@@ -39,8 +39,8 @@ const WebDev = () => {
         >
           <h3 className="title">Automatización y Desarrollo Web</h3>
           <p>
-            Automatizamos tus procesos operativos,
-            <strong>reduciendo hasta un 100% su ejecución manual</strong>.
+            Automatizamos tus procesos operativos
+            <strong> reduciendo hasta un 100% su ejecución manual</strong>.
             <br />
             <br /> Digitalizamos tu imagen comercial con
             <strong> soluciones web modernas</strong>. <br /> <br /> Nuestros

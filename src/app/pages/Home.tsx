@@ -9,8 +9,8 @@ const Home = () => {
   return(
     <>
       <Hero />
-      <MobileDev />
       <WebDev />
+      <MobileDev />
       <BusinessManagement />
       <ClientCarousel />
       <Portfolio />
