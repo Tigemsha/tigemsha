@@ -25,3 +25,11 @@
         width: 100%;
     }
 }
+
+@include bp-tab{
+    .portfolio{
+        &-container{
+            padding: 17rem 0;
+        }
+    }
+}
