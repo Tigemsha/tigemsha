@@ -24,7 +24,8 @@
     display: grid;
     place-items: center;
     padding: 2rem;
-    height: 18rem;
+    height: 30rem;
+    display: none;
 
     & p {
       line-height: 3rem;
@@ -37,6 +38,7 @@
     align-items: center;
     justify-content: space-evenly;
     padding-bottom: 4rem;
+    margin-top: 4rem;
     & button {
       width: 7rem;
       color: white;
@@ -50,13 +52,17 @@
 }
 
 @include bp-tab {
+    .pc{
+        &-text{
+            height: 20rem;
+        }
+    }
     .alice-carousel {
-    transform: translateX(-8rem);
     margin-top: 7rem;
   }
-  .__active {
-    transform: scale(1.2);
-    margin: 0 8rem !important;
+  .__target{
+    transform: scale(1.1);
+        margin: 0 3rem !important;
   }
   .alice-carousel__dots {
     display: none;

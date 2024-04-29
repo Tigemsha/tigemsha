@@ -16,6 +16,7 @@
         width: 100%;
         height: fit-content;
         padding: 7rem 4rem;
+        overflow: hidden;
     }
     &-header{
         margin: 3rem 0 5rem 0;
@@ -30,6 +31,11 @@
     .portfolio{
         &-container{
             padding: 17rem 0;
+        }
+        &-projects{
+            padding: 0 14.5rem 0 10.5rem;
+            max-width: 75rem;
+            overflow: hidden;
         }
     }
 }

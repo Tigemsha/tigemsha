@@ -33,7 +33,7 @@ const Portfolio = () => {
     <Box className="portfolio">
       <Box className="portfolio-container">
         <Box className={`portfolio-header fade-in-vertical ${isVisible ? " visible" : "" }`}>
-          <h3 className="title">Proyectos</h3>
+          <h3 className="title">Proyectos recientes</h3>
         </Box>
         <Box className={`portfolio-projects fade-in-vertical ${isVisible ? " visible" : "" }`}>
           <Carousel p1m={p1m} p2m={p2m} p3m={p3m}/>
