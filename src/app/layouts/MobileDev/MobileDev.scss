@@ -35,6 +35,8 @@
       padding: 0 2rem;
     }
     &-text {
+      border-left: none;
+      text-align: center;
       padding: 0 5rem;
       margin: 3rem 5rem;
     }
@@ -46,7 +48,7 @@
       flex-direction: row-reverse;
     }
     &-text {
-      border-left: none;
+      text-align: left;
       width: 50rem;
       margin-left: -2rem;
     }

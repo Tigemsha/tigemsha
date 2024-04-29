@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import logo from "app/assets/images/logo.png";
 import heroimg from "app/assets/images/tablet.png";
 import "./Hero.scss";

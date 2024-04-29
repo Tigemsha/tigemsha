@@ -30,7 +30,7 @@ const MobileDev = () => {
     <Box className="md w-screen">
     <Box className="md-container">
       <Box className={`md-image fade-in-vertical ${isVisible ? " visible" : "" }`}>
-          <img src={mobile} alt="Mobile image" />
+          <img src={mobile} alt="Mobile" />
       </Box>
       <Box className={`md-text fade-in-vertical ${isVisible ? " visible" : "" }`}>
         <h3 className="title">Desarrollo de aplicaciones móviles</h3>

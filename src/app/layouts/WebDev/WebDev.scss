@@ -38,6 +38,8 @@
             padding: 0 2rem;
         }
         &-text{
+            border-left: none;
+            text-align: center;
             padding: 0 5rem;
             margin: 3rem 0;
         }
@@ -49,6 +51,7 @@
             flex-direction: row;
         }
         &-text{
+            text-align: left;
             width: 50rem;
             border: none;
             margin: 0;

@@ -30,7 +30,7 @@ const WebDev = () => {
     <Box className="wd w-screen">
       <Box className="wd-container">
         <Box className={`wd-image fade-in-vertical ${isVisible ? " visible" : "" }`}>
-            <img src={laptop} alt="Laptop image" />
+            <img src={laptop} alt="Laptop" />
         </Box>
         <Box className={`wd-text fade-in-vertical ${isVisible ? " visible" : "" }`}>
           <h3 className="title">Automatización y Desarrollo Web</h3>

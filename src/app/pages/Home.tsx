@@ -1,4 +1,3 @@
-import React, { useEffect } from "react";
 import { Hero } from "app/layouts/Hero/Hero";
 import WebDev from "app/layouts/WebDev/WebDev";
 import { MobileDev } from "app/layouts/MobileDev/MobileDev";
