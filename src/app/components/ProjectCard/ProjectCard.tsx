@@ -15,13 +15,15 @@ const ProjectCard : React.FC<projectCardProps> = ({ urlImg, title, text, project
                 <p className='small'>{text}</p>
             </Box>
             <Box className="pc-actions">
-            <Button><a href={projectUrl}><Link /></a></Button>
-            {title === "Mares de papel" && (
-            <>
+            {title === "Mares de papel" ? (
+                <>
+                {/* <Button><a href={projectUrl}><Link /></a></Button> */}
                 <Button ><a href="https://www.mazarronhoy.com/noticias/2021/07/10/mares-papel-incorpora-codigo-qr.asp"><Newspaper /></a></Button>
                 <Button ><a href="https://lavozdemazarron.com/index.php/noticias/4730-codigos-qr-para-las-entradas-de-mares-de-papel"><LiveTv /></a></Button>
-            </>
-            )}
+                </>
+            ) : 
+            <Button><a href={projectUrl}><Link /></a></Button>
+            }
             </Box>
         </Box>
     </Box>

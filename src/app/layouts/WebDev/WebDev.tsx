@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import laptop from "app/assets/images/bi.png";
 import "./WebDev.scss";
+import { AutoMode, ImportantDevices, QueryStats } from "@mui/icons-material";
 
 const WebDev = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -39,11 +40,11 @@ const WebDev = () => {
         >
           <h3 className="title">Automatización y Desarrollo Web</h3>
           <p>
-            Automatizamos tus procesos operativos
+            <AutoMode sx={{ fontSize: "2.5rem", marginRight: ".4rem" }} /> Automatizamos tus procesos operativos
             <strong> reduciendo hasta un 100% su ejecución manual</strong>.
             <br />
-            <br /> Digitalizamos tu imagen comercial con
-            <strong> soluciones web modernas</strong>. <br /> <br /> Nuestros
+            <br /> <ImportantDevices sx={{ fontSize: "2.5rem", marginRight: ".4rem" }}/> Digitalizamos tu imagen comercial con
+            <strong> soluciones web modernas</strong>. <br /> <br /> <QueryStats sx={{ fontSize: "2.5rem", marginRight: ".4rem" }} /> Nuestros
             desarrollos incluyen{" "}
             <strong>
               {" "}
