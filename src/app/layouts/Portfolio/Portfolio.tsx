@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import { Carousel } from "app/components/Carousel/Carousel";
-import p1m from "app/assets/images/p1m.png";
-import p2m from "app/assets/images/p2m.png";
-import p3m from "app/assets/images/p3m.png";
+import p1m from "app/assets/images/p1m2.png";
+import p2m from "app/assets/images/p2m2.png";
+import p3m from "app/assets/images/p3m2.png";
 import "./Portfolio.scss";
 
 const Portfolio = () => {

@@ -72,7 +72,6 @@
 @include bp-tab-md {
   .bm {
     background-image: url("../../assets/images/bm.jpg");
-    background-size: contain;
     &-container {
       & h3 {
         font-size: 4rem;
