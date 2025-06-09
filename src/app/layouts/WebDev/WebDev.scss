@@ -1,5 +1,18 @@
 @import "../../assets/scss/main.scss";
 
+.design{
+    display: grid;
+    place-items: center;
+    background-image: url("../../assets/images/design-bg.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    padding: 10rem 3rem;
+    width: 100%;
+    min-height: 100vh;
+    height: 100%;
+}
+
 .wd{
     display: grid;
     place-items: center;

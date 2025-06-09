@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Box } from "@mui/material";
-import { Carousel } from "app/components/Carousel/Carousel";
-import p1m from "app/assets/images/p1m2.png";
-import p2m from "app/assets/images/p2m2.png";
-import p3m from "app/assets/images/p3m2.png";
-import "./Portfolio.scss";
+import p1m from "app/assets/images/p1m.png";
+import p2m from "app/assets/images/p2m.png";
+import p3m from "app/assets/images/p3m.png";
+import p4m from "app/assets/images/p4m.png";
+import { ProjectCard } from "app/components/ProjectCardV2/ProjectCardV2";
 
 const Portfolio = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -29,17 +28,56 @@ const Portfolio = () => {
       };
     }
   }, []);
+
+  const projects = [
+    {
+      title: "Fixing Broken Houses",
+      desc: "Professional website for a company specializing in home remodeling and construction in Texas.",
+      img: p2m,
+      urls: ["https://fixingbrokenhouses.com"],
+    },
+    {
+      title: "Soluciones Integrales Silva",
+      desc: "Corporate site for a company providing professional industrial and technical solutions.",
+      img: p4m,
+      urls: ["https://ggam-76598.web.app/"],
+    },
+    {
+      title: "Grupo Gran Alianza Mexicana",
+      desc: "Institutional website created for an active political association in Mexico.",
+      img: p3m,
+      urls: ["https://ggam-76598.web.app/"],
+    },
+    {
+      title: "Mares de papel",
+      desc: "Official portal developed for the Department of Culture of the Mazarrón City Council, Spain.",
+      img: p1m,
+      urls: ["https://lavozdemazarron.com/index.php/noticias/4730-codigos-qr-para-las-entradas-de-mares-de-papel"],
+    },
+  ];
+
   return (
-    <Box className="portfolio">
-      <Box className="portfolio-container">
-        <Box className={`portfolio-header fade-in-vertical ${isVisible ? " visible" : "" }`}>
-          <h3 className="title">Proyectos recientes</h3>
-        </Box>
-        <Box className={`portfolio-projects fade-in-vertical ${isVisible ? " visible" : "" }`}>
-          <Carousel p1m={p1m} p2m={p2m} p3m={p3m}/>
-        </Box>
-      </Box>
-    </Box>
+    <div className="py-14 px-10">
+      <div className="portfolio-container">
+        <div
+          className={`portfolio-projects fade-in-vertical
+                grid grid-cols-1
+                lg:grid-cols-2
+             ${isVisible ? " visible" : ""}`}
+        >
+          {projects.map((proj) => (
+            <div key={proj.title} className="w-full" style={{ minWidth: 0 }}>
+              <ProjectCard
+                title={proj.title}
+                desc={proj.desc}
+                img={proj.img}
+                urls={proj.urls}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
 
