@@ -13,9 +13,11 @@ import Icono from './Icono.astro';
 interface Props {
   landing: Landing;
   nivel?: 2 | 3;
+  /** Solo para las primeras tiras visibles al cargar. */
+  prioridad?: boolean;
 }
 
-const { landing, nivel = 3 } = Astro.props;
+const { landing, nivel = 3, prioridad = false } = Astro.props;
 const Titulo = nivel === 2 ? 'h2' : 'h3';
 const href = `/landings/${landing.slug}/`;
 ---
@@ -28,6 +30,7 @@ const href = `/landings/${landing.slug}/`;
     codigo={landing.codigo}
     anchos={[120, 240, 300, 600]}
     sizes="(min-width: 48rem) 300px, 120px"
+    prioridad={prioridad}
   />
   <div class="tira__cuerpo">
     <Titulo class="tira__titulo">
@@ -205,6 +208,14 @@ const href = `/landings/${landing.slug}/`;
 
     .tira:hover .tira__accion :global(.icono) {
       transform: translateX(3px);
+    }
+  }
+
+  /* Con menos movimiento: sin desplazamientos; quedan el borde, la sombra y el press. */
+  @media (prefers-reduced-motion: reduce) {
+    .tira:hover,
+    .tira:hover .tira__accion :global(.icono) {
+      transform: none;
     }
   }
 

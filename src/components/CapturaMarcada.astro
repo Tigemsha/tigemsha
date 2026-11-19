@@ -30,7 +30,7 @@ const { imagen, alt, codigo, anchos, sizes, prioridad = false, clase = '' } = As
     sizes={sizes}
     loading={prioridad ? 'eager' : 'lazy'}
     fetchpriority={prioridad ? 'high' : 'auto'}
-    decoding={prioridad ? 'sync' : 'async'}
+    decoding="async"
     draggable="false"
   />
   <span class="captura__marca" aria-hidden="true"></span>

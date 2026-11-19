@@ -32,9 +32,13 @@ const enGrande = total <= 2;
 
       <ul class:list={['indice__tiras', { 'indice__tiras--grandes': enGrande }]}>
         {
-          landings.map((landing) => (
+          landings.map((landing, i) => (
             <li>
-              {enGrande ? <LandingDestacada landing={landing} nivel={2} /> : <Tira landing={landing} nivel={2} />}
+              {enGrande ? (
+                <LandingDestacada landing={landing} nivel={2} prioridad={i === 0} />
+              ) : (
+                <Tira landing={landing} nivel={2} prioridad={i < 2} />
+              )}
             </li>
           ))
         }

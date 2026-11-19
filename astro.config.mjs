@@ -21,6 +21,8 @@ export default defineConfig({
   ],
   vite: {
     build: {
+      // Un solo CSS para todo el sitio: una petición que bloquea y queda en caché.
+      cssCodeSplit: false,
       assetsInlineLimit: 0,
       sourcemap: false,
     },

@@ -49,8 +49,8 @@ function iniciar(raiz: HTMLElement): void {
   const aviso = raiz.querySelector<HTMLElement>('[data-visor-aviso]');
   const grupo = raiz.querySelector<HTMLElement>('[data-visor-dispositivos]');
   const abrir = raiz.querySelector<HTMLElement>('[data-visor-abrir]');
-  const botonesDispositivo = Array.from(raiz.querySelectorAll<HTMLButtonElement>('[data-dispositivo]'));
-  const botonesTema = Array.from(raiz.querySelectorAll<HTMLButtonElement>('[data-tema]'));
+  const botonesDispositivo = Array.from(raiz.querySelectorAll<HTMLButtonElement>('button[data-dispositivo]'));
+  const botonesTema = Array.from(raiz.querySelectorAll<HTMLButtonElement>('button[data-tema]'));
   if (!demo || !marco || !pantalla || !estado || !aviso) return;
 
   let dispositivo: Dispositivo = matchMedia(ES_ESCRITORIO).matches ? 'escritorio' : 'celular';

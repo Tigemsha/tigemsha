@@ -11,9 +11,11 @@ interface Props {
   landing: Landing;
   /** Nivel del título según la página que la muestra. */
   nivel?: 2 | 3;
+  /** Cuando la captura es la imagen del LCP de la página. */
+  prioridad?: boolean;
 }
 
-const { landing, nivel = 3 } = Astro.props;
+const { landing, nivel = 3, prioridad = false } = Astro.props;
 const Titulo = nivel === 2 ? 'h2' : 'h3';
 const href = `/landings/${landing.slug}/`;
 ---
@@ -27,6 +29,7 @@ const href = `/landings/${landing.slug}/`;
       codigo={landing.codigo}
       anchos={[260, 320, 520, 640]}
       sizes="(min-width: 64rem) 320px, 260px"
+      prioridad={prioridad}
     />
   </div>
 
