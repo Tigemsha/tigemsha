@@ -1,0 +1,42 @@
+---
+/**
+ * Ficha de paleta: los 4 colores de un tema en franjas (fondo, superficie,
+ * tinta y acción), como una tira del muestrario. Usa atributos SVG, no estilos
+ * en línea, para que la CSP no necesite 'unsafe-inline'.
+ */
+import type { Tema } from '../lib/landings';
+
+interface Props {
+  tema: Tema;
+  clase?: string;
+}
+
+const { tema, clase = '' } = Astro.props;
+const franjas = [
+  { x: 0, w: 3, color: tema.fondo },
+  { x: 3, w: 2, color: tema.superficie },
+  { x: 5, w: 2, color: tema.tinta },
+  { x: 7, w: 3, color: tema.acento },
+];
+---
+
+<svg
+  class:list={['ficha-color', clase]}
+  viewBox="0 0 10 6"
+  preserveAspectRatio="none"
+  aria-hidden="true"
+  focusable="false"
+>
+  {franjas.map((f) => <rect x={f.x} y="0" width={f.w} height="6" fill={f.color} />)}
+</svg>
+
+<style>
+  .ficha-color {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 5 / 3;
+    border-radius: var(--radius-xs);
+    outline: 1px solid rgb(14 20 24 / 0.14);
+    outline-offset: -1px;
+  }
+</style>

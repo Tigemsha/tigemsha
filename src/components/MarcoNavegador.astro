@@ -1,0 +1,72 @@
+---
+/** Marco de navegador sobrio para mostrar una captura de escritorio. */
+interface Props {
+  url: string;
+  clase?: string;
+}
+const { url, clase = '' } = Astro.props;
+---
+
+<div class:list={['navegador', clase]}>
+  <div class="navegador__barra" aria-hidden="true">
+    <span class="navegador__puntos"><i></i><i></i><i></i></span>
+    <span class="navegador__url">{url}</span>
+  </div>
+  <div class="navegador__pantalla">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .navegador {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: var(--e-device);
+  }
+
+  .navegador__barra {
+    display: flex;
+    align-items: center;
+    gap: var(--s-4);
+    height: 2.5rem;
+    padding: 0 var(--s-4);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .navegador__puntos {
+    display: flex;
+    gap: 6px;
+  }
+
+  .navegador__puntos i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--line);
+  }
+
+  .navegador__url {
+    flex: 1;
+    max-width: 28rem;
+    margin-inline: auto;
+    overflow: hidden;
+    padding: 2px var(--s-3);
+    border-radius: var(--radius);
+    background: var(--bg);
+    color: var(--ink-3);
+    font-size: 0.8125rem;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .navegador__pantalla {
+    aspect-ratio: 16 / 10;
+  }
+
+  .navegador__pantalla > :global(*) {
+    height: 100%;
+  }
+</style>

@@ -1,0 +1,74 @@
+---
+/** Preguntas frecuentes con <details>: se abren sin JS y con teclado. */
+import type { Pregunta } from '../data/preguntas';
+import Icono from './Icono.astro';
+
+interface Props {
+  preguntas: Pregunta[];
+}
+
+const { preguntas } = Astro.props;
+---
+
+<div class="preguntas">
+  {
+    preguntas.map((p) => (
+      <details class="pregunta">
+        <summary>
+          <span>{p.pregunta}</span>
+          <Icono nombre="caret-down" clase="pregunta__caret" />
+        </summary>
+        <p>{p.respuesta}</p>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .preguntas {
+    border-top: 1px solid var(--line);
+  }
+
+  .pregunta {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .pregunta summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    min-height: 3.5rem;
+    padding-block: var(--s-4);
+    font-size: 1.125rem;
+    font-weight: 650;
+    line-height: 1.35;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .pregunta summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .pregunta summary :global(.pregunta__caret) {
+    color: var(--ink-3);
+    transition: transform var(--dur-state) var(--ease-out);
+  }
+
+  .pregunta[open] summary :global(.pregunta__caret) {
+    transform: rotate(180deg);
+  }
+
+  .pregunta p {
+    max-width: var(--measure);
+    padding-bottom: var(--s-5);
+    color: var(--ink-2);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .pregunta summary:hover {
+      color: var(--accent-ink);
+    }
+  }
+</style>

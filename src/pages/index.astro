@@ -1,0 +1,687 @@
+---
+import { Image, Picture } from 'astro:assets';
+import bancoAzteca from '../assets/clientes/banco-azteca.png';
+import liverpool from '../assets/clientes/liverpool.png';
+import nestle from '../assets/clientes/nestle.png';
+import CapturaMarcada from '../components/CapturaMarcada.astro';
+import Cierre from '../components/Cierre.astro';
+import Icono from '../components/Icono.astro';
+import LandingDestacada from '../components/LandingDestacada.astro';
+import MarcoNavegador from '../components/MarcoNavegador.astro';
+import Preguntas from '../components/Preguntas.astro';
+import Tira from '../components/Tira.astro';
+import { casos } from '../data/portafolio';
+import { preguntasHome } from '../data/preguntas';
+import { instagramUrl, sitio } from '../data/sitio';
+import Base from '../layouts/Base.astro';
+import { fechaCorta, pesosMXN } from '../lib/formato';
+import { landings, mantenimientoMinimo, precioMinimo } from '../lib/landings';
+import { enlaceWhatsApp, mensajes } from '../lib/whatsapp';
+
+const [ultima, ...anteriores] = landings;
+if (!ultima) throw new Error('La vitrina necesita al menos una landing');
+
+const desde = pesosMXN(precioMinimo);
+const casosDestacados = casos.filter((c) => c.destacado).slice(0, 2);
+
+const servicios = [
+  {
+    nombre: 'Automatización de procesos',
+    texto:
+      'Conectamos formularios, hojas de cálculo y sistemas para que la información deje de capturarse dos veces y los reportes salgan solos.',
+  },
+  {
+    nombre: 'Apps web',
+    texto:
+      'Sistemas internos, portales para tus clientes y paneles de control, hechos para la forma en que ya trabaja tu equipo.',
+  },
+  {
+    nombre: 'Apps móviles',
+    texto: 'Apps para iOS y Android, para tu equipo en campo o para tus clientes.',
+  },
+  {
+    nombre: 'Sitios y landings',
+    texto:
+      'Sitios rápidos que se leen bien en el celular y llevan a WhatsApp, con tus precios y horarios a la vista.',
+  },
+];
+
+const clientes = [
+  { imagen: liverpool, nombre: 'Liverpool' },
+  { imagen: nestle, nombre: 'Nestlé' },
+  { imagen: bancoAzteca, nombre: 'Banco Azteca' },
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: sitio.nombre,
+  url: sitio.url,
+  logo: `${sitio.url}/favicon.svg`,
+  description: sitio.descripcion,
+  areaServed: 'MX',
+  sameAs: [instagramUrl],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'sales',
+    url: `https://wa.me/${sitio.whatsapp}`,
+    availableLanguage: 'es',
+  },
+};
+---
+
+<Base
+  titulo="Tigemsha"
+  descripcion={`Software a la medida para empresas en México: automatización, apps web y móviles. Cada día publicamos una landing lista para tu negocio desde ${desde} MXN.`}
+  schema={schema}
+>
+  <section class="hero" aria-labelledby="hero-titulo">
+    <div class="wrap hero__rejilla">
+      <h1 id="hero-titulo" class="display hero__titulo entra-1">
+        Software a la medida para empresas en México
+      </h1>
+      <div class="hero__lado">
+        <p class="entrada hero__sub entra-2">
+          Automatizamos procesos, hacemos apps web y móviles, y cada día publicamos una landing lista para
+          tu negocio desde {desde} MXN.
+        </p>
+        <div class="acciones entra-3">
+          <a class="btn btn--primario" href="#landings">Ver landings a la venta</a>
+          <a class="btn btn--secundario" href={enlaceWhatsApp(mensajes.cotizar)} rel="noopener">
+            <Icono nombre="whatsapp" /> Cotizar por WhatsApp
+          </a>
+        </div>
+      </div>
+      <a
+        class="hero__visual entra-4"
+        href={`/landings/${ultima.slug}`}
+        aria-label={`Ver la demo de la landing más reciente: ${ultima.codigo}, ${ultima.giro}`}
+      >
+        <MarcoNavegador url={`tigemsha.com/landings/${ultima.slug}`}>
+          <CapturaMarcada
+            imagen={ultima.imagenes.escritorio}
+            alt={`Captura en escritorio de la landing ${ultima.codigo} para ${ultima.giro.toLowerCase()}`}
+            codigo={ultima.codigo}
+            anchos={[640, 960, 1200, 1600, 2400]}
+            sizes="(min-width: 75rem) 1200px, calc(100vw - 2rem)"
+            prioridad
+          />
+        </MarcoNavegador>
+      </a>
+    </div>
+  </section>
+
+  <section class="seccion vitrina" id="landings" aria-labelledby="landings-titulo">
+    <div class="wrap">
+      <div class="seccion__cabeza">
+        <h2 id="landings-titulo" class="titulo-seccion">
+          Landings a la venta. <span class="tenue">Un giro nuevo cada día.</span>
+        </h2>
+        <p>
+          La ves funcionando antes de pagar, la pruebas con otros colores y la armamos con tus datos. La
+          más reciente es la <a href={`/landings/${ultima.slug}`}>{ultima.codigo}, {ultima.giro.toLowerCase()}</a>, publicada el {
+            fechaCorta(ultima.fecha)
+          }.
+        </p>
+      </div>
+
+      <LandingDestacada landing={ultima} />
+
+      {
+        anteriores.length > 0 && (
+          <ul class="vitrina__tiras" aria-label="Landings anteriores">
+            {anteriores.slice(0, 6).map((landing) => (
+              <li>
+                <Tira landing={landing} />
+              </li>
+            ))}
+          </ul>
+        )
+      }
+
+      <div class="vitrina__pie">
+        <a class="enlace-flecha" href="/landings">
+          Ver todas las landings ({landings.length})
+          <Icono nombre="arrow-right" />
+        </a>
+        <p>
+          ¿Tu giro todavía no está? <a href={enlaceWhatsApp(mensajes.landings)} rel="noopener"
+            >Pídela por WhatsApp</a
+          >.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion compra" id="como-se-compra" aria-labelledby="compra-titulo">
+    <div class="wrap compra__rejilla">
+      <div class="seccion__cabeza compra__cabeza">
+        <h2 id="compra-titulo" class="titulo-seccion">Cómo se compra una landing</h2>
+        <p>
+          Una conversación por WhatsApp. El diseño ya está hecho y probado; lo tuyo va en un solo archivo
+          de configuración.
+        </p>
+      </div>
+
+      <ol class="pasos">
+        <li class="paso">
+          <h3 class="titulo">Elige el modelo y los colores</h3>
+          <p>
+            Abre la demo, pruébala en celular y en escritorio, y quédate con una de sus combinaciones de
+            color o pídela con los colores de tu marca.
+          </p>
+        </li>
+        <li class="paso">
+          <h3 class="titulo">Mándanos tus datos</h3>
+          <p>
+            Por WhatsApp: logo, fotos, horarios, precios, dirección y el número que va a recibir los
+            mensajes. Si falta algo, te decimos qué.
+          </p>
+        </li>
+        <li class="paso">
+          <h3 class="titulo">La armamos con tu configuración</h3>
+          <p>
+            Tus datos van en el archivo de configuración, sin tocar el diseño. Te mandamos una vista previa
+            para que la revises antes de publicar.
+          </p>
+        </li>
+        <li class="paso">
+          <h3 class="titulo">Publicamos y te entregamos el código</h3>
+          <p>
+            La subimos a tu dominio y el código fuente es tuyo. Si quieres que nosotros la mantengamos, el
+            mantenimiento va desde {pesosMXN(mantenimientoMinimo)} MXN al mes.
+          </p>
+        </li>
+      </ol>
+
+      <figure class="config" aria-label="Ejemplo de archivo de configuración de una landing">
+        <div class="config__barra">
+          <span class="codigo">site.config.ts</span>
+          <span class="config__ejemplo">Ejemplo</span>
+        </div>
+        <pre><code><span class="c-k">negocio</span>:   <span class="c-s">'Gimnasio Ejemplo'</span>,
+<span class="c-k">colonia</span>:   <span class="c-s">'Narvarte'</span>,
+<span class="c-k">tema</span>:      <span class="c-s">'rack'</span>,
+<span class="c-k">whatsapp</span>:  <span class="c-s">'55 0000 0000'</span>,
+<span class="c-k">horario</span>: &lbrace;
+  <span class="c-k">lunes_a_viernes</span>: <span class="c-s">'6:00 a 22:00'</span>,
+  <span class="c-k">sabado</span>:          <span class="c-s">'8:00 a 14:00'</span>,
+&rbrace;,
+<span class="c-k">planes</span>: [
+  &lbrace; <span class="c-k">nombre</span>: <span class="c-s">'Mensual'</span>,    <span class="c-k">precio</span>: <span class="c-n">650</span> &rbrace;,
+  &lbrace; <span class="c-k">nombre</span>: <span class="c-s">'Trimestral'</span>, <span class="c-k">precio</span>: <span class="c-n">1750</span> &rbrace;,
+],</code></pre>
+      </figure>
+    </div>
+  </section>
+
+  <section class="seccion software" id="software" aria-labelledby="software-titulo">
+    <div class="wrap">
+      <div class="seccion__cabeza">
+        <h2 id="software-titulo" class="titulo-seccion">
+          Software a medida. <span class="tenue">Para lo que una landing no resuelve.</span>
+        </h2>
+        <p>
+          Cuando el problema está en la operación: datos que se capturan a mano, hojas de cálculo que
+          nadie actualiza o procesos que dependen de una sola persona.
+        </p>
+      </div>
+
+      <dl class="servicios">
+        {
+          servicios.map((s) => (
+            <div class="servicio">
+              <dt class="titulo">{s.nombre}</dt>
+              <dd>{s.texto}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <h3 class="titulo casos__titulo">Proyectos entregados</h3>
+      <ul class="casos">
+        {
+          casosDestacados.map((caso) => (
+            <li class="caso">
+              <MarcoNavegador url={caso.marco}>
+                <Picture
+                  src={caso.imagen}
+                  alt={caso.alt}
+                  formats={['avif']}
+                  fallbackFormat="webp"
+                  widths={[480, 720, 960, 1200]}
+                  sizes="(min-width: 64rem) 560px, calc(100vw - 2rem)"
+                  loading="lazy"
+                  decoding="async"
+                  class="caso__imagen"
+                />
+              </MarcoNavegador>
+              <div class="caso__texto">
+                <h4 class="caso__nombre">{caso.nombre}</h4>
+                <p class="caso__tipo">{caso.tipo}</p>
+                <p>{caso.descripcion}</p>
+                {caso.enlace && (
+                  <a class="enlace-flecha" href={caso.enlace.url} rel="noopener">
+                    {caso.enlace.texto}
+                    <Icono nombre="arrow-square-out" />
+                  </a>
+                )}
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="acciones software__accion">
+        <a class="btn btn--primario" href={enlaceWhatsApp(mensajes.cotizar)} rel="noopener">
+          <Icono nombre="whatsapp" /> Cotizar un proyecto
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {
+    sitio.mostrarClientes && (
+      <section class="clientes" aria-labelledby="clientes-titulo">
+        <div class="wrap clientes__fila">
+          <h2 id="clientes-titulo" class="titulo clientes__titulo">
+            Empresas con las que hemos trabajado
+          </h2>
+          <ul class="clientes__logos">
+            {clientes.map((c) => (
+              <li>
+                <Image
+                  src={c.imagen}
+                  alt={c.nombre}
+                  widths={[160, 320]}
+                  sizes="160px"
+                  format="webp"
+                  loading="lazy"
+                  decoding="async"
+                  class="clientes__logo"
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="seccion preguntas-home" id="preguntas" aria-labelledby="preguntas-titulo">
+    <div class="wrap preguntas-home__rejilla">
+      <div class="seccion__cabeza">
+        <h2 id="preguntas-titulo" class="titulo-seccion">Preguntas frecuentes</h2>
+        <p>
+          Si tu duda no está aquí, <a href={enlaceWhatsApp(mensajes.cotizar)} rel="noopener"
+            >pregúntanos por WhatsApp</a
+          >.
+        </p>
+      </div>
+      <Preguntas preguntas={preguntasHome(ultima.plazo)} />
+    </div>
+  </section>
+
+  <Cierre />
+</Base>
+
+<style>
+  /* Hero */
+  .hero {
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 4.5rem) 0;
+    overflow: clip;
+  }
+
+  .hero__rejilla {
+    display: grid;
+    gap: var(--s-6);
+  }
+
+  .hero__titulo {
+    max-width: 15ch;
+  }
+
+  .hero__lado {
+    display: grid;
+    gap: var(--s-6);
+  }
+
+  .hero__visual {
+    display: block;
+    margin-top: var(--s-6);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+  }
+
+  .hero__visual :global(.captura img) {
+    transition: transform 250ms var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .hero__visual:hover :global(.captura img) {
+      transform: scale(1.02);
+    }
+  }
+
+  @media (max-width: 29.99rem) {
+    .hero .acciones .btn {
+      flex: 1 1 100%;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .hero__rejilla {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--s-8);
+      row-gap: var(--s-10);
+      align-items: end;
+    }
+
+    .hero__titulo {
+      grid-column: 1 / span 8;
+    }
+
+    .hero__lado {
+      grid-column: 9 / -1;
+      padding-bottom: var(--s-2);
+    }
+
+    .hero__visual {
+      grid-column: 1 / -1;
+      margin-top: 0;
+    }
+  }
+
+  /* Vitrina */
+  .vitrina__tiras {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: var(--s-4);
+    margin-top: var(--s-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  .vitrina__pie {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-2) var(--s-8);
+    margin-top: var(--s-6);
+    color: var(--ink-2);
+  }
+
+  /* Cómo se compra */
+  .compra {
+    border-block: 1px solid var(--line);
+    background: var(--surface);
+  }
+
+  .compra__rejilla {
+    display: grid;
+    gap: var(--s-10);
+  }
+
+  .compra__cabeza {
+    margin-bottom: 0;
+  }
+
+  .pasos {
+    display: grid;
+    gap: var(--s-8);
+    padding: 0;
+    list-style: none;
+    counter-reset: paso;
+  }
+
+  .paso {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    column-gap: var(--s-4);
+    row-gap: var(--s-2);
+    counter-increment: paso;
+  }
+
+  /* El número del paso es una ficha de color: la secuencia sí informa. */
+  .paso::before {
+    content: counter(paso);
+    grid-row: span 2;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-xs);
+    background: var(--accent);
+    color: var(--on-accent);
+    font-weight: 750;
+    font-stretch: var(--wdth-code);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.125rem;
+  }
+
+  .paso p {
+    color: var(--ink-2);
+    max-width: 52ch;
+  }
+
+  .config {
+    align-self: start;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--bg);
+  }
+
+  .config__barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding: var(--s-3) var(--s-4);
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+  }
+
+  .config__ejemplo {
+    padding: 0 var(--s-2);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    color: var(--ink-2);
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+
+  .config pre {
+    margin: 0;
+    overflow-x: auto;
+    padding: var(--s-5) var(--s-4);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.7;
+    tab-size: 2;
+  }
+
+  .c-k {
+    color: var(--ink-2);
+  }
+
+  .c-s {
+    color: var(--accent-ink);
+  }
+
+  .c-n {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  @media (min-width: 64rem) {
+    .compra__rejilla {
+      grid-template-columns: 1fr 1fr;
+      column-gap: clamp(3rem, 1rem + 5vw, 6rem);
+      row-gap: var(--s-10);
+    }
+
+    .compra__cabeza {
+      grid-column: 1 / -1;
+    }
+
+    .config {
+      position: sticky;
+      top: var(--s-6);
+    }
+
+    .config pre {
+      font-size: 0.875rem;
+      padding: var(--s-6);
+    }
+  }
+
+  /* Software a medida */
+  .servicios {
+    border-top: 1px solid var(--line);
+  }
+
+  .servicio {
+    display: grid;
+    gap: var(--s-2);
+    padding-block: var(--s-6);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .servicio dd {
+    margin: 0;
+    color: var(--ink-2);
+    max-width: 58ch;
+  }
+
+  @media (min-width: 48rem) {
+    .servicio {
+      grid-template-columns: minmax(14rem, 1fr) 2fr;
+      gap: var(--s-8);
+      align-items: baseline;
+    }
+  }
+
+  .casos__titulo {
+    margin-top: clamp(3rem, 2rem + 4vw, 5rem);
+    margin-bottom: var(--s-6);
+  }
+
+  .casos {
+    display: grid;
+    gap: var(--s-10);
+    padding: 0;
+    list-style: none;
+  }
+
+  .caso {
+    display: grid;
+    gap: var(--s-5);
+    align-content: start;
+  }
+
+  .caso :global(.caso__imagen) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+
+  .caso__texto {
+    display: grid;
+    gap: var(--s-2);
+    justify-items: start;
+  }
+
+  .caso__nombre {
+    font-size: var(--fs-title);
+    font-weight: 700;
+    font-stretch: 104%;
+    line-height: 1.2;
+  }
+
+  .caso__tipo {
+    margin-top: calc(var(--s-2) * -1);
+    color: var(--ink-3);
+    font-size: var(--fs-label);
+    font-weight: 600;
+  }
+
+  .caso__texto p:not(.caso__tipo) {
+    color: var(--ink-2);
+    max-width: 52ch;
+  }
+
+  .software__accion {
+    margin-top: var(--s-10);
+  }
+
+  @media (min-width: 64rem) {
+    .casos {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--s-8);
+    }
+  }
+
+  /* Clientes */
+  .clientes {
+    padding-block: var(--s-12);
+    border-block: 1px solid var(--line);
+    background: var(--surface);
+  }
+
+  .clientes__fila {
+    display: grid;
+    gap: var(--s-6);
+    align-items: center;
+  }
+
+  .clientes__titulo {
+    color: var(--ink-2);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    font-stretch: 100%;
+  }
+
+  .clientes__logos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-6) clamp(1.5rem, 1rem + 3vw, 4rem);
+    padding: 0;
+    list-style: none;
+  }
+
+  .clientes__logos :global(.clientes__logo) {
+    width: 8.5rem;
+    height: auto;
+    filter: grayscale(1) contrast(1.1);
+    opacity: 0.8;
+  }
+
+  @media (min-width: 64rem) {
+    .clientes__fila {
+      grid-template-columns: 16rem 1fr;
+    }
+
+    .clientes__logos {
+      justify-content: flex-end;
+    }
+  }
+
+  /* Preguntas */
+  .preguntas-home__rejilla {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  @media (min-width: 64rem) {
+    .preguntas-home__rejilla {
+      grid-template-columns: 1fr 1.6fr;
+      gap: clamp(3rem, 1rem + 5vw, 6rem);
+      align-items: start;
+    }
+  }
+</style>
