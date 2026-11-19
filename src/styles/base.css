@@ -235,7 +235,7 @@ a {
 }
 
 .btn--secundario {
-  --btn-line: var(--line-strong);
+  --btn-line: var(--ink-3);
 }
 
 @media (hover: hover) and (pointer: fine) {

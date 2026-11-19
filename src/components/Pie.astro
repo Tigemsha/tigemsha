@@ -13,16 +13,15 @@ const anio = new Date().getFullYear();
     </a>
     <nav aria-label="Pie de página">
       <ul class="pie__enlaces">
-        <li><a href="/landings">Landings a la venta</a></li>
+        <li><a href="/landings/">Landings a la venta</a></li>
         <li><a href="/#software">Software a medida</a></li>
         <li><a href="/#preguntas">Preguntas frecuentes</a></li>
         <li><a href={instagramUrl} rel="noopener">Instagram</a></li>
-        <li><a href="/aviso-de-privacidad">Aviso de privacidad</a></li>
+        <li><a href="/aviso-de-privacidad/">Aviso de privacidad</a></li>
       </ul>
     </nav>
     <p class="pie__legal">
-      © {anio}
-      {sitio.nombre}. Las demos de la vitrina son muestras con marca de agua; prohibida su copia o
+      © {anio} {sitio.nombre}. Las demos de la vitrina son muestras con marca de agua; prohibida su copia o
       redistribución.
     </p>
   </div>
@@ -84,7 +83,7 @@ const anio = new Date().getFullYear();
 
   @media (min-width: 64rem) {
     .pie__fila {
-      grid-template-columns: auto 1fr;
+      grid-template-columns: auto minmax(0, 1fr);
       align-items: center;
       column-gap: var(--s-12);
     }

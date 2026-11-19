@@ -54,6 +54,9 @@
   --accent-ink: var(--tigre-tinta);
   --focus: var(--tigre-tinta);
   --selection: rgb(65 212 242 / 0.35);
+  --sello-bg: rgb(14 20 24 / 0.78);
+  --sello-ink: var(--papel);
+  --ficha-borde: rgb(14 20 24 / 0.14);
 
   /* Tipografía */
   --font-display: 'Archivo Variable', 'Archivo Fallback', system-ui, sans-serif;

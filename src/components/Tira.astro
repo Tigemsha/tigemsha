@@ -17,7 +17,7 @@ interface Props {
 
 const { landing, nivel = 3 } = Astro.props;
 const Titulo = nivel === 2 ? 'h2' : 'h3';
-const href = `/landings/${landing.slug}`;
+const href = `/landings/${landing.slug}/`;
 ---
 
 <article class="tira">
@@ -37,9 +37,7 @@ const href = `/landings/${landing.slug}`;
     </Titulo>
     <p class="tira__meta">
       <span class="codigo">{landing.codigo}</span>
-      <span aria-hidden="true">·</span>
       <span>Modelo {landing.nombre}</span>
-      <span aria-hidden="true">·</span>
       <time datetime={landing.fecha}>{fechaCorta(landing.fecha)}</time>
     </p>
     <ul class="tira__temas" aria-label="Combinaciones de color">
@@ -63,7 +61,7 @@ const href = `/landings/${landing.slug}`;
   .tira {
     position: relative;
     display: grid;
-    grid-template-columns: 7.5rem 1fr;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
     gap: var(--s-4);
     padding: var(--s-3);
     border: 1px solid var(--line);
@@ -132,7 +130,7 @@ const href = `/landings/${landing.slug}`;
   .tira__meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0 var(--s-2);
+    gap: 0 var(--s-3);
     color: var(--ink-3);
     font-size: var(--fs-label);
   }
@@ -212,7 +210,7 @@ const href = `/landings/${landing.slug}`;
 
   @media (min-width: 48rem) {
     .tira {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       align-content: start;
     }
 

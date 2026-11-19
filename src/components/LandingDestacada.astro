@@ -9,10 +9,13 @@ import Icono from './Icono.astro';
 
 interface Props {
   landing: Landing;
+  /** Nivel del título según la página que la muestra. */
+  nivel?: 2 | 3;
 }
 
-const { landing } = Astro.props;
-const href = `/landings/${landing.slug}`;
+const { landing, nivel = 3 } = Astro.props;
+const Titulo = nivel === 2 ? 'h2' : 'h3';
+const href = `/landings/${landing.slug}/`;
 ---
 
 <article class="destacada" aria-labelledby={`destacada-${landing.slug}`}>
@@ -28,14 +31,12 @@ const href = `/landings/${landing.slug}`;
   </div>
 
   <div class="destacada__ficha">
-    <h3 id={`destacada-${landing.slug}`} class="destacada__titulo">
+    <Titulo id={`destacada-${landing.slug}`} class="destacada__titulo">
       Landing para {landing.giro.toLowerCase()}
-    </h3>
+    </Titulo>
     <p class="destacada__meta">
       <span class="codigo">{landing.codigo}</span>
-      <span aria-hidden="true">·</span>
       <span>Modelo {landing.nombre}</span>
-      <span aria-hidden="true">·</span>
       <span>Publicada el <time datetime={landing.fecha}>{fechaLarga(landing.fecha)}</time></span>
     </p>
     <p class="destacada__resumen">{landing.resumen}</p>
@@ -88,6 +89,7 @@ const href = `/landings/${landing.slug}`;
 <style>
   .destacada {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--s-8);
     padding: clamp(1.25rem, 0.6rem + 2.8vw, 3rem);
     border: 1px solid var(--line);
@@ -127,7 +129,7 @@ const href = `/landings/${landing.slug}`;
   .destacada__meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0 var(--s-2);
+    gap: 0 var(--s-4);
     margin-top: calc(var(--s-3) * -1);
     color: var(--ink-3);
     font-size: var(--fs-label);
@@ -212,7 +214,7 @@ const href = `/landings/${landing.slug}`;
 
   @media (min-width: 64rem) {
     .destacada {
-      grid-template-columns: auto 1fr;
+      grid-template-columns: auto minmax(0, 1fr);
       gap: clamp(2.5rem, 1rem + 4vw, 5rem);
       align-items: center;
     }

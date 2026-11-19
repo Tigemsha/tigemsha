@@ -46,10 +46,11 @@ const servicios = [
   },
 ];
 
+// El ancho de cada logo compensa el aire de su archivo para que pesen parecido.
 const clientes = [
-  { imagen: liverpool, nombre: 'Liverpool' },
-  { imagen: nestle, nombre: 'Nestlé' },
-  { imagen: bancoAzteca, nombre: 'Banco Azteca' },
+  { imagen: liverpool, nombre: 'Liverpool', clase: 'clientes__logo--liverpool' },
+  { imagen: nestle, nombre: 'Nestlé', clase: 'clientes__logo--nestle' },
+  { imagen: bancoAzteca, nombre: 'Banco Azteca', clase: 'clientes__logo--azteca' },
 ];
 
 const schema = {
@@ -94,7 +95,7 @@ const schema = {
       </div>
       <a
         class="hero__visual entra-4"
-        href={`/landings/${ultima.slug}`}
+        href={`/landings/${ultima.slug}/`}
         aria-label={`Ver la demo de la landing más reciente: ${ultima.codigo}, ${ultima.giro}`}
       >
         <MarcoNavegador url={`tigemsha.com/landings/${ultima.slug}`}>
@@ -119,7 +120,7 @@ const schema = {
         </h2>
         <p>
           La ves funcionando antes de pagar, la pruebas con otros colores y la armamos con tus datos. La
-          más reciente es la <a href={`/landings/${ultima.slug}`}>{ultima.codigo}, {ultima.giro.toLowerCase()}</a>, publicada el {
+          más reciente es la <a href={`/landings/${ultima.slug}/`}>{ultima.codigo}, {ultima.giro.toLowerCase()}</a>, publicada el {
             fechaCorta(ultima.fecha)
           }.
         </p>
@@ -140,7 +141,7 @@ const schema = {
       }
 
       <div class="vitrina__pie">
-        <a class="enlace-flecha" href="/landings">
+        <a class="enlace-flecha" href="/landings/">
           Ver todas las landings ({landings.length})
           <Icono nombre="arrow-right" />
         </a>
@@ -298,7 +299,7 @@ const schema = {
                   format="webp"
                   loading="lazy"
                   decoding="async"
-                  class="clientes__logo"
+                  class={`clientes__logo ${c.clase}`}
                 />
               </li>
             ))}
@@ -334,6 +335,7 @@ const schema = {
 
   .hero__rejilla {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--s-6);
   }
 
@@ -395,7 +397,7 @@ const schema = {
   /* Vitrina */
   .vitrina__tiras {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
     gap: var(--s-4);
     margin-top: var(--s-6);
     padding: 0;
@@ -420,6 +422,7 @@ const schema = {
 
   .compra__rejilla {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--s-10);
   }
 
@@ -437,7 +440,7 @@ const schema = {
 
   .paso {
     display: grid;
-    grid-template-columns: 2.5rem 1fr;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
     column-gap: var(--s-4);
     row-gap: var(--s-2);
     counter-increment: paso;
@@ -518,7 +521,7 @@ const schema = {
 
   @media (min-width: 64rem) {
     .compra__rejilla {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       column-gap: clamp(3rem, 1rem + 5vw, 6rem);
       row-gap: var(--s-10);
     }
@@ -620,7 +623,7 @@ const schema = {
 
   @media (min-width: 64rem) {
     .casos {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: var(--s-8);
     }
   }
@@ -661,9 +664,17 @@ const schema = {
     opacity: 0.8;
   }
 
+  .clientes__logos :global(.clientes__logo--nestle) {
+    width: 7rem;
+  }
+
+  .clientes__logos :global(.clientes__logo--azteca) {
+    width: 10.5rem;
+  }
+
   @media (min-width: 64rem) {
     .clientes__fila {
-      grid-template-columns: 16rem 1fr;
+      grid-template-columns: 16rem minmax(0, 1fr);
     }
 
     .clientes__logos {
@@ -674,12 +685,13 @@ const schema = {
   /* Preguntas */
   .preguntas-home__rejilla {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--s-4);
   }
 
   @media (min-width: 64rem) {
     .preguntas-home__rejilla {
-      grid-template-columns: 1fr 1.6fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
       gap: clamp(3rem, 1rem + 5vw, 6rem);
       align-items: start;
     }

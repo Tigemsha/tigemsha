@@ -60,7 +60,8 @@ function iniciar(raiz: HTMLElement): void {
   let temaPendiente: string | null = null;
 
   const escalar = () => {
-    const escala = pantalla.clientWidth / ANCHO_LOGICO[dispositivo];
+    // Ancho fraccional: con clientWidth (entero) queda una rendija de menos de 1 px.
+    const escala = pantalla.getBoundingClientRect().width / ANCHO_LOGICO[dispositivo];
     marco.style.setProperty('--escala', escala.toFixed(4));
   };
 

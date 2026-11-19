@@ -36,7 +36,7 @@ const HEADERS = `# Sitio de demos de tigemsha.com (lo arma scripts/collect-demos
   Content-Security-Policy: frame-ancestors 'self' https://tigemsha.com https://www.tigemsha.com
   Referrer-Policy: same-origin
   X-Content-Type-Options: nosniff
-  Permissions-Policy: accelerometer=(), autoplay=(), camera=(), clipboard-read=(), clipboard-write=(), display-capture=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=(), browsing-topics=()
+  Permissions-Policy: accelerometer=(), autoplay=(), camera=(), clipboard-read=(), clipboard-write=(), display-capture=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=()
 `;
 
 const ROBOTS = `User-agent: *

@@ -25,7 +25,7 @@ const laQuiero = enlaceWhatsApp(mensajes.laQuiero(landing));
 const pregunta = enlaceWhatsApp(mensajes.pregunta(landing));
 const otras = landings.filter((l) => l.slug !== landing.slug).slice(0, 3);
 const precio = pesosMXN(landing.precio_desde);
-const url = `${sitio.url}/landings/${landing.slug}`;
+const url = `${sitio.url}/landings/${landing.slug}/`;
 
 const medida = (valor: number | null, unidad: string) =>
   valor === null ? 'Se mide al publicar la demo' : `${valor} ${unidad}`;
@@ -57,7 +57,7 @@ const schema = {
   <div class="wrap ficha">
     <nav class="migas" aria-label="Ruta">
       <ol>
-        <li><a href="/landings">Landings a la venta</a></li>
+        <li><a href="/landings/">Landings a la venta</a></li>
         <li aria-current="page">{landing.giro}</li>
       </ol>
     </nav>
@@ -66,9 +66,7 @@ const schema = {
       <h1 class="display ficha__titulo entra-1">Landing para {giro}</h1>
       <p class="ficha__meta entra-2">
         <span class="codigo">{landing.codigo}</span>
-        <span aria-hidden="true">·</span>
         <span>Modelo {landing.nombre}</span>
-        <span aria-hidden="true">·</span>
         <span>Publicada el <time datetime={landing.fecha}>{fechaLarga(landing.fecha)}</time></span>
       </p>
       <p class="entrada ficha__resumen entra-2">{landing.resumen}</p>
@@ -208,6 +206,7 @@ const schema = {
 <style>
   .ficha {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--s-8);
     padding-block: var(--s-6) var(--section-y);
   }
@@ -246,13 +245,13 @@ const schema = {
   }
 
   .ficha__titulo {
-    max-width: 16ch;
+    font-size: clamp(2.25rem, 1.4rem + 3.2vw, 4rem);
   }
 
   .ficha__meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0 var(--s-2);
+    gap: 0 var(--s-4);
     color: var(--ink-3);
     font-size: 0.9375rem;
   }
@@ -386,6 +385,7 @@ const schema = {
 
   .tecnica__rejilla {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--s-10);
   }
 
@@ -431,7 +431,7 @@ const schema = {
 
   @media (min-width: 64rem) {
     .tecnica__rejilla {
-      grid-template-columns: 1.4fr 1fr;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
       gap: clamp(3rem, 1rem + 5vw, 6rem);
     }
   }
@@ -439,12 +439,13 @@ const schema = {
   /* Preguntas */
   .ficha-preguntas__rejilla {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--s-8);
   }
 
   @media (min-width: 64rem) {
     .ficha-preguntas__rejilla {
-      grid-template-columns: 1fr 1.6fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
       gap: clamp(3rem, 1rem + 5vw, 6rem);
       align-items: start;
     }

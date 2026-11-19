@@ -66,6 +66,7 @@ const giro = landing.giro.toLowerCase();
           anchos={[640, 960, 1280, 1600]}
           sizes="(min-width: 75rem) 800px, 100vw"
         />
+        <span class="visor__sello codigo" aria-hidden="true">Muestra · {landing.codigo}</span>
         <p class="visor__estado" data-visor-estado role="status"></p>
       </div>
     </div>
@@ -105,6 +106,7 @@ const giro = landing.giro.toLowerCase();
 <style>
   .visor {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--s-4);
   }
 
@@ -133,7 +135,7 @@ const giro = landing.giro.toLowerCase();
     display: inline-flex;
     align-items: center;
     gap: var(--s-2);
-    min-height: 40px;
+    min-height: 44px;
     padding: 0 var(--s-3);
     border: 0;
     border-radius: var(--radius);
@@ -299,6 +301,7 @@ const giro = landing.giro.toLowerCase();
     top: 0;
     left: 0;
     width: calc(var(--w) * 1px);
+    max-width: none;
     height: calc(var(--h) * 1px);
     border: 0;
     background: var(--surface);
@@ -310,6 +313,32 @@ const giro = landing.giro.toLowerCase();
 
   [data-estado='cargada'] :global(.visor__iframe) {
     opacity: 1;
+  }
+
+  /* Con la demo cargada, el póster se retira cuando termina el fundido. */
+  [data-estado='cargada'] :global(.visor__poster) {
+    visibility: hidden;
+    transition: visibility 0s linear var(--dur-base);
+  }
+
+  /* El sello queda sobre la demo y no recibe clics; la marca completa la trae la demo. */
+  .visor__sello {
+    position: absolute;
+    left: var(--s-2);
+    bottom: var(--s-2);
+    z-index: 1;
+    padding: 2px var(--s-2);
+    border-radius: var(--radius-xs);
+    background: var(--sello-bg);
+    color: var(--sello-ink);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    pointer-events: none;
+  }
+
+  .visor__pantalla :global(.captura__sello) {
+    display: none;
   }
 
   .visor__estado {
@@ -337,6 +366,7 @@ const giro = landing.giro.toLowerCase();
   /* Pruébala con otros colores */
   .visor__temas {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--s-3);
     margin-top: var(--s-4);
   }
@@ -348,7 +378,7 @@ const giro = landing.giro.toLowerCase();
 
   .fichas-tema {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr));
     gap: var(--s-3);
     max-width: 36rem;
     margin-top: var(--s-2);

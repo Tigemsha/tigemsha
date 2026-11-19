@@ -1,6 +1,7 @@
 ---
 import Cierre from '../../components/Cierre.astro';
 import Icono from '../../components/Icono.astro';
+import LandingDestacada from '../../components/LandingDestacada.astro';
 import Tira from '../../components/Tira.astro';
 import Base from '../../layouts/Base.astro';
 import { pesosMXN } from '../../lib/formato';
@@ -10,6 +11,8 @@ import { enlaceWhatsApp, mensajes } from '../../lib/whatsapp';
 const total = landings.length;
 const desde = pesosMXN(precioMinimo);
 const cuenta = total === 1 ? '1 modelo publicado' : `${total} modelos publicados`;
+// Con 1 o 2 modelos, cada uno va en grande; desde 3, en tiras del muestrario.
+const enGrande = total <= 2;
 ---
 
 <Base
@@ -27,11 +30,11 @@ const cuenta = total === 1 ? '1 modelo publicado' : `${total} modelos publicados
         <p class="indice__cuenta entra-2">{cuenta} · un giro nuevo cada día</p>
       </header>
 
-      <ul class="indice__tiras">
+      <ul class:list={['indice__tiras', { 'indice__tiras--grandes': enGrande }]}>
         {
           landings.map((landing) => (
             <li>
-              <Tira landing={landing} nivel={2} />
+              {enGrande ? <LandingDestacada landing={landing} nivel={2} /> : <Tira landing={landing} nivel={2} />}
             </li>
           ))
         }
@@ -72,6 +75,7 @@ const cuenta = total === 1 ? '1 modelo publicado' : `${total} modelos publicados
   /* De 1 a 30 tiras: lista en celular, columnas de 16 a 20 rem desde tablet. */
   .indice__tiras {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--s-4);
     padding: 0;
     list-style: none;
@@ -92,12 +96,28 @@ const cuenta = total === 1 ? '1 modelo publicado' : `${total} modelos publicados
   }
 
   @media (min-width: 48rem) {
-    .indice__tiras {
+    .indice__tiras:not(.indice__tiras--grandes) {
       grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
     }
 
-    .indice__pide {
+    .indice__tiras:not(.indice__tiras--grandes) .indice__pide {
       align-content: center;
+    }
+
+    .indice__tiras--grandes .indice__pide {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      column-gap: var(--s-8);
+    }
+
+    .indice__tiras--grandes .indice__pide h2,
+    .indice__tiras--grandes .indice__pide p {
+      grid-column: 1;
+    }
+
+    .indice__tiras--grandes .indice__pide .btn {
+      grid-column: 2;
+      grid-row: 1 / span 2;
     }
   }
 </style>
