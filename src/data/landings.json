@@ -1,0 +1,81 @@
+[
+  {
+    "codigo": "TGM-001",
+    "slug": "gimnasios",
+    "giro": "Gimnasios",
+    "nombre": "Rack",
+    "fecha": "2026-11-18",
+    "precio_desde": 2500,
+    "mantenimiento_mes": 350,
+    "demo": "/demos/gimnasios/",
+    "resumen": "Para gimnasios, boxes y estudios. Cada plan es un disco del rack y abre WhatsApp con el plan ya escrito.",
+    "para": "Gimnasios independientes, boxes de funcional y estudios de pilates o cycling.",
+    "incluye": [
+      "Planes como discos del rack; cada uno abre WhatsApp con el plan ya escrito",
+      "Horario como hoja de rutina, con el día de hoy marcado",
+      "Aviso de abierto o cerrado calculado con tu horario",
+      "Barra fija en el celular: WhatsApp, llamar y cómo llegar",
+      "Recorrido con fotos y video de tu gimnasio",
+      "Preguntas frecuentes y aviso de privacidad",
+      "Cuatro combinaciones de color o los colores de tu marca"
+    ],
+    "editable": [
+      "Nombre, logo y colonia",
+      "Planes y precios",
+      "Horarios y clases",
+      "Dirección y cómo llegar",
+      "WhatsApp y teléfono",
+      "Fotos y video",
+      "Coaches",
+      "Preguntas frecuentes",
+      "Colores y tema",
+      "Datos del aviso de privacidad"
+    ],
+    "plazo": "3 a 5 días hábiles",
+    "tema_por_defecto": "rack",
+    "temas": [
+      {
+        "id": "rack",
+        "nombre": "Rack",
+        "fondo": "#EFEFEC",
+        "superficie": "#FFFFFF",
+        "tinta": "#111111",
+        "acento": "#C8102E",
+        "texto_acento": "#FFFFFF"
+      },
+      {
+        "id": "acero",
+        "nombre": "Acero",
+        "fondo": "#EEEEEB",
+        "superficie": "#E1E1DD",
+        "tinta": "#1C1D1F",
+        "acento": "#C2501B",
+        "texto_acento": "#FFFFFF"
+      },
+      {
+        "id": "pino",
+        "nombre": "Pino",
+        "fondo": "#EFE9E0",
+        "superficie": "#E2D9CB",
+        "tinta": "#22261F",
+        "acento": "#2E5B44",
+        "texto_acento": "#FFFFFF"
+      },
+      {
+        "id": "noche",
+        "nombre": "Noche",
+        "fondo": "#0C0C0D",
+        "superficie": "#18181B",
+        "tinta": "#F5F5F4",
+        "acento": "#FF5A1F",
+        "texto_acento": "#0C0C0D"
+      }
+    ],
+    "captura_movil": "src/assets/landings/gimnasios/movil.png",
+    "captura_escritorio": "src/assets/landings/gimnasios/escritorio.png",
+    "ficha_tecnica": {
+      "peso_kb": null,
+      "lighthouse_movil": null
+    }
+  }
+]
