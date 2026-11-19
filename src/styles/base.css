@@ -41,6 +41,11 @@ main {
   flex: 1 0 auto;
 }
 
+/* `hidden` siempre gana, aunque la clase del elemento le ponga display (.btn, grid…). */
+[hidden] {
+  display: none !important;
+}
+
 main:focus {
   outline: none;
 }
