@@ -37,6 +37,12 @@ const HEADERS = `# Sitio de demos de tigemsha.com (lo arma scripts/collect-demos
   Referrer-Policy: same-origin
   X-Content-Type-Options: nosniff
   Permissions-Policy: accelerometer=(), autoplay=(), camera=(), clipboard-read=(), clipboard-write=(), display-capture=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=()
+
+# La demo corre en un iframe con sandbox sin allow-same-origin (origen opaco):
+# sus fuentes, scripts de módulo e imágenes con crossorigin se piden con CORS.
+# Son archivos públicos y sin credenciales, así que se abren a cualquier origen.
+/demos/*
+  Access-Control-Allow-Origin: *
 `;
 
 const ROBOTS = `User-agent: *

@@ -40,9 +40,10 @@
 # cuentan son las de ese sitio (.demos-dist/_headers). Estas quedan de respaldo.
 # X-Frame-Options: SAMEORIGIN ya llega desde /*.
 # Las demos se ven en un iframe con sandbox sin allow-same-origin (origen opaco):
-# sus fuentes deben ir inlinadas en el build de demo, porque una petición de
-# fuente desde un origen opaco es CORS y aquí no se abre CORS.
+# sus fuentes, scripts de módulo e imágenes con crossorigin se piden con CORS,
+# así que /demos/* abre CORS a cualquier origen (archivos públicos, sin credenciales).
 /demos/*
+  Access-Control-Allow-Origin: *
   X-Robots-Tag: noindex, nofollow, noarchive
   Content-Security-Policy: frame-ancestors 'self'
   Referrer-Policy: same-origin

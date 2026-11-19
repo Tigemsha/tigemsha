@@ -125,7 +125,7 @@ if (window.parent !== window) window.parent.postMessage({ type: 'tgm-ready', the
 
 ### Lo que necesita el build de demo
 
-- Las **fuentes van inlinadas** (data URI) en el CSS de la demo. Una petición de fuente desde un origen opaco es CORS y `/demos/*` no abre CORS.
+- La demo corre con origen opaco, así que sus fuentes, scripts de módulo e imágenes con `crossorigin` se piden con CORS. `/demos/*` responde `Access-Control-Allow-Origin: *` para que no fallen. Inlinar las fuentes (data URI) sigue siendo lo recomendado: ahorra peticiones.
 - Sin source maps (`collect-demos` además descarta los `.map`).
 - Rutas relativas o con base `/demos/<slug>/`: la demo se sirve en esa ruta, tanto en `tigemsha-demos` como en tigemsha.com.
 - Marca de agua, `noindex` y el aviso de licencia, como dice `ARQUITECTURA.md` §Vitrina.
@@ -156,7 +156,7 @@ Así la URL pública sigue siendo `tigemsha.com/demos/<slug>/`, del mismo origen
 1. En la landing: `npm run build:demo` (genera `dist-demo/`) y que su `landing.json` tenga el `slug`.
 2. Aquí: `npm run deploy:demos`. Arma `.demos-dist/` con:
    - `demos/<slug>/`, copiado del `dist-demo/` de cada landing en `../../code-projects/landings/*/` (o en `LANDINGS_DIR`), sin archivos `.map`;
-   - `_headers` para todo el sitio de demos: `X-Robots-Tag: noindex, nofollow, noarchive`, `Content-Security-Policy: frame-ancestors 'self' https://tigemsha.com https://www.tigemsha.com`, `Referrer-Policy: same-origin`, `X-Content-Type-Options: nosniff` y una `Permissions-Policy` restrictiva;
+   - `_headers` para todo el sitio de demos: `X-Robots-Tag: noindex, nofollow, noarchive`, `Content-Security-Policy: frame-ancestors 'self' https://tigemsha.com https://www.tigemsha.com`, `Referrer-Policy: same-origin`, `X-Content-Type-Options: nosniff` y una `Permissions-Policy` restrictiva, y `Access-Control-Allow-Origin: *` en `/demos/*` (la demo corre con origen opaco);
    - `robots.txt` con `Disallow: /`;
    - un `index.html` que manda a `https://tigemsha.com/landings/`.
 3. Agrega su entrada en `src/data/landings.json` con sus capturas y haz push a `main` (lo hace el coordinador).
