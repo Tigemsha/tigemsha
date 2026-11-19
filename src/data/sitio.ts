@@ -8,6 +8,8 @@ export const sitio = {
     'Software a la medida para empresas en México: automatización de procesos, apps web y móviles, y landings listas para tu negocio.',
   /** Número en formato wa.me: país + 1 + número, sin espacios ni signos. */
   whatsapp: '5215569418799',
+  /** El mismo número, como se muestra en el aviso de privacidad. */
+  telefono: '+52 1 55 6941 8799',
   instagram: 'tigemsha',
   /**
    * Pendiente: Hindra confirma el permiso para mostrar los logos de Liverpool,

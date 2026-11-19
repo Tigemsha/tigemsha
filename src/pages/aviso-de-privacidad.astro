@@ -2,10 +2,9 @@
 import { sitio } from '../data/sitio';
 import Base from '../layouts/Base.astro';
 import { fechaLarga } from '../lib/formato';
-import { enlaceWhatsApp } from '../lib/whatsapp';
+import { enlaceWhatsApp, mensajes } from '../lib/whatsapp';
 
-const whatsapp = enlaceWhatsApp('Hola, tengo una solicitud sobre mis datos personales (aviso de privacidad).');
-const telefono = '+52 1 55 6941 8799';
+const whatsapp = enlaceWhatsApp(mensajes.privacidad);
 ---
 
 <Base
@@ -30,7 +29,7 @@ const telefono = '+52 1 55 6941 8799';
       <p>
         {sitio.nombre} es responsable del tratamiento de tus datos personales. Para cualquier asunto
         relacionado con tu privacidad, escríbenos por WhatsApp al <a href={whatsapp} rel="noopener"
-          >{telefono}</a
+          >{sitio.telefono}</a
         >.
       </p>
       {

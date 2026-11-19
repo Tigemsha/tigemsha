@@ -1,7 +1,7 @@
 ---
 /** Cierre en banda noche: WhatsApp, Instagram y aviso de privacidad. */
 import { instagramUrl, sitio } from '../data/sitio';
-import { enlaceWhatsApp } from '../lib/whatsapp';
+import { enlaceWhatsApp, mensajes } from '../lib/whatsapp';
 import Icono from './Icono.astro';
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 const {
   titulo = 'Cuéntanos qué necesitas',
   texto = 'Escríbenos por WhatsApp. Si es una landing, dinos el código y tu giro; si es un proyecto, cuéntanos qué proceso quieres resolver y quién lo va a usar.',
-  mensaje = 'Hola, quiero cotizar con Tigemsha.',
+  mensaje = mensajes.contacto,
 } = Astro.props;
 ---
 
