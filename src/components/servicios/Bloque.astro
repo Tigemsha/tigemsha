@@ -1,0 +1,222 @@
+---
+/**
+ * Un servicio: dolor contado como historia → solución en palabras simples →
+ * demostración animada (slot) → "¿Te pasa esto?" con WhatsApp prellenado.
+ *
+ * variante "ancho": el texto arriba en dos columnas y la demostración a todo
+ * el ancho. variante "lado": el texto a la izquierda y la demostración a la
+ * derecha (en celular todo va en una columna, en el orden de lectura).
+ */
+import Icono from '../Icono.astro';
+import type { TextoServicio } from './i18n';
+
+interface Accion {
+  href: string;
+  texto: string;
+  tipo: 'primario' | 'secundario';
+  whatsapp?: boolean;
+}
+
+interface Props {
+  id: string;
+  variante: 'ancho' | 'lado';
+  t: TextoServicio;
+  acciones: Accion[];
+}
+
+const { id, variante, t, acciones } = Astro.props;
+---
+
+<article class:list={['bloque', `bloque--${variante}`]} id={id} aria-labelledby={`${id}-titulo`}>
+  <header class="bloque__cabeza">
+    <h3 id={`${id}-titulo`} class="bloque__titulo">{t.titulo}</h3>
+    <p class="bloque__definicion">{t.definicion}</p>
+  </header>
+
+  <div class="bloque__texto">
+    <p class="bloque__historia"><strong>{t.historia.nombre}</strong>{t.historia.resto}</p>
+    <p class="bloque__solucion"><strong>{t.solucion.entrada}</strong>{t.solucion.texto}</p>
+    {t.tambien && <p class="bloque__tambien">{t.tambien}</p>}
+  </div>
+
+  <div class="bloque__demo">
+    <slot />
+  </div>
+
+  <div class="bloque__cta">
+    <div class="bloque__cta-texto">
+      <p class="bloque__pregunta">{t.pregunta}</p>
+      <p class="bloque__pista">{t.pista}</p>
+    </div>
+    <div class="acciones bloque__acciones">
+      {
+        acciones.map((a) => (
+          <a class:list={['btn', `btn--${a.tipo}`]} href={a.href} rel={a.whatsapp ? 'noopener' : undefined}>
+            {a.whatsapp && <Icono nombre="whatsapp" />}
+            {a.texto}
+            {!a.whatsapp && <Icono nombre="arrow-right" />}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</article>
+
+<style>
+  .bloque {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-6);
+    scroll-margin-top: var(--s-8);
+  }
+
+  .bloque__cabeza {
+    display: grid;
+    gap: var(--s-3);
+    align-content: start;
+  }
+
+  .bloque__titulo {
+    font-size: clamp(1.875rem, 1.4rem + 1.9vw, 2.75rem);
+    font-weight: 780;
+    font-stretch: 110%;
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+  }
+
+  .bloque__definicion {
+    max-width: 34ch;
+    color: var(--ink-2);
+    font-size: var(--fs-lead);
+    line-height: 1.45;
+  }
+
+  .bloque__texto {
+    display: grid;
+    gap: var(--s-4);
+    align-content: start;
+    max-width: 62ch;
+  }
+
+  .bloque__historia {
+    font-size: var(--fs-lead);
+    line-height: 1.55;
+    color: var(--ink);
+  }
+
+  .bloque__historia strong,
+  .bloque__solucion strong {
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .bloque__solucion {
+    color: var(--ink-2);
+  }
+
+  .bloque__tambien {
+    color: var(--ink-3);
+    font-size: 0.9375rem;
+  }
+
+  .bloque__demo {
+    container: demo / inline-size;
+    min-width: 0;
+  }
+
+  .bloque__cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4) var(--s-8);
+    padding-top: var(--s-6);
+    border-top: 1px solid var(--line);
+  }
+
+  .bloque__cta-texto {
+    display: grid;
+    gap: var(--s-1);
+    max-width: 46ch;
+  }
+
+  .bloque__pregunta {
+    font-family: var(--font-display);
+    font-size: var(--fs-title);
+    font-weight: 700;
+    font-stretch: 106%;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .bloque__pista {
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+  }
+
+  @media (max-width: 30rem) {
+    .bloque__acciones,
+    .bloque__acciones .btn {
+      width: 100%;
+    }
+
+    .bloque__acciones .btn {
+      white-space: normal;
+      text-align: center;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .bloque {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--s-8);
+      row-gap: var(--s-10);
+    }
+
+    .bloque--ancho .bloque__cabeza {
+      grid-column: 1 / 6;
+    }
+
+    .bloque--ancho .bloque__texto {
+      grid-column: 6 / 13;
+    }
+
+    .bloque--ancho .bloque__demo,
+    .bloque--ancho .bloque__cta {
+      grid-column: 1 / -1;
+    }
+
+    .bloque--lado {
+      row-gap: var(--s-6);
+      grid-template-rows: auto auto 1fr;
+    }
+
+    .bloque--lado .bloque__cabeza,
+    .bloque--lado .bloque__texto,
+    .bloque--lado .bloque__cta {
+      grid-column: 1 / 6;
+    }
+
+    .bloque--lado .bloque__cabeza {
+      grid-row: 1;
+    }
+
+    .bloque--lado .bloque__texto {
+      grid-row: 2;
+    }
+
+    .bloque--lado .bloque__cta {
+      grid-row: 3;
+      align-self: end;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .bloque--lado .bloque__demo {
+      grid-column: 6 / 13;
+      grid-row: 1 / 4;
+      align-self: center;
+    }
+  }
+</style>

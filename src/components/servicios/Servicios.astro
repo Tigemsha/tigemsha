@@ -1,0 +1,181 @@
+---
+/**
+ * Sección de servicios v2. Contrato: <Servicios lang="es" | "en" totalLandings={number} />
+ *
+ * Cuatro bloques con el mismo orden de lectura (DIRECCION.md, principios v2):
+ * dolor contado como historia → solución en palabras simples → demostración
+ * animada → "¿Te pasa esto?" con WhatsApp prellenado por servicio.
+ *
+ * Movimiento: la coreografía de cada demo vive en su CSS (solo transform y
+ * opacity) y servicios.ts decide cuándo corre. Sin JS o con reduced-motion se
+ * ve el estado final, completo y quieto.
+ */
+import { enlaceWhatsApp } from '../../lib/whatsapp';
+import Bloque from './Bloque.astro';
+import DemoAppsWeb from './DemoAppsWeb.astro';
+import DemoAutomatizacion from './DemoAutomatizacion.astro';
+import DemoLandings from './DemoLandings.astro';
+import DemoMoviles from './DemoMoviles.astro';
+import { textos } from './i18n';
+
+interface Props {
+  lang: 'es' | 'en';
+  totalLandings: number;
+}
+
+const { lang, totalLandings } = Astro.props;
+const t = textos[lang];
+const rutaLandings = lang === 'en' ? '/en/landings/' : '/landings/';
+const ids = ['servicio-automatizacion', 'servicio-apps-web', 'servicio-apps-moviles', 'servicio-landings'] as const;
+
+const whatsapp = (texto: string, mensaje: string) => ({
+  href: enlaceWhatsApp(mensaje),
+  texto,
+  tipo: 'primario' as const,
+  whatsapp: true,
+});
+---
+
+<section id="servicios" class="servicios seccion" aria-labelledby="servicios-titulo" data-servicios>
+  <div class="wrap">
+    <header class="servicios__cabeza">
+      <h2 id="servicios-titulo" class="titulo-seccion">
+        {t.titulo} <span class="tenue">{t.tituloTenue}</span>
+      </h2>
+      <p class="servicios__intro">{t.intro}</p>
+      <nav class="servicios__indice" aria-label={t.indice}>
+        <ul>
+          {
+            ids.map((id, i) => (
+              <li>
+                <a href={`#${id}`}>{t.indiceCorto[i]}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </header>
+
+    <div class="servicios__lista">
+      <Bloque
+        id={ids[0]}
+        variante="ancho"
+        t={t.automatizacion}
+        acciones={[whatsapp(t.automatizacion.boton, t.automatizacion.mensaje)]}
+      >
+        <DemoAutomatizacion t={t} />
+      </Bloque>
+
+      <Bloque id={ids[1]} variante="lado" t={t.web} acciones={[whatsapp(t.web.boton, t.web.mensaje)]}>
+        <DemoAppsWeb t={t} />
+      </Bloque>
+
+      <Bloque id={ids[2]} variante="ancho" t={t.moviles} acciones={[whatsapp(t.moviles.boton, t.moviles.mensaje)]}>
+        <DemoMoviles t={t} />
+      </Bloque>
+
+      <Bloque
+        id={ids[3]}
+        variante="lado"
+        t={t.landings}
+        acciones={[
+          { href: rutaLandings, texto: t.landings.verLandings, tipo: 'primario' },
+          { ...whatsapp(t.landings.boton, t.landings.mensaje), tipo: 'secundario' },
+        ]}
+      >
+        <DemoLandings t={t} total={totalLandings} lang={lang} />
+      </Bloque>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { iniciarServicios } from './servicios';
+  iniciarServicios();
+</script>
+
+<style>
+  .servicios {
+    position: relative;
+  }
+
+  .servicios__cabeza {
+    display: grid;
+    gap: var(--s-5);
+    margin-bottom: clamp(3rem, 2rem + 4vw, 6rem);
+  }
+
+  .servicios__intro {
+    max-width: 52ch;
+    color: var(--ink-2);
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+  }
+
+  .servicios__indice ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .servicios__indice a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 var(--s-4);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    color: var(--ink);
+    font-size: var(--fs-label);
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform var(--dur-press) var(--ease-out);
+  }
+
+  .servicios__indice a:active {
+    transform: scale(0.97);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .servicios__indice a:hover {
+      border-color: var(--ink);
+    }
+  }
+
+  .servicios__lista {
+    display: grid;
+    gap: clamp(5rem, 3rem + 7vw, 10rem);
+  }
+
+  /*
+   * Estados de las demostraciones (servicios.ts):
+   * - "espera" y fuera de pantalla: todo pausado en su cuadro actual.
+   * - [data-pausa]: el botón Pausar del grupo.
+   * - Una escena inactiva (pestaña oculta) no anima: sus rodillos y filas
+   *   arrancan de cero cuando la pestaña se vuelve a mostrar.
+   */
+  .servicios :global([data-estado='espera'] *),
+  .servicios :global([data-estado='espera'] *::before),
+  .servicios :global([data-estado='espera'] *::after),
+  .servicios :global([data-estado].fuera *),
+  .servicios :global([data-estado].fuera *::before),
+  .servicios :global([data-estado].fuera *::after),
+  .servicios :global([data-pausa][data-estado] *),
+  .servicios :global([data-pausa][data-estado] *::before),
+  .servicios :global([data-pausa][data-estado] *::after),
+  .servicios :global([data-pausa] [data-estado] *),
+  .servicios :global([data-pausa] [data-estado] *::before),
+  .servicios :global([data-pausa] [data-estado] *::after) {
+    animation-play-state: paused !important;
+  }
+
+  .servicios :global([data-escena]:not(.activo) *),
+  .servicios :global([data-escena]:not(.activo) *::before),
+  .servicios :global([data-escena]:not(.activo) *::after) {
+    animation: none !important;
+  }
+</style>

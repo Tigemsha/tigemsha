@@ -1,0 +1,97 @@
+---
+/**
+ * Íconos de Phosphor para las demostraciones de servicios (SVG en línea,
+ * siempre decorativos: el texto de al lado da el significado).
+ */
+import arrowCounterClockwise from '@phosphor-icons/core/regular/arrow-counter-clockwise.svg?raw';
+import calendarBlank from '@phosphor-icons/core/regular/calendar-blank.svg?raw';
+import caretDown from '@phosphor-icons/core/regular/caret-down.svg?raw';
+import cashRegister from '@phosphor-icons/core/regular/cash-register.svg?raw';
+import chartBar from '@phosphor-icons/core/regular/chart-bar.svg?raw';
+import check from '@phosphor-icons/core/bold/check-bold.svg?raw';
+import checkCircleFill from '@phosphor-icons/core/fill/check-circle-fill.svg?raw';
+import clock from '@phosphor-icons/core/regular/clock.svg?raw';
+import database from '@phosphor-icons/core/regular/database.svg?raw';
+import filePdf from '@phosphor-icons/core/regular/file-pdf.svg?raw';
+import gearSix from '@phosphor-icons/core/regular/gear-six.svg?raw';
+import hammer from '@phosphor-icons/core/regular/hammer.svg?raw';
+import houseFill from '@phosphor-icons/core/fill/house-fill.svg?raw';
+import list from '@phosphor-icons/core/regular/list.svg?raw';
+import lockSimple from '@phosphor-icons/core/regular/lock-simple.svg?raw';
+import magnifyingGlass from '@phosphor-icons/core/regular/magnifying-glass.svg?raw';
+import mopedFill from '@phosphor-icons/core/fill/moped-fill.svg?raw';
+import nut from '@phosphor-icons/core/regular/nut.svg?raw';
+import excelFill from '@phosphor-icons/core/fill/microsoft-excel-logo-fill.svg?raw';
+import package_ from '@phosphor-icons/core/regular/package.svg?raw';
+import paintBrush from '@phosphor-icons/core/regular/paint-brush.svg?raw';
+import paintBucket from '@phosphor-icons/core/regular/paint-bucket.svg?raw';
+import pauseFill from '@phosphor-icons/core/fill/pause-fill.svg?raw';
+import phoneFill from '@phosphor-icons/core/fill/phone-fill.svg?raw';
+import pipe from '@phosphor-icons/core/regular/pipe.svg?raw';
+import playFill from '@phosphor-icons/core/fill/play-fill.svg?raw';
+import receipt from '@phosphor-icons/core/regular/receipt.svg?raw';
+import scissors from '@phosphor-icons/core/regular/scissors.svg?raw';
+import starFill from '@phosphor-icons/core/fill/star-fill.svg?raw';
+import storefrontFill from '@phosphor-icons/core/fill/storefront-fill.svg?raw';
+import truck from '@phosphor-icons/core/regular/truck.svg?raw';
+import userCircle from '@phosphor-icons/core/regular/user-circle.svg?raw';
+import warningFill from '@phosphor-icons/core/fill/warning-fill.svg?raw';
+import whatsappFill from '@phosphor-icons/core/fill/whatsapp-logo-fill.svg?raw';
+
+const glifos = {
+  'arrow-counter-clockwise': arrowCounterClockwise,
+  'calendar-blank': calendarBlank,
+  'caret-down': caretDown,
+  'cash-register': cashRegister,
+  'chart-bar': chartBar,
+  check,
+  'check-circle': checkCircleFill,
+  clock,
+  database,
+  excel: excelFill,
+  'file-pdf': filePdf,
+  'gear-six': gearSix,
+  hammer,
+  house: houseFill,
+  list,
+  'lock-simple': lockSimple,
+  'magnifying-glass': magnifyingGlass,
+  moped: mopedFill,
+  nut,
+  package: package_,
+  'paint-brush': paintBrush,
+  'paint-bucket': paintBucket,
+  pause: pauseFill,
+  phone: phoneFill,
+  pipe,
+  play: playFill,
+  receipt,
+  scissors,
+  star: starFill,
+  storefront: storefrontFill,
+  truck,
+  'user-circle': userCircle,
+  warning: warningFill,
+  whatsapp: whatsappFill,
+} as const;
+
+export type NombreGlifo = keyof typeof glifos;
+
+interface Props {
+  n: NombreGlifo;
+  clase?: string;
+}
+
+const { n, clase = '' } = Astro.props;
+const svg = glifos[n].replace('<svg ', `<svg class="glifo ${clase}" aria-hidden="true" focusable="false" `);
+---
+
+<Fragment set:html={svg} />
+
+<style is:global>
+  .glifo {
+    width: 1em;
+    height: 1em;
+    flex: none;
+  }
+</style>

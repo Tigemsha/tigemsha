@@ -1,0 +1,116 @@
+---
+/**
+ * Número que "cuenta" con rodillos de dígitos (como un odómetro), solo con
+ * transform. Sin JS, sin animación o con reduced-motion se ve el valor final.
+ * La animación corre cuando un ancestro tiene [data-estado] (ver servicios.ts);
+ * el retraso y la duración se ajustan con --rueda-delay y --rueda-dur.
+ *
+ * valor: el número ya formateado ("$47,680"). desde: el valor de inicio con
+ * el mismo formato ("1,243"); si falta, cada dígito arranca en 0.
+ */
+interface Props {
+  valor: string;
+  desde?: string;
+  clase?: string;
+}
+
+const { valor, desde, clase = '' } = Astro.props;
+const DIGITOS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+const caracteres = [...valor];
+const inicio = desde ? [...desde.padStart(caracteres.length, ' ')] : [];
+const columnas = caracteres.map((c, i) => {
+  if (!/\d/.test(c)) return { simbolo: c };
+  const s = inicio[i] ?? '0';
+  const ds = /\d/.test(s) ? s : '0';
+  return { digito: c, ds, quieta: ds === c };
+});
+---
+
+<span class:list={['rueda', clase]}>
+  <span class="visually-hidden">{valor}</span>
+  <span class="rueda__vista" aria-hidden="true">
+    {
+      columnas.map((col) =>
+        col.simbolo !== undefined ? (
+          <span class="rueda__sim">{col.simbolo}</span>
+        ) : (
+          <span class="rueda__col">
+            <span class="rueda__fantasma">{col.digito}</span>
+            <span class:list={['rueda__tira', `d${col.digito}`, `ds${col.ds}`, { quieta: col.quieta }]}>
+              {DIGITOS.map((d) => (
+                <span>{d}</span>
+              ))}
+            </span>
+          </span>
+        ),
+      )
+    }
+  </span>
+</span>
+
+<style>
+  .rueda {
+    position: relative;
+    display: inline-block;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .rueda__col {
+    position: relative;
+    display: inline-block;
+    /* clip-path recorta el rodillo sin cambiar la línea base del número. */
+    clip-path: inset(0 -0.15em);
+  }
+
+  .rueda__fantasma {
+    visibility: hidden;
+  }
+
+  .rueda__tira {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(calc(var(--d) * -10%));
+  }
+
+  .rueda__tira > span {
+    display: block;
+  }
+
+  .d0 { --d: 0; }
+  .d1 { --d: 1; }
+  .d2 { --d: 2; }
+  .d3 { --d: 3; }
+  .d4 { --d: 4; }
+  .d5 { --d: 5; }
+  .d6 { --d: 6; }
+  .d7 { --d: 7; }
+  .d8 { --d: 8; }
+  .d9 { --d: 9; }
+  .ds0 { --ds: 0; }
+  .ds1 { --ds: 1; }
+  .ds2 { --ds: 2; }
+  .ds3 { --ds: 3; }
+  .ds4 { --ds: 4; }
+  .ds5 { --ds: 5; }
+  .ds6 { --ds: 6; }
+  .ds7 { --ds: 7; }
+  .ds8 { --ds: 8; }
+  .ds9 { --ds: 9; }
+
+  @keyframes sv-rueda {
+    from {
+      transform: translateY(calc(var(--ds) * -10%));
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global([data-estado]) .rueda__tira:not(.quieta) {
+      animation: sv-rueda var(--rueda-dur, 1000ms) var(--rueda-curva, var(--ease-out)) var(--rueda-delay, 0ms) both;
+    }
+  }
+</style>

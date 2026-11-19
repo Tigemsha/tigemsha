@@ -1,0 +1,1278 @@
+---
+/**
+ * Demostración 1 · La historia de Anita: un diagrama que "se ejecuta solo".
+ * Excel → archivo ordenado (base de datos) → motor con reloj → PDF + WhatsApp.
+ *
+ * Toda la coreografía vive en CSS (una sola línea de tiempo de 8.6 s, ver la
+ * tabla de abajo). servicios.ts solo decide cuándo corre: al entrar en
+ * pantalla, pausa fuera de ella, botones de pausa y repetir, y mide el vuelo
+ * de cada fila (del renglón del Excel a su lugar en la base de datos).
+ * Sin JS o con reduced-motion se ve el estado final: todo guardado, el motor
+ * en "Listo", el PDF y el WhatsApp ya enviados.
+ *
+ *   Paso 1  0–1.9 s   las filas se iluminan y salen volando (cada 380 ms)
+ *   Paso 2  1.9–3.3   aterrizan en el archivo ordenado; el contador sube
+ *   Paso 3  3.3–6.0   pulso al motor, el reloj llega a las 8:00, el engrane gira
+ *   Paso 4  6.0–8.6   pulso a la salida, el PDF se arma y llega el WhatsApp
+ */
+import Controles from './Controles.astro';
+import Glifo from './Glifo.astro';
+import Rueda from './Rueda.astro';
+import type { Textos } from './i18n';
+
+interface Props {
+  t: Textos;
+}
+
+const { t } = Astro.props;
+const a = t.automatizacion;
+---
+
+<figure class="auto" data-grupo data-anima data-una-vez data-vuelos>
+  <figcaption class="visually-hidden">{a.descripcion}</figcaption>
+
+  <div class="auto__barra">
+    <ol class="pasos" aria-label={a.pasosNombre}>
+      {
+        a.pasos.map((paso, i) => (
+          <li class={`paso p${i + 1}`}>
+            <span class="paso__num" aria-hidden="true">
+              {i + 1}
+              <span class="paso__hecho">
+                <Glifo n="check" />
+              </span>
+            </span>
+            <span class="paso__texto">{paso}</span>
+            <span class="paso__pista" aria-hidden="true">
+              <span class="paso__relleno" data-paso={i} data-fin={i === 3 ? '' : undefined} />
+            </span>
+          </li>
+        ))
+      }
+    </ol>
+    <Controles textos={t.controles} que={a.demoNombre} repetir />
+  </div>
+
+  <div class="lienzo" aria-hidden="true">
+    <span class="lienzo__sello">{t.ejemplo}</span>
+
+    <div class="nodo nodo--excel">
+      <div class="nodo__cabeza">
+        <span class="nodo__ic nodo__ic--excel"><Glifo n="excel" /></span>
+        <span class="nodo__nombre">{a.archivo}</span>
+      </div>
+      <div class="hoja">
+        <div class="hoja__fila hoja__fila--cab">
+          <span class="hoja__n"></span>
+          <span class="hoja__cel">{a.columnas[0]}</span>
+          <span class="hoja__cel hoja__num">{a.columnas[1]}</span>
+          <span></span>
+        </div>
+        {
+          a.filas.map(([cliente, total], i) => (
+            <div class={`hoja__fila f${i}`} data-fila={i}>
+              <span class="hoja__n">{i + 2}</span>
+              <span class="hoja__cel">{cliente}</span>
+              <span class="hoja__cel hoja__num">{total}</span>
+              <span class="hoja__ok">
+                <Glifo n="check" />
+              </span>
+              <span class="hoja__brillo" />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="conector c1"><span class="conector__luz"></span></div>
+
+    <div class="nodo nodo--db">
+      <div class="nodo__cabeza">
+        <span class="nodo__ic"><Glifo n="database" /></span>
+        <span class="nodo__titulos">
+          <span class="nodo__nombre">{a.db.titulo}</span>
+          <span class="nodo__sub">{a.db.sub}</span>
+        </span>
+      </div>
+      <p class="db__cuenta">
+        <Rueda valor="1,248" desde="1,243" clase="db__rueda" />
+        <span>{a.db.guardadas}</span>
+      </p>
+      <ul class="db__lista">
+        {
+          a.filas.map(([cliente, total], i) => (
+            <li class="hueco" data-slot={i}>
+              <span class={`registro f${i}`}>
+                <Glifo n="check" />
+                <span class="registro__c">{cliente}</span>
+                <span class="registro__v">{total}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="db__pie"><Glifo n="lock-simple" />{a.db.pie}</p>
+    </div>
+
+    <div class="conector c2"><span class="conector__luz"></span><span class="pulso"><i></i></span></div>
+
+    <div class="nodo nodo--motor">
+      <div class="nodo__cabeza">
+        <span class="nodo__ic motor__ic"><Glifo n="gear-six" clase="motor__engrane" /></span>
+        <span class="nodo__nombre">{a.motor.titulo}</span>
+      </div>
+      <div class="motor__cuando">
+        <span class="reloj"><span class="reloj__h"></span><span class="reloj__m"></span></span>
+        <span class="motor__texto">
+          <span class="motor__dia"><span>{a.motor.dia}</span></span>
+          <span>{a.motor.cuando}</span>
+        </span>
+      </div>
+      <p class="motor__estado">
+        <span class="estado e1">{a.motor.estados[0]}</span>
+        <span class="estado e2"><Glifo n="gear-six" />{a.motor.estados[1]}</span>
+        <span class="estado e3"><Glifo n="check" />{a.motor.estados[2]}</span>
+      </p>
+    </div>
+
+    <div class="conector c3"><span class="conector__luz"></span><span class="pulso"><i></i></span></div>
+
+    <div class="salidas">
+      <div class="salida salida--pdf">
+      <div class="nodo nodo--pdf">
+        <div class="pdf__cabeza">
+          <span class="pdf__tipo">PDF</span>
+          <span class="nodo__titulos">
+            <span class="nodo__nombre">{a.pdf.titulo}</span>
+            <span class="nodo__sub">{a.pdf.semana}</span>
+          </span>
+        </div>
+        <div class="pdf__barras">
+          {a.filas.map((_, i) => <span class={`pdf__barra b${i}`} />)}
+        </div>
+        <p class="pdf__total">
+          <span>{a.pdf.total}</span>
+          <Rueda valor="$47,680" clase="pdf__rueda" />
+        </p>
+      </div>
+      </div>
+
+      <div class="salida salida--wa">
+      <div class="nodo nodo--wa">
+        <span class="wa__ic"><Glifo n="whatsapp" /></span>
+        <span class="wa__cuerpo">
+          <span class="wa__meta"><span>{a.wa.app}</span><span>{a.wa.ahora}</span></span>
+          <span class="wa__titulo">{a.wa.titulo}</span>
+          <span class="wa__texto">{a.wa.texto}</span>
+          <span class="wa__adjunto"><Glifo n="file-pdf" />{a.wa.adjunto}</span>
+        </span>
+      </div>
+      </div>
+    </div>
+
+    <div class="vuelos">
+      {
+        a.filas.map(([cliente, total], i) => (
+          <span class={`vuelo f${i}`} data-vuelo={i}>
+            <span class="vuelo__y">
+              <span class="vuelo__ficha registro">
+                <Glifo n="check" />
+                <span class="registro__c">{cliente}</span>
+                <span class="registro__v">{total}</span>
+              </span>
+            </span>
+          </span>
+        ))
+      }
+    </div>
+  </div>
+</figure>
+
+<style>
+  .auto {
+    position: relative;
+    container: anita / inline-size;
+    display: grid;
+    gap: var(--s-5);
+    margin: 0;
+  }
+
+  /* ── Pasos y controles ─────────────────────────────────────────────── */
+
+  .auto__barra {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--s-4) var(--s-8);
+  }
+
+  .auto__barra :global(.controles) {
+    justify-content: flex-end;
+  }
+
+  @container anita (min-width: 46rem) {
+    .auto__barra :global(.controles) {
+      min-width: 15rem;
+    }
+  }
+
+  .pasos {
+    flex: 1 1 30rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @container anita (min-width: 46rem) {
+    .pasos {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .paso {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: var(--s-2) var(--s-2);
+    color: var(--ink-2);
+    font-size: var(--fs-label);
+    line-height: 1.3;
+  }
+
+  .paso__num {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    background: var(--surface);
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .paso__hecho {
+    position: absolute;
+    inset: -1px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--surface);
+    font-size: 0.6875rem;
+  }
+
+  .paso__texto {
+    padding-top: 0.15rem;
+  }
+
+  .paso[aria-current='step'] .paso__texto {
+    color: var(--ink);
+    font-weight: 650;
+  }
+
+  .paso[aria-current='step'] .paso__num {
+    border-color: var(--accent-ink);
+    color: var(--accent-ink);
+  }
+
+  .paso__pista {
+    grid-column: 1 / -1;
+    height: 3px;
+    overflow: hidden;
+    border-radius: 2px;
+    background: var(--line);
+  }
+
+  .paso__relleno {
+    display: block;
+    height: 100%;
+    background: var(--accent-ink);
+    transform-origin: left center;
+  }
+
+  /* ── Lienzo ────────────────────────────────────────────────────────── */
+
+  .lienzo {
+    --verde-excel: #1d6f42;
+    --pdf: #b42318;
+    --wa: #128c4a;
+    --trabajando-bg: #fff3d1;
+    --trabajando-ink: #6b4a00;
+    --listo-bg: #e2f3e9;
+    --punto: rgb(14 20 24 / 0.1);
+    --entra: translateY(-12px);
+    position: relative;
+    display: grid;
+    justify-items: center;
+    padding: var(--s-12) var(--s-4) var(--s-6);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background-color: var(--surface);
+    background-image: radial-gradient(var(--punto) 1px, transparent 1.5px);
+    background-size: 18px 18px;
+    background-position: 9px 9px;
+    box-shadow: var(--e1);
+    font-size: 0.8125rem;
+    line-height: 1.35;
+  }
+
+  .lienzo__sello {
+    position: absolute;
+    top: var(--s-3);
+    right: var(--s-3);
+    padding: 0.125rem 0.625rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    color: var(--ink-2);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .nodo {
+    position: relative;
+    width: min(100%, 26rem);
+    padding: var(--s-3);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow:
+      0 1px 2px rgb(14 20 24 / 0.05),
+      0 10px 24px -14px rgb(14 20 24 / 0.3);
+  }
+
+  .nodo__cabeza {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    margin-bottom: var(--s-3);
+    font-weight: 650;
+    min-width: 0;
+  }
+
+  .nodo__nombre {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .nodo__titulos {
+    display: grid;
+    min-width: 0;
+    line-height: 1.2;
+  }
+
+  .nodo__sub {
+    color: var(--ink-3);
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .nodo__ic {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 8px;
+    background: var(--bg);
+    font-size: 1.125rem;
+  }
+
+  .nodo__ic--excel {
+    background: transparent;
+    color: var(--verde-excel);
+    font-size: 1.5rem;
+  }
+
+  /* Excel */
+  .hoja {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hoja__fila {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.75rem minmax(0, 1fr) auto 1.5rem;
+    align-items: center;
+    min-height: 1.875rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .hoja__fila--cab {
+    min-height: 1.625rem;
+    border-top: 0;
+    background: var(--bg);
+    color: var(--ink-3);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .hoja__cel {
+    overflow: hidden;
+    padding: 0 0.5rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .hoja__num {
+    text-align: right;
+  }
+
+  .hoja__n {
+    align-self: stretch;
+    display: grid;
+    place-items: center;
+    border-right: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--ink-3);
+    font-size: 0.6875rem;
+  }
+
+  .hoja__ok {
+    display: grid;
+    place-items: center;
+    color: var(--verde-excel);
+    font-size: 0.75rem;
+  }
+
+  .hoja__brillo {
+    position: absolute;
+    inset: 0;
+    border: 1.5px solid var(--accent-ink);
+    background: rgb(65 212 242 / 0.14);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Archivo ordenado */
+  .db__cuenta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.375rem;
+    margin-bottom: var(--s-3);
+    color: var(--ink-2);
+  }
+
+  .db__cuenta :global(.db__rueda) {
+    color: var(--ink);
+    font-size: 1.375rem;
+    font-weight: 750;
+    font-stretch: 90%;
+    line-height: 1.1;
+  }
+
+  .db__lista {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hueco {
+    display: grid;
+    height: 1.75rem;
+    border: 1px dashed var(--line-strong);
+    border-radius: 6px;
+  }
+
+  .hueco > .registro {
+    margin: -1px;
+  }
+
+  .registro {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.375rem;
+    height: 1.75rem;
+    padding: 0 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--bg);
+    font-size: 0.75rem;
+  }
+
+  .registro :global(.glifo) {
+    color: var(--exito);
+    font-size: 0.6875rem;
+  }
+
+  .registro__c {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .registro__v {
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .db__pie {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-top: var(--s-3);
+    color: var(--ink-3);
+    font-size: 0.75rem;
+  }
+
+  /* Motor */
+  .motor__ic::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border: 2px solid var(--accent);
+    border-radius: 10px;
+  }
+
+  .motor__cuando {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    margin-bottom: var(--s-3);
+  }
+
+  .reloj {
+    position: relative;
+    flex: none;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    background: var(--surface);
+  }
+
+  .reloj::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    margin: -2.5px 0 0 -2.5px;
+    border-radius: 50%;
+    background: var(--ink);
+  }
+
+  .reloj__h,
+  .reloj__m {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    width: 2px;
+    margin-left: -1px;
+    border-radius: 1px;
+    background: var(--ink);
+    transform-origin: 50% 100%;
+  }
+
+  .reloj__h {
+    height: 26%;
+    transform: rotate(240deg);
+  }
+
+  .reloj__m {
+    height: 38%;
+    transform: rotate(0deg);
+  }
+
+  .motor__texto {
+    display: grid;
+    gap: 0.25rem;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .motor__dia {
+    position: relative;
+    justify-self: start;
+    isolation: isolate;
+    padding: 0.0625rem 0.4375rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+  }
+
+  .motor__dia::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: 4px;
+    background: var(--accent);
+  }
+
+  .motor__estado {
+    display: grid;
+  }
+
+  .estado {
+    grid-area: 1 / 1;
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--radius-pill);
+    font-weight: 650;
+  }
+
+  .e1 {
+    background: var(--bg);
+    color: var(--ink-2);
+    opacity: 0;
+  }
+
+  .e2 {
+    background: var(--trabajando-bg);
+    color: var(--trabajando-ink);
+    opacity: 0;
+  }
+
+  .e3 {
+    background: var(--listo-bg);
+    color: var(--exito);
+  }
+
+  /* Salidas */
+  .salidas {
+    display: grid;
+    gap: var(--s-3);
+    width: min(100%, 26rem);
+  }
+
+  .salida {
+    position: relative;
+  }
+
+  /* Hueco punteado donde va a salir el resultado; se va cuando llega. */
+  .salida::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1.5px dashed var(--line-strong);
+    border-radius: var(--radius-md);
+    opacity: 0;
+  }
+
+  .salidas .nodo {
+    width: 100%;
+  }
+
+  .pdf__cabeza {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    margin-bottom: var(--s-3);
+    font-weight: 650;
+  }
+
+  .pdf__tipo {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 1.875rem;
+    height: 2.25rem;
+    border-radius: 4px 9px 4px 4px;
+    background: var(--pdf);
+    color: #fff;
+    font-size: 0.625rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+
+  .pdf__barras {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 3.25rem;
+    padding: 0 0.25rem;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .pdf__barra {
+    flex: 1;
+    border-radius: 3px 3px 0 0;
+    background: var(--accent-ink);
+    transform-origin: 50% 100%;
+  }
+
+  .b0 { height: 82%; --i: 0; }
+  .b1 { height: 59%; --i: 1; }
+  .b2 { height: 100%; --i: 2; }
+  .b3 { height: 44%; --i: 3; }
+  .b4 { height: 28%; --i: 4; }
+
+  .pdf__total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-top: var(--s-2);
+    color: var(--ink-2);
+  }
+
+  .pdf__total :global(.pdf__rueda) {
+    color: var(--ink);
+    font-size: 1rem;
+    font-weight: 750;
+  }
+
+  .nodo--wa {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.625rem;
+    border-radius: 16px;
+    box-shadow:
+      0 2px 4px rgb(14 20 24 / 0.06),
+      0 18px 36px -16px rgb(14 20 24 / 0.4);
+  }
+
+  .wa__ic {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 10px;
+    background: var(--wa);
+    color: #fff;
+    font-size: 1.375rem;
+  }
+
+  .wa__cuerpo {
+    display: grid;
+    gap: 0.125rem;
+    min-width: 0;
+  }
+
+  .wa__meta {
+    display: flex;
+    justify-content: space-between;
+    color: var(--ink-3);
+    font-size: 0.6875rem;
+  }
+
+  .wa__titulo {
+    font-weight: 700;
+  }
+
+  .wa__texto {
+    color: var(--ink-2);
+  }
+
+  .wa__adjunto {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+    padding: 0.125rem 0.375rem;
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--ink-2);
+    font-size: 0.6875rem;
+  }
+
+  .wa__adjunto :global(.glifo) {
+    color: var(--pdf);
+  }
+
+  /* Conectores: punteados; se encienden cuando pasa la información. */
+  .conector {
+    position: relative;
+    width: 2px;
+    height: 2.25rem;
+    background-image: linear-gradient(var(--line-strong) 50%, transparent 0);
+    background-size: 2px 6px;
+  }
+
+  .conector::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    width: 7px;
+    height: 7px;
+    margin-left: -3.5px;
+    border-right: 2px solid var(--accent-ink);
+    border-bottom: 2px solid var(--accent-ink);
+    transform: rotate(45deg);
+  }
+
+  .conector__luz {
+    position: absolute;
+    inset: 0;
+    background: var(--accent-ink);
+  }
+
+  .pulso {
+    position: absolute;
+    inset: 0;
+  }
+
+  .pulso i {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    margin: -5px 0 0 -5px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px rgb(65 212 242 / 0.3);
+    opacity: 0;
+  }
+
+  /* Vuelos (solo con JS): una ficha por fila, del Excel a su lugar. */
+  .vuelos {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .auto[data-estado] .vuelos {
+    display: block;
+  }
+
+  .vuelo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--w, 12rem);
+    translate: var(--x0, 0) var(--y0, 0);
+  }
+
+  .vuelo__y {
+    display: block;
+  }
+
+  .vuelo__ficha {
+    border-color: var(--accent-ink);
+    background: var(--surface);
+    box-shadow: 0 12px 24px -10px rgb(14 20 24 / 0.4);
+    opacity: 0;
+  }
+
+  /* ── Horizontal: Excel → archivo → motor → salidas ─────────────────── */
+
+  @container anita (min-width: 55rem) {
+    .lienzo {
+      --entra: translateX(-12px);
+      grid-template-columns:
+        minmax(0, 1.3fr) 2.75rem minmax(0, 1.1fr) 2.75rem minmax(0, 0.85fr)
+        2.75rem minmax(0, 1.15fr);
+      align-items: center;
+      justify-items: stretch;
+      padding: var(--s-12) var(--s-6) var(--s-8);
+    }
+
+    .nodo,
+    .salidas {
+      width: auto;
+    }
+
+    .conector {
+      width: 100%;
+      height: 2px;
+      background-image: linear-gradient(90deg, var(--line-strong) 50%, transparent 0);
+      background-size: 6px 2px;
+    }
+
+    .conector::after {
+      top: 50%;
+      right: -1px;
+      bottom: auto;
+      left: auto;
+      margin: -3.5px 0 0;
+      transform: rotate(-45deg);
+    }
+
+    .pulso i {
+      top: 50%;
+      left: 0;
+    }
+  }
+
+  /* Entre 880 y 1088 px de ancho la fila entera no cabe holgada: más compacta. */
+  @container anita (min-width: 55rem) and (max-width: 67.99rem) {
+    .lienzo {
+      grid-template-columns:
+        minmax(0, 1.3fr) 1.75rem minmax(0, 1.1fr) 1.75rem minmax(0, 0.9fr)
+        1.75rem minmax(0, 1.1fr);
+      padding-inline: var(--s-4);
+      font-size: 0.75rem;
+    }
+
+    .nodo {
+      padding: var(--s-2);
+    }
+
+    .hoja__fila {
+      grid-template-columns: 1.25rem minmax(0, 1fr) auto 1.25rem;
+    }
+
+    .hoja__cel {
+      padding: 0 0.375rem;
+    }
+
+    .reloj {
+      width: 2.25rem;
+      height: 2.25rem;
+    }
+  }
+
+  /* ── Línea de tiempo (solo con JS y sin reduced-motion) ─────────────── */
+
+  .p1 { --t: 0ms; --d: 1900ms; }
+  .p2 { --t: 1900ms; --d: 1400ms; }
+  .p3 { --t: 3300ms; --d: 2700ms; }
+  .p4 { --t: 6000ms; --d: 2600ms; }
+  .f0 { --t: 300ms; }
+  .f1 { --t: 680ms; }
+  .f2 { --t: 1060ms; }
+  .f3 { --t: 1440ms; }
+  .f4 { --t: 1820ms; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .auto[data-estado] .paso__relleno {
+      animation: sv-llena var(--d) linear var(--t) both;
+    }
+
+    .auto[data-estado] .paso__hecho {
+      animation: sv-marca 260ms var(--ease-out) calc(var(--t) + var(--d)) both;
+    }
+
+    .auto[data-estado] .hoja__brillo {
+      animation: sv-brillo 900ms ease calc(var(--t) - 150ms) both;
+    }
+
+    .auto[data-estado] .hoja__ok {
+      animation: sv-marca 300ms var(--ease-out) calc(var(--t) + 150ms) both;
+    }
+
+    .auto[data-estado] .vuelo {
+      animation: sv-vuelo-x 1000ms var(--ease-in-out) var(--t) both;
+    }
+
+    .auto[data-estado] .vuelo__y {
+      animation: sv-vuelo-y 1000ms var(--ease-in-out) var(--t) both;
+    }
+
+    .auto[data-estado] .vuelo__ficha {
+      animation: sv-vuelo-ficha 1000ms linear var(--t) both;
+    }
+
+    .auto[data-estado] .db__lista .registro {
+      animation: sv-llega 320ms var(--ease-out) calc(var(--t) + 880ms) both;
+    }
+
+    .auto[data-estado] .db__cuenta {
+      --rueda-delay: 1200ms;
+      --rueda-dur: 1700ms;
+      --rueda-curva: var(--ease-in-out);
+    }
+
+    .auto[data-estado] .c1 .conector__luz {
+      animation: sv-aparece 400ms ease 300ms both;
+    }
+
+    .auto[data-estado] .c2 .conector__luz {
+      animation: sv-aparece 400ms ease 3700ms both;
+    }
+
+    .auto[data-estado] .c2 .pulso {
+      animation: sv-viaje-y 700ms var(--ease-in-out) 3300ms both;
+    }
+
+    .auto[data-estado] .c2 .pulso i {
+      animation: sv-pulso 700ms linear 3300ms both;
+    }
+
+    .auto[data-estado] .reloj__h {
+      animation: sv-hora 1100ms var(--ease-in-out) 3500ms both;
+    }
+
+    .auto[data-estado] .reloj__m {
+      animation: sv-minuto 1100ms var(--ease-in-out) 3500ms both;
+    }
+
+    .auto[data-estado] .motor__dia::before {
+      animation: sv-aparece 300ms ease 4500ms both;
+    }
+
+    .auto[data-estado] .motor__ic::after {
+      animation: sv-aparece 300ms ease 4600ms both;
+    }
+
+    .auto[data-estado] :global(.motor__engrane) {
+      animation: sv-gira 2200ms var(--ease-in-out) 4600ms both;
+    }
+
+    .auto[data-estado] .e1 {
+      animation: sv-e1 8600ms linear both;
+    }
+
+    .auto[data-estado] .e2 {
+      animation: sv-e2 8600ms linear both;
+    }
+
+    .auto[data-estado] .e3 {
+      animation: sv-e3 8600ms linear both;
+    }
+
+    .auto[data-estado] .c3 .conector__luz {
+      animation: sv-aparece 400ms ease 6200ms both;
+    }
+
+    .auto[data-estado] .c3 .pulso {
+      animation: sv-viaje-y 600ms var(--ease-in-out) 5900ms both;
+    }
+
+    .auto[data-estado] .c3 .pulso i {
+      animation: sv-pulso 600ms linear 5900ms both;
+    }
+
+    .auto[data-estado] .nodo--pdf {
+      animation: sv-entra 500ms var(--ease-out) 6200ms both;
+    }
+
+    .auto[data-estado] .salida--pdf::before {
+      animation: sv-oculta 300ms ease 6300ms both;
+    }
+
+    .auto[data-estado] .salida--wa::before {
+      animation: sv-oculta 300ms ease 7400ms both;
+    }
+
+    .auto[data-estado] .pdf__barra {
+      animation: sv-barra 500ms var(--ease-out) calc(6450ms + var(--i) * 70ms) both;
+    }
+
+    .auto[data-estado] .pdf__total {
+      --rueda-delay: 6500ms;
+    }
+
+    .auto[data-estado] .nodo--wa {
+      animation: sv-notifica 500ms var(--ease-out) 7300ms both;
+    }
+  }
+
+  @container anita (min-width: 55rem) {
+    @media (prefers-reduced-motion: no-preference) {
+      .auto[data-estado] .pulso {
+        animation-name: sv-viaje-x;
+      }
+    }
+  }
+
+  @keyframes sv-llena {
+    from {
+      transform: scaleX(0);
+    }
+  }
+
+  @keyframes sv-aparece {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes sv-marca {
+    from {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+  }
+
+  @keyframes sv-brillo {
+    0% {
+      opacity: 0;
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes sv-vuelo-x {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(var(--dx, 0px));
+    }
+  }
+
+  @keyframes sv-vuelo-y {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(calc(var(--dy, 0px) / 2 - 1.25rem));
+    }
+    100% {
+      transform: translateY(var(--dy, 0px));
+    }
+  }
+
+  @keyframes sv-vuelo-ficha {
+    0% {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    12% {
+      opacity: 1;
+      transform: scale(1.04);
+    }
+    84% {
+      opacity: 1;
+      transform: scale(1.02);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes sv-llega {
+    from {
+      opacity: 0;
+      transform: translateY(-4px) scale(0.98);
+    }
+  }
+
+  @keyframes sv-viaje-y {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(100%);
+    }
+  }
+
+  @keyframes sv-viaje-x {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes sv-pulso {
+    0% {
+      opacity: 0;
+    }
+    20%,
+    80% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes sv-hora {
+    from {
+      transform: rotate(225deg);
+    }
+  }
+
+  @keyframes sv-minuto {
+    from {
+      transform: rotate(-180deg);
+    }
+  }
+
+  @keyframes sv-gira {
+    from {
+      transform: rotate(-540deg);
+    }
+  }
+
+  /* Los estados se relevan sin encimarse: uno se va y el otro llega. */
+  @keyframes sv-e1 {
+    0%,
+    52.5% {
+      opacity: 1;
+    }
+    53.5%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes sv-e2 {
+    0%,
+    53.5% {
+      opacity: 0;
+    }
+    55%,
+    78.5% {
+      opacity: 1;
+    }
+    79.5%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes sv-e3 {
+    0%,
+    79.5% {
+      opacity: 0;
+    }
+    81%,
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes sv-oculta {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes sv-entra {
+    from {
+      opacity: 0;
+      transform: var(--entra);
+    }
+  }
+
+  @keyframes sv-barra {
+    from {
+      transform: scaleY(0.06);
+    }
+  }
+
+  @keyframes sv-notifica {
+    from {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.97);
+    }
+  }
+</style>

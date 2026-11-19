@@ -1,0 +1,1443 @@
+---
+/**
+ * Demostración 3 · Apps móviles: tres teléfonos con pantallas de ejemplo.
+ *   Reserva de cita (la historia de Marta), tarjeta de puntos y seguimiento
+ *   de pedido con mapa.
+ *
+ * Cada pantalla repite un ciclo de 9 s mientras se ve (se pausa fuera de
+ * pantalla y con el botón Pausar). En escritorio los teléfonos se inclinan y
+ * se desplazan a distinto ritmo con el scroll (scroll-driven, con @supports);
+ * en celular van en una fila que se desliza con el dedo.
+ * Sin JS o con reduced-motion se ve el final de cada historia: la cita
+ * confirmada, los 150 puntos y el repartidor llegando.
+ *
+ * Las medidas de adentro van en px: el teléfono es un dibujo de tamaño fijo y
+ * la ruta del mapa usa coordenadas de esa pantalla.
+ */
+import Controles from './Controles.astro';
+import Glifo from './Glifo.astro';
+import Rueda from './Rueda.astro';
+import type { Textos } from './i18n';
+
+interface Props {
+  t: Textos;
+}
+
+const { t } = Astro.props;
+const m = t.moviles;
+const { cita, puntos, pedido } = m;
+const sellos = Array.from({ length: 10 }, (_, i) => i);
+---
+
+<figure class="moviles" data-grupo>
+  <figcaption class="visually-hidden">{m.descripcion}</figcaption>
+
+  <div class="telefonos" data-desliza role="group" aria-label={m.descripcion}>
+  <ul class="telefonos__fila">
+    <li class="telefonos__item item-cita">
+      <div class="tel" data-anima>
+        <div class="tel__pantalla" aria-hidden="true">
+          <span class="tel__isla"></span>
+          <div class="tel__estado"><span>9:41</span><span class="tel__senal"><i></i><i></i><i></i><b></b></span></div>
+          <div class="tel__app app-cita">
+            <div class="cita__uno">
+              <p class="tel__marca">{cita.app}</p>
+              <p class="tel__h">{cita.pantalla}</p>
+              <div class="cita__servicio">
+                <span class="cita__ic"><Glifo n="scissors" /></span>
+                <span class="cita__srv"><b>{cita.servicio}</b><span>{cita.detalle}</span></span>
+              </div>
+              <div class="cita__dias">
+                <span class="cita__marca-dia"></span>
+                {
+                  cita.dias.map(([d, n]) => (
+                    <span class="cita__dia">
+                      <span>{d}</span>
+                      <b>{n}</b>
+                    </span>
+                  ))
+                }
+              </div>
+              <div class="cita__horas">
+                {
+                  cita.horarios.map((h, i) => (
+                    <span class:list={['cita__hora', `ho${i}`, { ocupada: i === 0 || i === 3 }]}>
+                      {i === 1 && <span class="cita__elegida"><b>{h}</b></span>}
+                      <b>{h}</b>
+                      {(i === 0 || i === 3) && <small>{cita.ocupado}</small>}
+                    </span>
+                  ))
+                }
+              </div>
+              <span class="cita__boton">{cita.boton}</span>
+            </div>
+            <div class="cita__dos">
+              <span class="cita__check"><Glifo n="check" /></span>
+              <p class="tel__h cita__t1">{cita.confirmada}</p>
+              <p class="cita__cuando cita__t2">{cita.cuando}</p>
+              <p class="cita__con cita__t3">{cita.con}</p>
+              <p class="cita__nota cita__t4"><Glifo n="whatsapp" />{cita.recordatorio}</p>
+              <span class="cita__cal cita__t4"><Glifo n="calendar-blank" />{cita.calendario}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="tel__nombre">{cita.titulo}</p>
+      <p class="visually-hidden">{cita.descripcion}</p>
+    </li>
+
+    <li class="telefonos__item item-puntos">
+      <div class="tel" data-anima>
+        <div class="tel__pantalla" aria-hidden="true">
+          <span class="tel__isla"></span>
+          <div class="tel__estado"><span>9:41</span><span class="tel__senal"><i></i><i></i><i></i><b></b></span></div>
+          <div class="tel__app app-puntos">
+            <p class="tel__marca">{puntos.app}</p>
+            <p class="tel__h">{puntos.titulo}</p>
+            <div class="tarjeta">
+              <span class="tarjeta__tipo">{puntos.tarjeta}</span>
+              <span class="tarjeta__nombre">{puntos.nombre}</span>
+              <span class="tarjeta__pts"><Rueda valor="150" desde="120" clase="pts-rueda" /><small>{puntos.pts}</small></span>
+            </div>
+            <div class="sellos">
+              {
+                sellos.map((i) => (
+                  <span class:list={['sello', { lleno: i < 8, nuevo: i === 7 }]}>{i < 8 && <Glifo n="star" />}</span>
+                ))
+              }
+            </div>
+            <div class="meta">
+              <p>{puntos.faltanAntes} <Rueda valor="2" desde="3" clase="faltan-rueda" /> {puntos.faltanDespues}</p>
+              <span class="meta__pista"><span class="meta__relleno"></span></span>
+            </div>
+            <div class="historial">
+              {
+                puntos.historial.map(([cuando, que, pts], i) => (
+                  <span class:list={['historial__fila', { hoy: i === 0 }]}>
+                    <span>{cuando}</span>
+                    <span>{que}</span>
+                    <b>{pts}</b>
+                  </span>
+                ))
+              }
+            </div>
+          </div>
+          <div class="aviso-pts"><Glifo n="star" />{puntos.aviso}</div>
+        </div>
+      </div>
+      <p class="tel__nombre">{puntos.titulo}</p>
+      <p class="visually-hidden">{puntos.descripcion}</p>
+    </li>
+
+    <li class="telefonos__item item-pedido">
+      <div class="tel" data-anima>
+        <div class="tel__pantalla" aria-hidden="true">
+          <span class="tel__isla"></span>
+          <div class="tel__estado"><span>9:41</span><span class="tel__senal"><i></i><i></i><i></i><b></b></span></div>
+          <div class="tel__app app-pedido">
+            <div class="mapa">
+              <svg class="mapa__fondo" viewBox="0 0 224 250" focusable="false">
+                <rect width="224" height="250" class="m-base"></rect>
+                <rect x="-12" y="-12" width="34" height="50" rx="6" class="m-cuadra"></rect>
+                <rect x="50" y="-12" width="86" height="50" rx="6" class="m-cuadra"></rect>
+                <rect x="164" y="-12" width="72" height="50" rx="6" class="m-cuadra"></rect>
+                <rect x="-12" y="66" width="34" height="50" rx="6" class="m-cuadra"></rect>
+                <rect x="50" y="66" width="86" height="50" rx="6" class="m-cuadra"></rect>
+                <rect x="164" y="66" width="72" height="50" rx="6" class="m-cuadra"></rect>
+                <rect x="-12" y="144" width="34" height="42" rx="6" class="m-cuadra"></rect>
+                <rect x="50" y="144" width="86" height="42" rx="6" class="m-parque"></rect>
+                <rect x="164" y="144" width="72" height="42" rx="6" class="m-cuadra"></rect>
+                <rect x="-12" y="214" width="34" height="48" rx="6" class="m-cuadra"></rect>
+                <rect x="50" y="214" width="86" height="48" rx="6" class="m-cuadra"></rect>
+                <rect x="164" y="214" width="72" height="48" rx="6" class="m-cuadra"></rect>
+                <polyline points="36,200 36,130 150,130 150,52" class="m-ruta"></polyline>
+              </svg>
+              <span class="pin pin--tienda"><Glifo n="storefront" /></span>
+              <span class="pin pin--casa"><Glifo n="house" /></span>
+              <span class="repartidor"><Glifo n="moped" /></span>
+              <span class="mapa__app">{pedido.app}</span>
+            </div>
+            <div class="hoja-ped">
+              <span class="hoja-ped__asa"></span>
+              <p class="hoja-ped__estado">{pedido.estado}</p>
+              <p class="hoja-ped__eta">{pedido.llega} <Rueda valor="4" desde="9" clase="eta-rueda" /> {pedido.min}</p>
+              <div class="pasos-ped">
+                <span class="pasos-ped__pista"><span class="pasos-ped__relleno"></span></span>
+                <span class="pasos-ped__nombres">
+                  {
+                    pedido.pasos.map((p, i) => (
+                      <span class:list={[{ hecho: i === 0, actual: i === 1 }]}>{p}</span>
+                    ))
+                  }
+                </span>
+              </div>
+              <div class="repa">
+                <span class="repa__foto">B</span>
+                <span class="repa__t"><b>{pedido.repartidor}</b><span>{pedido.vehiculo}</span></span>
+                <span class="repa__tel"><Glifo n="phone" /></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="tel__nombre">{pedido.titulo}</p>
+      <p class="visually-hidden">{pedido.descripcion}</p>
+    </li>
+  </ul>
+  </div>
+
+  <div class="moviles__pie">
+    <span class="moviles__sello">{t.ejemplo}</span>
+    <p class="moviles__deslizar" aria-hidden="true">{m.deslizar}</p>
+    <Controles textos={t.controles} que={m.demoNombre} />
+  </div>
+</figure>
+
+<style>
+  .moviles {
+    position: relative;
+    container: moviles / inline-size;
+    display: grid;
+    gap: var(--s-4);
+    margin: 0;
+  }
+
+  /* ── Fila de teléfonos ─────────────────────────────────────────────── */
+
+  /* Todo lo posicionado (textos para lectores de pantalla incluidos) se ancla
+     dentro de la fila: nada ensancha la página. */
+  .telefonos {
+    position: relative;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .telefonos__fila {
+    display: flex;
+    gap: var(--s-4);
+    width: max-content;
+    margin: 0;
+    padding: var(--s-4) calc(50cqi - 120px) var(--s-2);
+    list-style: none;
+  }
+
+  .telefonos::-webkit-scrollbar {
+    display: none;
+  }
+
+  .telefonos:focus-visible {
+    outline-offset: 4px;
+  }
+
+  .telefonos__item {
+    position: relative;
+    flex: none;
+    display: grid;
+    justify-items: center;
+    gap: var(--s-3);
+    scroll-snap-align: center;
+  }
+
+  .tel__nombre {
+    font-weight: 650;
+    font-size: 0.9375rem;
+  }
+
+  .moviles__pie {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+  }
+
+  .moviles__sello {
+    padding: 0.125rem 0.625rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    color: var(--ink-2);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .moviles__deslizar {
+    flex: 1;
+    color: var(--ink-3);
+    font-size: var(--fs-label);
+  }
+
+  @container moviles (min-width: 52rem) {
+    .telefonos {
+      overflow: visible;
+    }
+
+    .telefonos__fila {
+      justify-content: center;
+      gap: clamp(1.5rem, 4cqi, 4rem);
+      width: auto;
+      padding: var(--s-10) 0 var(--s-4);
+    }
+
+    .item-pedido {
+      order: 1;
+    }
+
+    .item-cita {
+      order: 2;
+    }
+
+    .item-puntos {
+      order: 3;
+    }
+
+    .moviles__deslizar {
+      visibility: hidden;
+    }
+  }
+
+  /* ── El teléfono ───────────────────────────────────────────────────── */
+
+  .tel {
+    width: 240px;
+    height: 496px;
+    padding: 8px;
+    border-radius: 42px;
+    background: #0e1418;
+    box-shadow:
+      inset 0 0 0 1.5px #3a464e,
+      0 2px 4px rgb(14 20 24 / 0.08),
+      0 30px 60px -24px rgb(14 20 24 / 0.45);
+  }
+
+  .tel__pantalla {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 34px;
+    background: #fff;
+    color: #1d1a1c;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .tel__isla {
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    z-index: 5;
+    width: 72px;
+    height: 20px;
+    margin-left: -36px;
+    border-radius: 12px;
+    background: #0e1418;
+  }
+
+  .tel__estado {
+    position: relative;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 38px;
+    padding: 6px 22px 0 26px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .tel__senal {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+  }
+
+  .tel__senal i {
+    width: 3px;
+    border-radius: 1px;
+    background: currentColor;
+  }
+
+  .tel__senal i:nth-child(1) { height: 5px; }
+  .tel__senal i:nth-child(2) { height: 7px; }
+  .tel__senal i:nth-child(3) { height: 9px; }
+
+  .tel__senal b {
+    width: 20px;
+    height: 10px;
+    margin-left: 4px;
+    border: 1.5px solid currentColor;
+    border-radius: 3px;
+    background: linear-gradient(90deg, currentColor 70%, transparent 0) 1px 1px / calc(100% - 2px) calc(100% - 2px) no-repeat;
+  }
+
+  .tel__app {
+    position: relative;
+    height: calc(100% - 38px);
+  }
+
+  .tel__marca {
+    color: var(--marca);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .tel__h {
+    font-size: 19px;
+    font-weight: 780;
+    font-stretch: 104%;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+  }
+
+  /* ── Reserva de cita ───────────────────────────────────────────────── */
+
+  .item-cita {
+    --marca: #9c3d54;
+    --marca-suave: #fbeef1;
+  }
+
+  .cita__uno,
+  .cita__dos {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    padding: 6px 16px 16px;
+    background: #fff;
+  }
+
+  .cita__uno {
+    transform: translateX(-30%);
+    opacity: 0;
+  }
+
+  .cita__servicio {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+    padding: 10px;
+    border: 1px solid #eadde1;
+    border-radius: 14px;
+  }
+
+  .cita__ic {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: var(--marca-suave);
+    color: var(--marca);
+    font-size: 16px;
+  }
+
+  .cita__srv {
+    display: grid;
+  }
+
+  .cita__srv span {
+    color: #6d5f64;
+  }
+
+  .cita__dias {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .cita__marca-dia {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 25%;
+    border-radius: 12px;
+    background: var(--marca-suave);
+    box-shadow: inset 0 0 0 1.5px var(--marca);
+    transform: translateX(200%);
+  }
+
+  .cita__dia {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    padding: 6px 0;
+    color: #6d5f64;
+    font-size: 11px;
+  }
+
+  .cita__dia b {
+    color: #1d1a1c;
+    font-size: 16px;
+  }
+
+  .cita__horas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .cita__hora {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    min-height: 42px;
+    border: 1px solid #e6dde0;
+    border-radius: 12px;
+    font-size: 13px;
+  }
+
+  .cita__hora.ocupada {
+    background: #f6f3f4;
+    color: #6c6166;
+  }
+
+  .cita__hora.ocupada b {
+    text-decoration: line-through;
+    font-weight: 600;
+  }
+
+  .cita__hora small {
+    font-size: 10px;
+  }
+
+  .cita__elegida {
+    position: absolute;
+    inset: -1px;
+    border-radius: 12px;
+    background: var(--marca);
+  }
+
+  .cita__elegida {
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-size: 13px;
+  }
+
+  .ho1::after,
+  .cita__boton::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    margin: -22px 0 0 -22px;
+    border-radius: 50%;
+    background: rgb(29 26 28 / 0.22);
+    opacity: 0;
+  }
+
+  .cita__boton {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 44px;
+    margin-top: 4px;
+    border-radius: 14px;
+    background: #1d1a1c;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .cita__dos {
+    justify-items: center;
+    padding-top: 44px;
+    text-align: center;
+  }
+
+  .cita__check {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 6px;
+    border-radius: 50%;
+    background: #1f7a4d;
+    color: #fff;
+    font-size: 30px;
+  }
+
+  .cita__cuando {
+    color: var(--marca);
+    font-size: 16px;
+    font-weight: 750;
+  }
+
+  .cita__con {
+    color: #6d5f64;
+  }
+
+  .cita__nota {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: #eaf6ef;
+    color: #1d5e3d;
+    text-align: left;
+  }
+
+  .cita__nota :global(.glifo) {
+    flex: none;
+    font-size: 18px;
+  }
+
+  .cita__cal {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    padding: 10px 14px;
+    border: 1px solid #e6dde0;
+    border-radius: 12px;
+    font-weight: 650;
+  }
+
+  /* ── Tarjeta de puntos ─────────────────────────────────────────────── */
+
+  .item-puntos {
+    --marca: #9c3d54;
+    --marca-suave: #fbeef1;
+  }
+
+  .app-puntos {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    padding: 6px 16px 16px;
+  }
+
+  .tarjeta {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2px 8px;
+    margin-top: 4px;
+    padding: 14px;
+    border-radius: 16px;
+    background: var(--marca);
+    color: #fff;
+  }
+
+  .tarjeta__tipo {
+    grid-column: 1 / -1;
+    font-size: 11px;
+    opacity: 0.85;
+  }
+
+  .tarjeta__nombre {
+    align-self: end;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .tarjeta__pts {
+    display: grid;
+    justify-items: end;
+    line-height: 1;
+  }
+
+  .tarjeta__pts :global(.pts-rueda) {
+    font-size: 30px;
+    font-weight: 800;
+    font-stretch: 92%;
+  }
+
+  .tarjeta__pts small {
+    font-size: 11px;
+    opacity: 0.85;
+  }
+
+  .sellos {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .sello {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    border: 1.5px dashed #d9c9ce;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 15px;
+  }
+
+  .sello.lleno {
+    border: 0;
+    background: var(--marca);
+  }
+
+  .meta {
+    display: grid;
+    gap: 6px;
+  }
+
+  .meta p {
+    color: #4d4146;
+    font-weight: 600;
+  }
+
+  .meta__pista {
+    height: 6px;
+    overflow: hidden;
+    border-radius: 3px;
+    background: var(--marca-suave);
+  }
+
+  .meta__relleno {
+    display: block;
+    height: 100%;
+    border-radius: 3px;
+    background: var(--marca);
+    transform: scaleX(0.8);
+    transform-origin: left center;
+  }
+
+  .historial {
+    display: grid;
+    border-top: 1px solid #efe6e9;
+  }
+
+  .historial__fila {
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    align-items: center;
+    min-height: 30px;
+    border-bottom: 1px solid #efe6e9;
+    color: #6d5f64;
+  }
+
+  .historial__fila b {
+    color: #1f7a4d;
+  }
+
+  .historial__fila.hoy {
+    color: #1d1a1c;
+    font-weight: 600;
+  }
+
+  .aviso-pts {
+    position: absolute;
+    top: 42px;
+    right: 10px;
+    left: 10px;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: #1d1a1c;
+    color: #fff;
+    font-weight: 650;
+    box-shadow: 0 10px 24px -8px rgb(14 20 24 / 0.45);
+  }
+
+  .aviso-pts :global(.glifo) {
+    color: #ffd166;
+    font-size: 16px;
+  }
+
+  /* ── Seguimiento de pedido ─────────────────────────────────────────── */
+
+  .item-pedido {
+    --marca: #7a4a2e;
+    --ruta: #1f63c6;
+  }
+
+  /* El mapa llega hasta arriba: la barra de estado queda encima, como en las apps de mapas. */
+  .app-pedido {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: auto;
+  }
+
+  .mapa {
+    position: relative;
+    height: 268px;
+    overflow: hidden;
+  }
+
+  .mapa__fondo {
+    position: absolute;
+    top: 18px;
+    left: 0;
+    width: 224px;
+    height: 250px;
+  }
+
+  .m-base {
+    fill: #f1f4f2;
+  }
+
+  .m-cuadra {
+    fill: #e2e8e5;
+  }
+
+  .m-parque {
+    fill: #cfe7d6;
+  }
+
+  .m-ruta {
+    fill: none;
+    stroke: var(--ruta);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .pin,
+  .repartidor {
+    position: absolute;
+    top: 18px;
+    left: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: #fff;
+  }
+
+  .pin {
+    width: 28px;
+    height: 28px;
+    margin: -14px 0 0 -14px;
+    border: 2px solid #fff;
+    font-size: 14px;
+    box-shadow: 0 2px 6px rgb(14 20 24 / 0.25);
+  }
+
+  .pin--tienda {
+    background: var(--marca);
+    translate: 36px 200px;
+  }
+
+  .pin--casa {
+    background: #1d1a1c;
+    translate: 150px 52px;
+  }
+
+  .repartidor {
+    z-index: 2;
+    width: 34px;
+    height: 34px;
+    margin: -17px 0 0 -17px;
+    border: 3px solid #fff;
+    background: var(--ruta);
+    font-size: 17px;
+    box-shadow: 0 4px 10px rgb(31 99 198 / 0.45);
+    transform: translate(150px, 80px);
+  }
+
+  .mapa__app {
+    position: absolute;
+    top: 46px;
+    left: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--marca);
+    font-size: 11px;
+    font-weight: 750;
+    box-shadow: 0 2px 8px rgb(14 20 24 / 0.15);
+  }
+
+  .hoja-ped {
+    position: relative;
+    z-index: 3;
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    margin-top: -18px;
+    padding: 8px 16px 16px;
+    border-radius: 20px 20px 0 0;
+    background: #fff;
+    box-shadow: 0 -6px 18px -8px rgb(14 20 24 / 0.2);
+  }
+
+  .hoja-ped__asa {
+    justify-self: center;
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: #d9dee1;
+  }
+
+  .hoja-ped__estado {
+    color: #5d6469;
+    font-weight: 600;
+  }
+
+  .hoja-ped__eta {
+    font-size: 21px;
+    font-weight: 800;
+    font-stretch: 96%;
+    line-height: 1.1;
+  }
+
+  .pasos-ped {
+    display: grid;
+    gap: 6px;
+  }
+
+  .pasos-ped__pista {
+    height: 5px;
+    overflow: hidden;
+    border-radius: 3px;
+    background: #e3e8eb;
+  }
+
+  .pasos-ped__relleno {
+    display: block;
+    height: 100%;
+    background: var(--ruta);
+    transform: scaleX(0.5);
+    transform-origin: left center;
+  }
+
+  .pasos-ped__nombres {
+    display: flex;
+    justify-content: space-between;
+    color: #646d73;
+    font-size: 10.5px;
+  }
+
+  .pasos-ped__nombres .hecho {
+    color: #1d1a1c;
+  }
+
+  .pasos-ped__nombres .actual {
+    color: var(--ruta);
+    font-weight: 700;
+  }
+
+  .repa {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+    padding-top: 10px;
+    border-top: 1px solid #edf0f2;
+  }
+
+  .repa__foto {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #ffe2c7;
+    color: var(--marca);
+    font-weight: 800;
+  }
+
+  .repa__t {
+    flex: 1;
+    display: grid;
+    line-height: 1.25;
+  }
+
+  .repa__t span {
+    color: #5d6469;
+  }
+
+  .repa__tel {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #e8f5ee;
+    color: #1f7a4d;
+    font-size: 15px;
+  }
+
+  /* ── Ciclos (9 s, en bucle, solo con JS y sin reduced-motion) ──────── */
+
+  @media (prefers-reduced-motion: no-preference) {
+    .tel[data-estado] .tel__app {
+      animation: sv-tel-ciclo 9s linear infinite both;
+    }
+
+    /* Cita */
+    .tel[data-estado] .cita__uno {
+      animation: sv-cita-uno 9s linear infinite both;
+    }
+
+    .tel[data-estado] .cita__dos {
+      animation: sv-cita-dos 9s linear infinite both;
+    }
+
+    .tel[data-estado] .cita__marca-dia {
+      animation: sv-cita-dia 9s linear infinite both;
+    }
+
+    .tel[data-estado] .cita__elegida {
+      animation: sv-cita-elegida 9s linear infinite both;
+    }
+
+    .tel[data-estado] .ho1::after {
+      animation: sv-toque-a 9s linear infinite both;
+    }
+
+    .tel[data-estado] .cita__boton {
+      animation: sv-cita-boton 9s linear infinite both;
+    }
+
+    .tel[data-estado] .cita__boton::after {
+      animation: sv-toque-b 9s linear infinite both;
+    }
+
+    .tel[data-estado] .cita__check {
+      animation: sv-cita-check 9s linear infinite both;
+    }
+
+    .tel[data-estado] .cita__t1,
+    .tel[data-estado] .cita__t2 {
+      animation: sv-cita-txt 9s linear infinite both;
+    }
+
+    .tel[data-estado] .cita__t3,
+    .tel[data-estado] .cita__t4 {
+      animation: sv-cita-txt-2 9s linear infinite both;
+    }
+
+    /* Puntos */
+    .tel[data-estado] .aviso-pts {
+      animation: sv-pts-aviso 9s linear infinite both;
+    }
+
+    .tel[data-estado] .tarjeta__pts :global(.rueda__tira:not(.quieta)) {
+      animation: sv-pts-rueda 9s linear infinite both;
+    }
+
+    .tel[data-estado] .sello.nuevo {
+      animation: sv-pts-sello 9s linear infinite both;
+    }
+
+    .tel[data-estado] .meta :global(.rueda__tira:not(.quieta)) {
+      animation: sv-pts-faltan 9s linear infinite both;
+    }
+
+    .tel[data-estado] .meta__relleno {
+      animation: sv-pts-meta 9s linear infinite both;
+    }
+
+    .tel[data-estado] .historial__fila.hoy {
+      animation: sv-pts-hoy 9s linear infinite both;
+    }
+
+    /* Pedido */
+    .tel[data-estado] .repartidor {
+      animation: sv-ped-ruta 9s linear infinite both;
+    }
+
+    .tel[data-estado] .hoja-ped__eta :global(.rueda__tira:not(.quieta)) {
+      animation: sv-ped-eta 9s linear infinite both;
+    }
+  }
+
+  /*
+   * Cada ciclo: la historia pasa entre 0 % y 80 %, el final se queda hasta
+   * 92 %, la pantalla se atenúa, todo vuelve a su inicio a 96 % sin que se vea
+   * y la pantalla reaparece. El cuadro 0 es el inicio visible: así se ve
+   * mientras la demo espera a entrar en pantalla.
+   */
+  @keyframes sv-tel-ciclo {
+    0%,
+    92% {
+      opacity: 1;
+    }
+    94.5%,
+    97% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes sv-cita-uno {
+    0%,
+    44% {
+      transform: none;
+      opacity: 1;
+      animation-timing-function: var(--ease-drawer);
+    }
+    51%,
+    95.5% {
+      transform: translateX(-30%);
+      opacity: 0;
+    }
+    96%,
+    100% {
+      transform: none;
+      opacity: 1;
+    }
+  }
+
+  @keyframes sv-cita-dos {
+    0%,
+    44% {
+      transform: translateX(100%);
+      animation-timing-function: var(--ease-drawer);
+    }
+    51%,
+    95.5% {
+      transform: none;
+    }
+    96%,
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes sv-cita-dia {
+    0%,
+    9% {
+      transform: none;
+      animation-timing-function: var(--ease-in-out);
+    }
+    17%,
+    95.5% {
+      transform: translateX(200%);
+    }
+    96%,
+    100% {
+      transform: none;
+    }
+  }
+
+  @keyframes sv-cita-elegida {
+    0%,
+    27% {
+      opacity: 0;
+      transform: scale(0.96);
+      animation-timing-function: var(--ease-out);
+    }
+    30%,
+    95.5% {
+      opacity: 1;
+      transform: none;
+    }
+    96%,
+    100% {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+  }
+
+  @keyframes sv-toque-a {
+    0%,
+    23% {
+      opacity: 0;
+      transform: scale(0.6);
+      animation-timing-function: var(--ease-out);
+    }
+    26% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    31%,
+    100% {
+      opacity: 0;
+      transform: scale(1.3);
+    }
+  }
+
+  @keyframes sv-toque-b {
+    0%,
+    34% {
+      opacity: 0;
+      transform: scale(0.6);
+      animation-timing-function: var(--ease-out);
+    }
+    37% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    42%,
+    100% {
+      opacity: 0;
+      transform: scale(1.4);
+    }
+  }
+
+  @keyframes sv-cita-boton {
+    0%,
+    35% {
+      transform: none;
+    }
+    37% {
+      transform: scale(0.96);
+    }
+    40%,
+    100% {
+      transform: none;
+    }
+  }
+
+  @keyframes sv-cita-check {
+    0%,
+    50% {
+      opacity: 0;
+      transform: scale(0.7);
+      animation-timing-function: var(--ease-out);
+    }
+    56%,
+    95.5% {
+      opacity: 1;
+      transform: none;
+    }
+    96%,
+    100% {
+      opacity: 0;
+      transform: scale(0.7);
+    }
+  }
+
+  @keyframes sv-cita-txt {
+    0%,
+    52% {
+      opacity: 0;
+      transform: translateY(6px);
+      animation-timing-function: var(--ease-out);
+    }
+    58%,
+    95.5% {
+      opacity: 1;
+      transform: none;
+    }
+    96%,
+    100% {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+
+  @keyframes sv-cita-txt-2 {
+    0%,
+    54% {
+      opacity: 0;
+      transform: translateY(6px);
+      animation-timing-function: var(--ease-out);
+    }
+    60%,
+    95.5% {
+      opacity: 1;
+      transform: none;
+    }
+    96%,
+    100% {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+
+  @keyframes sv-pts-aviso {
+    0%,
+    7% {
+      opacity: 0;
+      transform: translateY(-140%);
+      animation-timing-function: var(--ease-out);
+    }
+    12%,
+    92% {
+      opacity: 1;
+      transform: none;
+    }
+    94.5%,
+    100% {
+      opacity: 0;
+      transform: none;
+    }
+  }
+
+  @keyframes sv-pts-rueda {
+    0%,
+    13% {
+      transform: translateY(calc(var(--ds) * -10%));
+      animation-timing-function: var(--ease-in-out);
+    }
+    25%,
+    95.5% {
+      transform: translateY(calc(var(--d) * -10%));
+    }
+    96%,
+    100% {
+      transform: translateY(calc(var(--ds) * -10%));
+    }
+  }
+
+  @keyframes sv-pts-sello {
+    0%,
+    26% {
+      opacity: 0;
+      transform: scale(1.6) rotate(-14deg);
+      animation-timing-function: var(--ease-out);
+    }
+    30%,
+    95.5% {
+      opacity: 1;
+      transform: none;
+    }
+    96%,
+    100% {
+      opacity: 0;
+      transform: scale(1.6) rotate(-14deg);
+    }
+  }
+
+  @keyframes sv-pts-faltan {
+    0%,
+    30% {
+      transform: translateY(calc(var(--ds) * -10%));
+      animation-timing-function: var(--ease-out);
+    }
+    34%,
+    95.5% {
+      transform: translateY(calc(var(--d) * -10%));
+    }
+    96%,
+    100% {
+      transform: translateY(calc(var(--ds) * -10%));
+    }
+  }
+
+  @keyframes sv-pts-meta {
+    0%,
+    30% {
+      transform: scaleX(0.7);
+      animation-timing-function: var(--ease-out);
+    }
+    36%,
+    95.5% {
+      transform: scaleX(0.8);
+    }
+    96%,
+    100% {
+      transform: scaleX(0.7);
+    }
+  }
+
+  @keyframes sv-pts-hoy {
+    0%,
+    34% {
+      opacity: 0;
+      transform: translateY(-6px);
+      animation-timing-function: var(--ease-out);
+    }
+    40%,
+    95.5% {
+      opacity: 1;
+      transform: none;
+    }
+    96%,
+    100% {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+
+  /* La moto sigue la ruta: 36,200 → 36,130 → 150,130 → 150,80 (casi en la casa). */
+  @keyframes sv-ped-ruta {
+    0%,
+    6% {
+      transform: translate(36px, 200px);
+    }
+    28% {
+      transform: translate(36px, 130px);
+    }
+    64% {
+      transform: translate(150px, 130px);
+      animation-timing-function: var(--ease-out);
+    }
+    80%,
+    95.5% {
+      transform: translate(150px, 80px);
+    }
+    96%,
+    100% {
+      transform: translate(36px, 200px);
+    }
+  }
+
+  @keyframes sv-ped-eta {
+    0%,
+    6% {
+      transform: translateY(calc(var(--ds) * -10%));
+      animation-timing-function: var(--ease-in-out);
+    }
+    80%,
+    95.5% {
+      transform: translateY(calc(var(--d) * -10%));
+    }
+    96%,
+    100% {
+      transform: translateY(calc(var(--ds) * -10%));
+    }
+  }
+
+  /* ── Inclinación y parallax con el scroll (escritorio) ─────────────── */
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) and (min-width: 64rem) {
+      .telefonos__item {
+        animation: linear both;
+        animation-timeline: view();
+        animation-range: entry 0% exit 100%;
+      }
+
+      .item-pedido {
+        animation-name: sv-par-izq;
+      }
+
+      .item-cita {
+        animation-name: sv-par-centro;
+      }
+
+      .item-puntos {
+        animation-name: sv-par-der;
+      }
+    }
+  }
+
+  @keyframes sv-par-izq {
+    from {
+      transform: translateY(64px) rotate(-6deg);
+    }
+    to {
+      transform: translateY(-40px) rotate(-1.5deg);
+    }
+  }
+
+  @keyframes sv-par-centro {
+    from {
+      transform: translateY(28px);
+    }
+    to {
+      transform: translateY(-28px);
+    }
+  }
+
+  @keyframes sv-par-der {
+    from {
+      transform: translateY(80px) rotate(6deg);
+    }
+    to {
+      transform: translateY(-48px) rotate(1.5deg);
+    }
+  }
+</style>

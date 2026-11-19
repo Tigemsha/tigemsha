@@ -1,0 +1,94 @@
+---
+/**
+ * Botones de pausa y repetir de una demostración. Sin JS no hacen nada, así
+ * que salen ocultos y servicios.ts los muestra (solo si hay movimiento).
+ * "que" completa el nombre accesible: "Pausar la demostración de automatización".
+ */
+import Glifo from './Glifo.astro';
+
+interface Props {
+  textos: { pausar: string; reanudar: string; repetir: string };
+  que: string;
+  repetir?: boolean;
+  clase?: string;
+}
+
+const { textos, que, repetir = false, clase = '' } = Astro.props;
+---
+
+<div class:list={['controles', clase]} data-controles hidden>
+  <button type="button" class="control" data-accion="pausa">
+    <Glifo n="pause" clase="control__ic control__ic--pausa" />
+    <Glifo n="play" clase="control__ic control__ic--sigue" />
+    <span class="control__texto" data-pausar={textos.pausar} data-reanudar={textos.reanudar}>{textos.pausar}</span>
+    <span class="visually-hidden">{` ${que}`}</span>
+  </button>
+  {
+    repetir && (
+      <button type="button" class="control" data-accion="repetir">
+        <Glifo n="arrow-counter-clockwise" clase="control__ic" />
+        <span>{textos.repetir}</span>
+        <span class="visually-hidden">{` ${que}`}</span>
+      </button>
+    )
+  }
+</div>
+
+<style>
+  .controles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+
+  .controles[hidden] {
+    display: none;
+  }
+
+  .control {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 44px;
+    padding: 0 var(--s-4);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    color: var(--ink);
+    font-size: var(--fs-label);
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform var(--dur-press) var(--ease-out);
+  }
+
+  .control:active {
+    transform: scale(0.97);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .control:hover {
+      border-color: var(--ink);
+    }
+  }
+
+  .control :global(.control__ic) {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .control :global(.control__ic--sigue),
+  :global([data-pausa]) .control :global(.control__ic--pausa) {
+    display: none;
+  }
+
+  :global([data-pausa]) .control :global(.control__ic--sigue) {
+    display: block;
+  }
+
+  /* Al terminar una demostración que corre una sola vez, queda solo "Repetir". */
+  :global([data-terminado]) .control[data-accion='pausa'] {
+    display: none;
+  }
+</style>

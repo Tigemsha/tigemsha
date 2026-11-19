@@ -1,0 +1,1496 @@
+---
+/**
+ * Demostración 2 · Apps web: un navegador con tres sistemas de ejemplo para
+ * la tlapalería de Luis, hechos en HTML/CSS (no son capturas).
+ *
+ * Con JS: pestañas accesibles (flechas, Inicio, Fin) que avanzan solas cada
+ * 6.5 s mientras se ven; la barra de cada pestaña marca el tiempo y, al
+ * terminar, servicios.ts pasa a la siguiente. Al elegir una pestaña se acaba
+ * el recorrido automático. Al mostrarse, cada panel cuenta sus números, dibuja
+ * su gráfica y mete sus filas.
+ * Sin JS: los tres sistemas uno debajo del otro, en su estado final.
+ */
+import Controles from './Controles.astro';
+import Glifo from './Glifo.astro';
+import type { NombreGlifo } from './Glifo.astro';
+import Rueda from './Rueda.astro';
+import type { Textos } from './i18n';
+
+interface Props {
+  t: Textos;
+}
+
+const { t } = Astro.props;
+const w = t.web;
+const { inv, portal, pos } = w;
+
+const iconosNegocio: NombreGlifo[] = ['package', 'receipt', 'cash-register', 'chart-bar'];
+const iconosCliente: NombreGlifo[] = ['package', 'receipt', 'user-circle'];
+const iconosProductos: NombreGlifo[] = ['package', 'paint-bucket', 'paint-brush', 'pipe', 'nut', 'hammer'];
+const existencias = ['3', '142', '18', '64', '9'];
+const estadosInv = ['quedan', 'ok', 'ok', 'ok', 'surtir'] as const;
+
+// Compras del año (miles de pesos), suman $186,400.
+const compras = [12, 15, 11, 18, 16, 21, 14, 19, 23, 17, 20.4];
+const puntos = compras.map((v, i) => `${(i * 22).toFixed(1)},${(76 - v * 2.9).toFixed(1)}`);
+const trazo = `M${puntos.join(' L')}`;
+const area = `${trazo} L220,80 L0,80 Z`;
+
+const shell = (cliente: boolean, activo: number) => ({
+  items: cliente ? w.navCliente : w.navNegocio,
+  iconos: cliente ? iconosCliente : iconosNegocio,
+  activo,
+});
+const shells = [shell(false, 0), shell(true, 0), shell(false, 2)];
+---
+
+<figure class="web" data-grupo data-anima data-tabs>
+  <figcaption class="visually-hidden">{w.descripcion}</figcaption>
+
+  <div class="web__marco">
+    <div class="web__tira">
+      <span class="web__puntos" aria-hidden="true"><i></i><i></i><i></i></span>
+      <div class="web__pestanas" role="tablist" aria-label={w.pestanasNombre} hidden>
+        {
+          w.pestanas.map((p, i) => (
+            <button
+              type="button"
+              role="tab"
+              id={`sv-tab-${i}`}
+              class="pestana"
+              aria-controls={`sv-panel-${i}`}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+              data-url={p.url}
+            >
+              <span class={`pestana__fav fav${i}`} aria-hidden="true">
+                <Glifo n={(['package', 'truck', 'cash-register'] as const)[i] ?? 'package'} />
+              </span>
+              <span class="pestana__texto pestana__texto--largo">{p.nombre}</span>
+              <span class="pestana__texto pestana__texto--corto">{p.corto}</span>
+              <span class="pestana__pista" aria-hidden="true">
+                <span class="pestana__barra" data-avance />
+              </span>
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="web__barra">
+      <span class="web__url" aria-hidden="true">
+        <Glifo n="lock-simple" />
+        <span data-url-vista>{w.pestanas[0].url}</span>
+      </span>
+      <span class="web__sello">{t.datosEjemplo}</span>
+    </div>
+
+    <div class="web__paneles">
+      {
+        w.pestanas.map((p, i) => (
+          <div class:list={['panel', `panel--${i}`, { activo: i === 0 }]} id={`sv-panel-${i}`} aria-labelledby={`sv-tab-${i}`} data-panel data-escena>
+            <p class="panel__nombre">{p.nombre}</p>
+            <p class="visually-hidden">{p.descripcion}</p>
+            <div class="app" aria-hidden="true">
+              <div class="app__lado">
+                <span class="app__marca">
+                  <span class="app__logo">TL</span>
+                  <span class="app__marca-n">{w.marca}</span>
+                </span>
+                <span class="app__nav">
+                  {shells[i]?.items.map((item, j) => (
+                    <span class:list={['app__item', { activo: j === shells[i]?.activo }]}>
+                      <Glifo n={shells[i]?.iconos[j] ?? 'package'} />
+                      {item}
+                    </span>
+                  ))}
+                </span>
+              </div>
+
+              <div class="app__main">
+                {i === 0 && (
+                  <>
+                    <div class="app__cabeza">
+                      <span class="app__titulos">
+                        <span class="app__h">{inv.titulo}</span>
+                        <span class="app__sub">
+                          {inv.sucursal} <Glifo n="caret-down" />
+                        </span>
+                      </span>
+                      <span class="app__buscar">
+                        <Glifo n="magnifying-glass" />
+                        {inv.buscar}
+                      </span>
+                    </div>
+                    <div class="kpis">
+                      <span class="kpi">
+                        <span class="kpi__l">{inv.kpis[0]}</span>
+                        <span class="kpi__v"><Rueda valor="1,284" /></span>
+                      </span>
+                      <span class="kpi">
+                        <span class="kpi__l">{inv.kpis[1]}</span>
+                        <span class="kpi__v"><Rueda valor="$412,580" /></span>
+                      </span>
+                      <span class="kpi kpi--alerta">
+                        <span class="kpi__l">{inv.kpis[2]}</span>
+                        <span class="kpi__v">
+                          <Glifo n="warning" />
+                          <Rueda valor="6" />
+                        </span>
+                      </span>
+                    </div>
+                    <div class="alerta">
+                      <Glifo n="warning" />
+                      <span class="alerta__t">
+                        <b>{inv.alerta}</b> {inv.alertaDato}
+                      </span>
+                      <span class="alerta__btn">{inv.alertaAccion}</span>
+                    </div>
+                    <div class="inv__cuerpo">
+                      <div class="tabla">
+                        <span class="tabla__fila tabla__fila--cab">
+                          <span>{inv.columnas[0]}</span>
+                          <span class="num">{inv.columnas[1]}</span>
+                          <span>{inv.columnas[2]}</span>
+                        </span>
+                        {inv.productos.map((producto, j) => (
+                          <span class={`tabla__fila r${j}`}>
+                            <span class="tabla__p">{producto}</span>
+                            <span class="num">{existencias[j]}</span>
+                            <span class={`chip chip--${estadosInv[j]}`}>
+                              <Glifo n={estadosInv[j] === 'ok' ? 'check' : 'warning'} />
+                              {inv.estados[estadosInv[j] ?? 'ok']}
+                            </span>
+                          </span>
+                        ))}
+                      </div>
+                      <div class="grafica">
+                        <span class="grafica__t">{inv.grafica}</span>
+                        <span class="barras">
+                          {inv.dias.map((_, j) => (
+                            <span class={`barra h${j}`} />
+                          ))}
+                        </span>
+                        <span class="ejes">
+                          {inv.dias.map((d) => (
+                            <span>{d}</span>
+                          ))}
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {i === 1 && (
+                  <>
+                    <div class="app__cabeza">
+                      <span class="app__titulos">
+                        <span class="app__h">{portal.saludo}</span>
+                        <span class="app__sub">{portal.sub}</span>
+                      </span>
+                      <span class="app__avatar">CR</span>
+                    </div>
+                    <div class="pedido">
+                      <span class="pedido__top">
+                        <span class="app__titulos">
+                          <span class="pedido__id">{portal.pedido}</span>
+                          <span class="app__sub">{portal.detalle}</span>
+                        </span>
+                        <span class="pedido__eta">
+                          <Glifo n="truck" />
+                          {portal.llega}
+                        </span>
+                      </span>
+                      <span class="ruta">
+                        <span class="ruta__pista">
+                          <span class="ruta__relleno" />
+                          <i class="ruta__punto pk0" />
+                          <i class="ruta__punto pk1" />
+                          <i class="ruta__punto pk2" />
+                          <i class="ruta__punto pk3" />
+                          <span class="ruta__mover">
+                            <span class="ruta__camion">
+                              <Glifo n="truck" />
+                            </span>
+                          </span>
+                        </span>
+                        <span class="ruta__pasos">
+                          {portal.pasos.map((paso, j) => (
+                            <span class:list={['ruta__paso', { hecho: j < 2, actual: j === 2 }]}>{paso}</span>
+                          ))}
+                        </span>
+                      </span>
+                    </div>
+                    <div class="portal__cuerpo">
+                      <div class="lista">
+                        {portal.lista.map(([id, detalle], j) => (
+                          <span class={`lista__fila r${j}`}>
+                            <span class="lista__id">{id}</span>
+                            <span class="lista__d">{detalle}</span>
+                            <span class:list={['chip', j < 2 ? 'chip--ok' : 'chip--neutro']}>
+                              <Glifo n={j < 2 ? 'check' : 'receipt'} />
+                              {portal.estados[j]}
+                            </span>
+                          </span>
+                        ))}
+                      </div>
+                      <div class="grafica linea">
+                        <span class="linea__cabeza">
+                          <span class="grafica__t">{portal.grafica}</span>
+                          <span class="linea__total">
+                            <Rueda valor="$186,400" />
+                          </span>
+                        </span>
+                        <span class="linea__ventana">
+                          <span class="linea__mover">
+                            <span class="linea__contra">
+                              <svg viewBox="0 0 220 80" preserveAspectRatio="none" focusable="false">
+                                <path class="linea__area" d={area} />
+                                <path class="linea__trazo" d={trazo} />
+                              </svg>
+                            </span>
+                          </span>
+                        </span>
+                        <span class="ejes ejes--meses">
+                          {portal.meses.map((m) => (
+                            <span>{m}</span>
+                          ))}
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {i === 2 && (
+                  <>
+                    <div class="app__cabeza">
+                      <span class="app__titulos">
+                        <span class="app__h">{pos.titulo}</span>
+                        <span class="app__sub">{pos.sub}</span>
+                      </span>
+                      <span class="app__buscar">
+                        <Glifo n="magnifying-glass" />
+                        {pos.buscar}
+                      </span>
+                    </div>
+                    <div class="pos">
+                      <div class="pos__productos">
+                        {pos.productos.map(([nombre, precio], j) => (
+                          <span class={`producto k${j}`}>
+                            <span class="producto__ic">
+                              <Glifo n={iconosProductos[j] ?? 'package'} />
+                            </span>
+                            <span class="producto__n">{nombre}</span>
+                            <span class="producto__p">{precio}</span>
+                          </span>
+                        ))}
+                      </div>
+                      <div class="ticket">
+                        <span class="ticket__h">
+                          <Glifo n="receipt" />
+                          {pos.ticket}
+                        </span>
+                        <span class="ticket__lineas">
+                          {pos.lineas.map(([detalle, valor], j) => (
+                            <span class={`ticket__linea r${j}`}>
+                              <span>{detalle}</span>
+                              <span class="num">{valor}</span>
+                            </span>
+                          ))}
+                        </span>
+                        <span class="ticket__total">
+                          <span>{pos.total}</span>
+                          <Rueda valor="$1,875" desde="$1,680" />
+                        </span>
+                        <span class="ticket__cobrar">{pos.cobrar} $1,875</span>
+                      </div>
+                    </div>
+                    <span class="aviso">
+                      <Glifo n="check-circle" />
+                      {pos.aviso}
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <Controles textos={t.controles} que={w.demoNombre} clase="web__controles" />
+</figure>
+
+<style>
+  .web {
+    position: relative;
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+  }
+
+  .web__marco {
+    /* Paleta propia de la app de ejemplo (la tlapalería), no la del sitio. */
+    --app-bg: #f5f7f8;
+    --app-panel: #ffffff;
+    --app-ink: #17212a;
+    --app-ink-2: #56636d;
+    --app-line: #e3e8eb;
+    --app-lado: #16222c;
+    --app-lado-ink: #b9c5cd;
+    --app-acento: #e8590c;
+    --app-acento-hondo: #b8430a;
+    --app-acento-suave: #fff0e5;
+    --app-alerta-bg: #fff4d6;
+    --app-alerta-ink: #6f4500;
+    --app-ok-bg: #e4f4eb;
+    --app-ok-ink: #1d6741;
+    --app-azul: #1f63c6;
+    container: navegador / inline-size;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: var(--e-device);
+  }
+
+  /* Tira de pestañas, como en un navegador de escritorio. */
+  .web__tira {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--s-3);
+    min-height: 2.25rem;
+    padding: var(--s-2) var(--s-3) 0;
+    background: var(--bg);
+  }
+
+  .web__puntos {
+    display: flex;
+    gap: 6px;
+    align-self: center;
+    padding-bottom: var(--s-1);
+  }
+
+  .web__puntos i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--line-strong);
+  }
+
+  .web__pestanas {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2px;
+    max-width: 34rem;
+  }
+
+  .web__pestanas[hidden] {
+    display: none;
+  }
+
+  .pestana {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.4375rem;
+    min-width: 0;
+    min-height: 2.75rem;
+    padding: 0.25rem 0.625rem;
+    border: 0;
+    border-radius: 10px 10px 0 0;
+    background: transparent;
+    color: var(--ink-2);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: left;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .pestana[aria-selected='true'] {
+    background: var(--surface);
+    color: var(--ink);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .pestana:hover:not([aria-selected='true']) {
+      background: rgb(14 20 24 / 0.05);
+    }
+  }
+
+  .pestana:focus-visible {
+    outline-offset: -3px;
+  }
+
+  .pestana__fav {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 0.75rem;
+  }
+
+  .fav0 {
+    background: var(--app-acento-hondo);
+  }
+
+  .fav1 {
+    background: var(--app-azul);
+  }
+
+  .fav2 {
+    background: var(--app-lado);
+  }
+
+  .pestana__texto {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .pestana__texto--corto {
+    display: none;
+  }
+
+  /* En pantallas angostas: nombres cortos, sin favicon ni botones de ventana. */
+  @container navegador (max-width: 30rem) {
+    .web__puntos,
+    .pestana__fav,
+    .pestana__texto--largo {
+      display: none;
+    }
+
+    .pestana__texto--corto {
+      display: block;
+    }
+
+    .pestana {
+      justify-content: center;
+    }
+
+    .web__tira {
+      padding-inline: var(--s-2);
+    }
+
+    .web__pestanas {
+      max-width: none;
+    }
+  }
+
+  .pestana__pista {
+    position: absolute;
+    right: 0.625rem;
+    bottom: 0.3125rem;
+    left: 0.625rem;
+    height: 2px;
+    overflow: hidden;
+    border-radius: 1px;
+  }
+
+  .pestana__barra {
+    display: block;
+    height: 100%;
+    background: var(--accent-ink);
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  .web:not([data-auto]) .pestana[aria-selected='true'] .pestana__barra {
+    transform: none;
+  }
+
+  .web__barra {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: var(--s-2) var(--s-3);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .web__url {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-width: 0;
+    padding: 0.3125rem 0.75rem;
+    border-radius: var(--radius-pill);
+    background: var(--bg);
+    color: var(--ink-2);
+    font-size: 0.8125rem;
+  }
+
+  .web__url span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .web__sello {
+    flex: none;
+    padding: 0.125rem 0.625rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    color: var(--ink-2);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  /* Sin JS: los tres sistemas en fila, cada uno con su nombre. Con JS: apilados y uno visible. */
+  .web__paneles {
+    position: relative;
+    container: app / inline-size;
+  }
+
+  .panel__nombre {
+    padding: var(--s-3) var(--s-4) var(--s-2);
+    border-top: 1px solid var(--line);
+    font-weight: 650;
+  }
+
+  .panel:first-child .panel__nombre {
+    border-top: 0;
+  }
+
+  .web[data-js] .web__paneles {
+    display: grid;
+  }
+
+  .web[data-js] .panel {
+    grid-area: 1 / 1;
+    display: grid;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 180ms ease,
+      visibility 0s linear 180ms;
+  }
+
+  .web[data-js] .panel.activo {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity 240ms ease 60ms,
+      visibility 0s;
+  }
+
+  .web[data-js] .panel__nombre {
+    display: none;
+  }
+
+  /* ── La app de ejemplo ─────────────────────────────────────────────── */
+
+  .app {
+    display: grid;
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    min-height: 100%;
+    background: var(--app-bg);
+    color: var(--app-ink);
+    font-size: 0.75rem;
+    line-height: 1.35;
+  }
+
+  .app__lado {
+    display: grid;
+    align-content: start;
+    gap: var(--s-4);
+    padding: var(--s-4) var(--s-2);
+    background: var(--app-lado);
+    color: var(--app-lado-ink);
+  }
+
+  .app__marca {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: 0 var(--s-1);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .app__logo {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 6px;
+    background: var(--app-acento-hondo);
+    color: #fff;
+    font-size: 0.625rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+
+  .app__marca-n {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app__nav {
+    display: grid;
+    gap: 2px;
+  }
+
+  .app__item {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: 0.375rem var(--s-2);
+    border-radius: 6px;
+  }
+
+  .app__item :global(.glifo) {
+    font-size: 0.9375rem;
+  }
+
+  .app__item.activo {
+    background: rgb(255 255 255 / 0.1);
+    color: #fff;
+    font-weight: 650;
+  }
+
+  .app__main {
+    display: grid;
+    align-content: start;
+    gap: var(--s-3);
+    min-width: 0;
+    padding: var(--s-4);
+  }
+
+  .app__cabeza {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+  }
+
+  .app__titulos {
+    display: grid;
+    min-width: 0;
+  }
+
+  .app__h {
+    font-size: 0.9375rem;
+    font-weight: 750;
+    line-height: 1.25;
+  }
+
+  .app__sub {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--app-ink-2);
+  }
+
+  .app__buscar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.625rem;
+    border: 1px solid var(--app-line);
+    border-radius: 6px;
+    background: var(--app-panel);
+    color: var(--app-ink-2);
+    white-space: nowrap;
+  }
+
+  .app__avatar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--app-azul);
+    color: #fff;
+    font-size: 0.6875rem;
+    font-weight: 750;
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  .chip {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.4375rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.6875rem;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+
+  .chip :global(.glifo) {
+    font-size: 0.6875rem;
+  }
+
+  .chip--ok {
+    background: var(--app-ok-bg);
+    color: var(--app-ok-ink);
+  }
+
+  .chip--quedan {
+    background: var(--app-alerta-ink);
+    color: #fff;
+  }
+
+  .chip--surtir {
+    background: var(--app-alerta-bg);
+    color: var(--app-alerta-ink);
+  }
+
+  .chip--neutro {
+    background: var(--app-bg);
+    border: 1px solid var(--app-line);
+    color: var(--app-ink-2);
+  }
+
+  /* Inventario */
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-2);
+  }
+
+  .kpi {
+    display: grid;
+    gap: 0.125rem;
+    padding: var(--s-2) var(--s-3);
+    border: 1px solid var(--app-line);
+    border-radius: 8px;
+    background: var(--app-panel);
+  }
+
+  .kpi__l {
+    color: var(--app-ink-2);
+  }
+
+  .kpi__v {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 1.125rem;
+    font-weight: 750;
+    font-stretch: 92%;
+    line-height: 1.15;
+  }
+
+  .kpi--alerta .kpi__v :global(.glifo) {
+    color: var(--app-acento);
+    font-size: 1rem;
+  }
+
+  .alerta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-2) var(--s-3);
+    border: 1px solid #f2d389;
+    border-radius: 8px;
+    background: var(--app-alerta-bg);
+    color: var(--app-alerta-ink);
+  }
+
+  .alerta > :global(.glifo) {
+    font-size: 1rem;
+  }
+
+  .alerta__t {
+    flex: 1;
+    min-width: 10rem;
+  }
+
+  .alerta__btn {
+    padding: 0.25rem 0.625rem;
+    border-radius: 6px;
+    background: var(--app-alerta-ink);
+    color: #fff;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+
+  .inv__cuerpo,
+  .portal__cuerpo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-3);
+  }
+
+  .tabla,
+  .lista {
+    display: grid;
+    overflow: hidden;
+    border: 1px solid var(--app-line);
+    border-radius: 8px;
+    background: var(--app-panel);
+  }
+
+  .tabla__fila {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 4.25rem 5.75rem;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 1.875rem;
+    padding: 0 var(--s-3);
+    border-top: 1px solid var(--app-line);
+  }
+
+  .tabla__fila--cab {
+    min-height: 1.625rem;
+    border-top: 0;
+    background: var(--app-bg);
+    color: var(--app-ink-2);
+    font-weight: 600;
+  }
+
+  .tabla__p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .grafica {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: var(--s-2);
+    padding: var(--s-3);
+    border: 1px solid var(--app-line);
+    border-radius: 8px;
+    background: var(--app-panel);
+  }
+
+  .grafica__t {
+    color: var(--app-ink-2);
+    font-weight: 600;
+  }
+
+  .barras {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 5.5rem;
+    border-bottom: 1px solid var(--app-line);
+  }
+
+  .barra {
+    flex: 1;
+    border-radius: 3px 3px 0 0;
+    background: var(--app-acento);
+    transform-origin: 50% 100%;
+  }
+
+  .h0 { height: 58%; --i: 0; }
+  .h1 { height: 72%; --i: 1; }
+  .h2 { height: 64%; --i: 2; }
+  .h3 { height: 90%; --i: 3; }
+  .h4 { height: 100%; --i: 4; }
+  .h5 { height: 46%; --i: 5; }
+
+  .ejes {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    color: var(--app-ink-2);
+    font-size: 0.625rem;
+  }
+
+  .ejes span {
+    flex: 1;
+    text-align: center;
+  }
+
+  /* Portal de clientes */
+  .pedido {
+    display: grid;
+    gap: var(--s-3);
+    padding: var(--s-3);
+    border: 1px solid var(--app-line);
+    border-radius: 8px;
+    background: var(--app-panel);
+  }
+
+  .pedido__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-2);
+  }
+
+  .pedido__id {
+    font-size: 0.875rem;
+    font-weight: 750;
+  }
+
+  .pedido__eta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--radius-pill);
+    background: #e7effb;
+    color: #1a4f9c;
+    font-weight: 650;
+  }
+
+  .ruta {
+    display: grid;
+    gap: var(--s-2);
+    padding: 0 0.375rem;
+  }
+
+  .ruta__pista {
+    position: relative;
+    height: 4px;
+    margin: 0.625rem 0;
+    border-radius: 2px;
+    background: var(--app-line);
+  }
+
+  .ruta__relleno {
+    position: absolute;
+    inset: 0;
+    border-radius: 2px;
+    background: var(--app-azul);
+    transform: scaleX(0.6667);
+    transform-origin: left center;
+  }
+
+  .ruta__punto {
+    position: absolute;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    margin: -5px 0 0 -5px;
+    border: 2px solid var(--app-line);
+    border-radius: 50%;
+    background: var(--app-panel);
+  }
+
+  .pk0 { left: 0; }
+  .pk1 { left: 33.333%; }
+  .pk2 { left: 66.667%; }
+  .pk3 { left: 100%; }
+
+  .ruta__punto.pk0,
+  .ruta__punto.pk1,
+  .ruta__punto.pk2 {
+    border-color: var(--app-azul);
+    background: var(--app-azul);
+  }
+
+  .ruta__mover {
+    position: absolute;
+    inset: 0;
+    transform: translateX(66.667%);
+  }
+
+  .ruta__camion {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    margin: -0.875rem 0 0 -0.875rem;
+    border: 2px solid var(--app-panel);
+    border-radius: 50%;
+    background: var(--app-azul);
+    color: #fff;
+    font-size: 0.875rem;
+    box-shadow: 0 2px 6px rgb(23 33 42 / 0.25);
+  }
+
+  .ruta__pasos {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 -0.375rem;
+    color: var(--app-ink-2);
+    font-size: 0.6875rem;
+  }
+
+  .ruta__paso.hecho {
+    color: var(--app-ink);
+  }
+
+  .ruta__paso.actual {
+    color: #1a4f9c;
+    font-weight: 700;
+  }
+
+  .lista__fila {
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 2.25rem;
+    padding: 0 var(--s-3);
+    border-top: 1px solid var(--app-line);
+  }
+
+  .lista__fila:first-child {
+    border-top: 0;
+  }
+
+  .lista__id {
+    color: var(--app-ink-2);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lista__d {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .linea__cabeza {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-2);
+  }
+
+  .linea__total {
+    font-size: 0.9375rem;
+    font-weight: 750;
+  }
+
+  .linea__ventana {
+    display: block;
+    overflow: hidden;
+    height: 4.5rem;
+  }
+
+  .linea__mover,
+  .linea__contra {
+    display: block;
+    height: 100%;
+  }
+
+  .linea__contra svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .linea__area {
+    fill: rgb(31 99 198 / 0.1);
+  }
+
+  .linea__trazo {
+    fill: none;
+    stroke: var(--app-azul);
+    stroke-width: 2;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .ejes--meses span {
+    flex: 1;
+  }
+
+  /* Punto de venta */
+  .pos {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-3);
+  }
+
+  .pos__productos {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-2);
+    align-content: start;
+  }
+
+  .producto {
+    position: relative;
+    display: grid;
+    gap: 0.125rem;
+    padding: var(--s-2);
+    border: 1px solid var(--app-line);
+    border-radius: 8px;
+    background: var(--app-panel);
+  }
+
+  .producto::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin: -1.375rem 0 0 -1.375rem;
+    border-radius: 50%;
+    background: rgb(232 89 12 / 0.28);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .producto__ic {
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-bottom: 0.125rem;
+    border-radius: 6px;
+    background: var(--app-acento-suave);
+    color: var(--app-acento-hondo);
+    font-size: 1rem;
+  }
+
+  .producto__n {
+    overflow: hidden;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .producto__p {
+    color: var(--app-ink-2);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ticket {
+    display: grid;
+    align-content: start;
+    gap: var(--s-2);
+    padding: var(--s-3);
+    border: 1px solid var(--app-line);
+    border-radius: 8px;
+    background: var(--app-panel);
+  }
+
+  .ticket__h {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-weight: 700;
+  }
+
+  .ticket__lineas {
+    display: grid;
+    gap: 0.375rem;
+    padding-bottom: var(--s-2);
+    border-bottom: 1px dashed var(--app-line);
+  }
+
+  .ticket__linea {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-2);
+  }
+
+  .ticket__total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font-size: 0.9375rem;
+    font-weight: 750;
+  }
+
+  .ticket__cobrar {
+    display: grid;
+    place-items: center;
+    min-height: 2.25rem;
+    border-radius: 8px;
+    background: var(--app-acento-hondo);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .aviso {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-2) var(--s-3);
+    border-radius: 8px;
+    background: var(--app-ok-bg);
+    color: var(--app-ok-ink);
+    font-weight: 650;
+  }
+
+  .aviso :global(.glifo) {
+    font-size: 1rem;
+  }
+
+  /* En pantallas angostas la barra lateral se vuelve una barra arriba. */
+  @container app (max-width: 33.99rem) {
+    .app {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .app__lado {
+      padding: var(--s-2) var(--s-3);
+    }
+
+    .app__nav,
+    .app__buscar {
+      display: none;
+    }
+
+    .app__main {
+      padding: var(--s-3);
+    }
+
+    .kpi {
+      padding: var(--s-2);
+    }
+
+    .kpi__v {
+      font-size: 0.9375rem;
+    }
+
+    .tabla__fila {
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      padding: 0 var(--s-2);
+    }
+
+    .barras {
+      height: 3.5rem;
+    }
+
+    .producto__ic {
+      display: none;
+    }
+  }
+
+  @container app (min-width: 40rem) {
+    .inv__cuerpo,
+    .portal__cuerpo {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    }
+
+    .pos {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    }
+  }
+
+  .web :global(.web__controles) {
+    justify-content: flex-end;
+  }
+
+  /* ── Movimiento (solo con JS y sin reduced-motion) ─────────────────── */
+
+  .r0 { --t: 200ms; }
+  .r1 { --t: 260ms; }
+  .r2 { --t: 310ms; }
+  .r3 { --t: 350ms; }
+  .r4 { --t: 380ms; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .web[data-auto][data-estado] .pestana[aria-selected='true'] .pestana__barra {
+      animation: sv-avance 6500ms linear both;
+    }
+
+    .web[data-estado] .kpi {
+      --rueda-delay: 150ms;
+    }
+
+    .web[data-estado] .tabla__fila:not(.tabla__fila--cab),
+    .web[data-estado] .lista__fila {
+      animation: sv-fila 420ms var(--ease-out) var(--t) both;
+    }
+
+    .web[data-estado] .barra {
+      animation: sv-barra-web 650ms var(--ease-out) calc(300ms + var(--i) * 55ms) both;
+    }
+
+    .web[data-estado] .alerta {
+      animation: sv-alerta 450ms var(--ease-out) 1000ms both;
+    }
+
+    .web[data-estado] .chip--quedan {
+      animation: sv-latido 600ms var(--ease-in-out) 1350ms both;
+    }
+
+    .web[data-estado] .ruta__relleno {
+      animation: sv-ruta 1400ms var(--ease-in-out) 300ms both;
+    }
+
+    .web[data-estado] .ruta__mover {
+      animation: sv-ruta-mover 1400ms var(--ease-in-out) 300ms both;
+    }
+
+    .web[data-estado] .ruta__punto.pk1 {
+      animation: sv-punto 240ms var(--ease-out) 760ms both;
+    }
+
+    .web[data-estado] .ruta__punto.pk2 {
+      animation: sv-punto 240ms var(--ease-out) 1300ms both;
+    }
+
+    .web[data-estado] .pedido__eta {
+      animation: sv-alerta 400ms var(--ease-out) 1500ms both;
+    }
+
+    .web[data-estado] .linea__total {
+      --rueda-delay: 500ms;
+      --rueda-dur: 1200ms;
+    }
+
+    .web[data-estado] .linea__mover {
+      animation: sv-revela 1300ms var(--ease-in-out) 500ms both;
+    }
+
+    .web[data-estado] .linea__contra {
+      animation: sv-contra 1300ms var(--ease-in-out) 500ms both;
+    }
+
+    .web[data-estado] .producto.k0,
+    .web[data-estado] .producto.k1,
+    .web[data-estado] .producto.k2 {
+      animation: sv-toque-tecla 360ms var(--ease-out) var(--t) both;
+    }
+
+    .web[data-estado] .producto.k0::after,
+    .web[data-estado] .producto.k1::after,
+    .web[data-estado] .producto.k2::after {
+      animation: sv-toque 520ms var(--ease-out) var(--t) both;
+    }
+
+    .producto.k0 { --t: 300ms; }
+    .producto.k1 { --t: 900ms; }
+    .producto.k2 { --t: 1500ms; }
+    .ticket__linea.r0 { --t: 450ms; }
+    .ticket__linea.r1 { --t: 1050ms; }
+    .ticket__linea.r2 { --t: 1650ms; }
+
+    .web[data-estado] .ticket__linea {
+      animation: sv-fila 380ms var(--ease-out) var(--t) both;
+    }
+
+    /* El total aparece con la tercera línea y suma las brochas: $1,680 → $1,875. */
+    .web[data-estado] .ticket__total {
+      --rueda-delay: 1800ms;
+      --rueda-dur: 700ms;
+      animation: sv-sube 380ms var(--ease-out) 1600ms both;
+    }
+
+    .web[data-estado] .ticket__cobrar {
+      animation: sv-toque-tecla 300ms var(--ease-out) 2750ms both;
+    }
+
+    .web[data-estado] .aviso {
+      animation: sv-sube 420ms var(--ease-out) 3000ms both;
+    }
+  }
+
+  @keyframes sv-avance {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes sv-fila {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+
+  @keyframes sv-barra-web {
+    from {
+      transform: scaleY(0.04);
+    }
+  }
+
+  @keyframes sv-alerta {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+
+  @keyframes sv-latido {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    45% {
+      transform: scale(1.1);
+    }
+  }
+
+  @keyframes sv-ruta {
+    from {
+      transform: scaleX(0);
+    }
+  }
+
+  @keyframes sv-ruta-mover {
+    from {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes sv-punto {
+    from {
+      opacity: 0.2;
+      transform: scale(0.6);
+    }
+  }
+
+  /* La ventana avanza y su contenido retrocede: la gráfica se revela sin moverse. */
+  @keyframes sv-revela {
+    from {
+      transform: translateX(-100%);
+    }
+  }
+
+  @keyframes sv-contra {
+    from {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes sv-toque-tecla {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    40% {
+      transform: scale(0.95);
+    }
+  }
+
+  @keyframes sv-toque {
+    0% {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    35% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.5);
+    }
+  }
+
+  @keyframes sv-sube {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+</style>

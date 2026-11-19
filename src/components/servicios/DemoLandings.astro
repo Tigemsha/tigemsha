@@ -1,0 +1,510 @@
+---
+/**
+ * Demostración 4 · Sitios y landings: el contador de landings publicadas
+ * (cuenta al entrar en pantalla) y una muestra en miniatura de la landing de
+ * gimnasios que pasa una vez por sus cuatro combinaciones de color (menos de
+ * 5 s) y después se deja manejar con las fichas de color.
+ *
+ * Los colores de la muestra son los temas reales de la landing 001
+ * (DIRECCION.md), en variables locales. Sin JS se ve el tema "rack" y el
+ * número final; las fichas, que necesitan JS, salen ocultas.
+ */
+import Glifo from './Glifo.astro';
+import Rueda from './Rueda.astro';
+import type { Textos } from './i18n';
+
+interface Props {
+  t: Textos;
+  total: number;
+  lang: 'es' | 'en';
+}
+
+const { t, total, lang } = Astro.props;
+const l = t.landings;
+const mu = l.muestra;
+const totalTexto = new Intl.NumberFormat(lang === 'en' ? 'en-US' : 'es-MX').format(Math.max(0, total));
+---
+
+<figure class="vm" data-anima data-temas>
+  <figcaption class="visually-hidden">{mu.descripcion}</figcaption>
+
+  <div class="vm__contador">
+    <p class="vm__cifra">
+      <Rueda valor={totalTexto} clase="vm__rueda" />
+      <span class="vm__etiqueta">{l.publicadas(total)}</span>
+    </p>
+    <p class="vm__precio">{l.precioDesde} <b>{l.precio}</b></p>
+    <p class="vm__diario"><Glifo n="calendar-blank" />{l.cadaDia}</p>
+  </div>
+
+  <div class="vm__muestra">
+    <div class="mini" data-vista aria-hidden="true">
+      {
+        mu.temas.map(([id]) => (
+          <div class={`mini__capa tema-${id}`}>
+            <div class="mini__nav">
+              <span class="mini__logo" />
+              <b>{mu.negocio}</b>
+              <span class="mini__menu">
+                <Glifo n="list" />
+              </span>
+            </div>
+            <div class="mini__hero">
+              <span class="mini__disco" />
+              <span class="mini__abierto">{mu.horario}</span>
+              <span class="mini__lema">{mu.lema}</span>
+            </div>
+            <span class="mini__cta">
+              <Glifo n="whatsapp" />
+              {mu.boton}
+            </span>
+            <div class="mini__planes">
+              {mu.planes.map(([plan, precio], i) => (
+                <span class={`mini__plan dp${i}`}>
+                  <b>{precio}</b>
+                  <small>{plan}</small>
+                </span>
+              ))}
+            </div>
+            <div class="mini__barra">
+              <Glifo n="whatsapp" />
+              <Glifo n="phone" />
+              <Glifo n="storefront" />
+            </div>
+          </div>
+        ))
+      }
+      <span class="mini__sello">{t.ejemplo}</span>
+    </div>
+
+    <div class="vm__fichas" data-fichas hidden>
+      <p class="vm__prueba" id="sv-prueba">{mu.prueba}</p>
+      <div class="fichas" role="group" aria-labelledby="sv-prueba">
+        {
+          mu.temas.map(([id, nombre]) => (
+            <button type="button" class="ficha" data-tema={id} aria-pressed="false">
+              <span class={`ficha__color c-${id}`} aria-hidden="true" />
+              {nombre}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</figure>
+
+<style>
+  .vm {
+    position: relative;
+    display: grid;
+    gap: var(--s-8);
+    margin: 0;
+    padding: var(--s-6);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: var(--e1);
+  }
+
+  .vm__contador {
+    display: grid;
+    gap: var(--s-3);
+    align-content: start;
+  }
+
+  .vm__cifra {
+    display: grid;
+    gap: var(--s-1);
+  }
+
+  .vm__cifra :global(.vm__rueda) {
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 2.5rem + 6vw, 7rem);
+    font-weight: 800;
+    font-stretch: var(--wdth-display);
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+  }
+
+  .vm__etiqueta {
+    font-size: var(--fs-title);
+    font-weight: 650;
+    line-height: 1.2;
+  }
+
+  .vm__precio {
+    color: var(--ink-2);
+    font-size: var(--fs-lead);
+  }
+
+  .vm__precio b {
+    color: var(--ink);
+    font-weight: 750;
+    font-stretch: 96%;
+  }
+
+  .vm__diario {
+    justify-self: start;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: 0.3125rem 0.75rem;
+    border-radius: var(--radius-pill);
+    background: var(--bg);
+    color: var(--ink-2);
+    font-size: var(--fs-label);
+    font-weight: 600;
+  }
+
+  .vm__muestra {
+    display: grid;
+    justify-items: center;
+    gap: var(--s-5);
+  }
+
+  /* ── Fichas de color ───────────────────────────────────────────────── */
+
+  .vm__fichas {
+    display: grid;
+    justify-items: center;
+    gap: var(--s-2);
+  }
+
+  .vm__fichas[hidden] {
+    display: none;
+  }
+
+  .vm__prueba {
+    color: var(--ink-2);
+    font-size: var(--fs-label);
+    font-weight: 600;
+  }
+
+  .fichas {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--s-2);
+  }
+
+  .ficha {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 44px;
+    padding: 0 var(--s-3) 0 var(--s-2);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    color: var(--ink);
+    font-size: var(--fs-label);
+    font-weight: 600;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform var(--dur-press) var(--ease-out);
+  }
+
+  .ficha:active {
+    transform: scale(0.97);
+  }
+
+  .ficha[aria-pressed='true'] {
+    border-color: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--ink);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .ficha:hover {
+      border-color: var(--ink);
+    }
+  }
+
+  .ficha__color {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgb(14 20 24 / 0.15);
+  }
+
+  .c-rack {
+    background: conic-gradient(#c8102e 0 25%, #0055a4 0 50%, #00843d 0 75%, #ffc72c 0);
+  }
+
+  .c-acero {
+    background: conic-gradient(#c2501b 0 50%, #1c1d1f 0);
+  }
+
+  .c-pino {
+    background: conic-gradient(#2e5b44 0 50%, #efe9e0 0);
+  }
+
+  .c-noche {
+    background: conic-gradient(#ff5a1f 0 50%, #0c0c0d 0);
+  }
+
+  /* ── Landing en miniatura ──────────────────────────────────────────── */
+
+  .mini {
+    position: relative;
+    display: grid;
+    width: 232px;
+    height: 392px;
+    overflow: hidden;
+    border-radius: 22px;
+    box-shadow:
+      0 0 0 1px rgb(14 20 24 / 0.1),
+      0 24px 48px -20px rgb(14 20 24 / 0.35);
+    font-size: 11px;
+    line-height: 1.3;
+  }
+
+  .mini__capa {
+    grid-area: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    background: var(--m-fondo);
+    color: var(--m-tinta);
+    opacity: 0;
+    transition: opacity 360ms ease;
+  }
+
+  .mini:not([data-tema-activo]) .tema-rack,
+  .mini[data-tema-activo='rack'] .tema-rack,
+  .mini[data-tema-activo='acero'] .tema-acero,
+  .mini[data-tema-activo='pino'] .tema-pino,
+  .mini[data-tema-activo='noche'] .tema-noche {
+    opacity: 1;
+  }
+
+  .tema-rack {
+    --m-fondo: #efefec;
+    --m-sup: #ffffff;
+    --m-tinta: #111111;
+    --m-accion: #c8102e;
+    --m-accion-ink: #ffffff;
+    --m-hero: #111111;
+    --m-hero-ink: #ffffff;
+    --d0: #0055a4;
+    --d0-ink: #ffffff;
+    --d1: #00843d;
+    --d1-ink: #ffffff;
+    --d2: #ffc72c;
+    --d2-ink: #111111;
+  }
+
+  .tema-acero {
+    --m-fondo: #eeeeeb;
+    --m-sup: #e1e1dd;
+    --m-tinta: #1c1d1f;
+    --m-accion: #b4471a;
+    --m-accion-ink: #ffffff;
+    --m-hero: #1c1d1f;
+    --m-hero-ink: #eeeeeb;
+    --d0: #b4471a;
+    --d0-ink: #ffffff;
+    --d1: #1c1d1f;
+    --d1-ink: #eeeeeb;
+    --d2: #e1e1dd;
+    --d2-ink: #1c1d1f;
+  }
+
+  .tema-pino {
+    --m-fondo: #efe9e0;
+    --m-sup: #e2d9cb;
+    --m-tinta: #22261f;
+    --m-accion: #2e5b44;
+    --m-accion-ink: #ffffff;
+    --m-hero: #22261f;
+    --m-hero-ink: #efe9e0;
+    --d0: #2e5b44;
+    --d0-ink: #ffffff;
+    --d1: #22261f;
+    --d1-ink: #efe9e0;
+    --d2: #e2d9cb;
+    --d2-ink: #22261f;
+  }
+
+  .tema-noche {
+    --m-fondo: #0c0c0d;
+    --m-sup: #1b1b1e;
+    --m-tinta: #f2f2f0;
+    --m-accion: #ff5a1f;
+    --m-accion-ink: #0c0c0d;
+    --m-hero: #1b1b1e;
+    --m-hero-ink: #f2f2f0;
+    --d0: #ff5a1f;
+    --d0-ink: #0c0c0d;
+    --d1: #f2f2f0;
+    --d1-ink: #0c0c0d;
+    --d2: #3a3a3f;
+    --d2-ink: #f2f2f0;
+  }
+
+  .mini__nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 4px;
+    font-size: 12px;
+  }
+
+  .mini__logo {
+    width: 18px;
+    height: 18px;
+    border: 4px solid var(--m-accion);
+    border-radius: 50%;
+  }
+
+  .mini__menu {
+    margin-left: auto;
+    font-size: 16px;
+  }
+
+  .mini__hero {
+    position: relative;
+    display: grid;
+    align-content: end;
+    gap: 6px;
+    height: 150px;
+    overflow: hidden;
+    padding: 14px;
+    border-radius: 14px;
+    background: var(--m-hero);
+    color: var(--m-hero-ink);
+  }
+
+  /* Un disco de pesas, el motivo de la landing de gimnasios. */
+  .mini__disco {
+    position: absolute;
+    top: -38px;
+    right: -38px;
+    width: 140px;
+    height: 140px;
+    border: 26px solid var(--m-accion);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 10px var(--m-hero);
+    opacity: 0.9;
+  }
+
+  .mini__abierto {
+    position: relative;
+    justify-self: start;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--m-fondo);
+    color: var(--m-tinta);
+    font-size: 9.5px;
+    font-weight: 700;
+  }
+
+  .mini__lema {
+    position: relative;
+    max-width: 9em;
+    font-size: 21px;
+    font-weight: 800;
+    font-stretch: 112%;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .mini__cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 36px;
+    border-radius: 10px;
+    background: var(--m-accion);
+    color: var(--m-accion-ink);
+    font-size: 11.5px;
+    font-weight: 750;
+  }
+
+  .mini__planes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .mini__plan {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 5px rgb(0 0 0 / 0.14);
+    line-height: 1.1;
+  }
+
+  .mini__plan b {
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .mini__plan small {
+    font-size: 8.5px;
+  }
+
+  .dp0 {
+    background: var(--d0);
+    color: var(--d0-ink);
+  }
+
+  .dp1 {
+    background: var(--d1);
+    color: var(--d1-ink);
+  }
+
+  .dp2 {
+    background: var(--d2);
+    color: var(--d2-ink);
+  }
+
+  .mini__barra {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    justify-items: center;
+    margin: auto -12px -12px;
+    padding: 10px 12px;
+    border-top: 1px solid rgb(127 127 127 / 0.25);
+    background: var(--m-sup);
+    font-size: 16px;
+  }
+
+  .mini__sello {
+    position: absolute;
+    top: 13px;
+    right: 40px;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--sello-bg);
+    color: var(--sello-ink);
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mini__capa {
+      transition-duration: 120ms;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .vm[data-estado] .vm__cifra {
+      --rueda-dur: 1400ms;
+      --rueda-delay: 150ms;
+    }
+  }
+
+  @container demo (min-width: 35rem) {
+    .vm {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: var(--s-6) var(--s-8);
+      padding: var(--s-8);
+    }
+  }
+</style>
