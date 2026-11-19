@@ -1,0 +1,92 @@
+[
+  {
+    "orden": 2,
+    "slug": "clinicas-dentales",
+    "nombre": "Clínicas dentales",
+    "nombre_en": "Dental clinics",
+    "familia": "salud",
+    "palabras_clave": [
+      "dentista",
+      "dental",
+      "ortodoncia",
+      "muelas"
+    ],
+    "palabras_clave_en": [
+      "dentist",
+      "dental",
+      "orthodontics"
+    ]
+  },
+  {
+    "orden": 3,
+    "slug": "medicina-estetica",
+    "nombre": "Clínicas de medicina estética",
+    "nombre_en": "Medical aesthetics clinics",
+    "familia": "belleza",
+    "palabras_clave": [
+      "estetica",
+      "botox",
+      "facial",
+      "laser"
+    ],
+    "palabras_clave_en": [
+      "aesthetics",
+      "botox",
+      "med spa"
+    ]
+  },
+  {
+    "orden": 4,
+    "slug": "veterinarias",
+    "nombre": "Veterinarias",
+    "nombre_en": "Veterinary clinics",
+    "familia": "salud",
+    "palabras_clave": [
+      "veterinario",
+      "mascotas",
+      "perros",
+      "gatos"
+    ],
+    "palabras_clave_en": [
+      "vet",
+      "pets",
+      "animal hospital"
+    ]
+  },
+  {
+    "orden": 5,
+    "slug": "colegios",
+    "nombre": "Colegios privados",
+    "nombre_en": "Private schools",
+    "familia": "educacion",
+    "palabras_clave": [
+      "escuela",
+      "primaria",
+      "secundaria",
+      "kinder"
+    ],
+    "palabras_clave_en": [
+      "school",
+      "academy"
+    ]
+  },
+  {
+    "orden": 6,
+    "slug": "inmobiliarias",
+    "nombre": "Inmobiliarias y asesores inmobiliarios",
+    "nombre_en": "Real estate agencies",
+    "familia": "hogar",
+    "palabras_clave": [
+      "inmobiliaria",
+      "bienes raices",
+      "casas",
+      "departamentos",
+      "renta"
+    ],
+    "palabras_clave_en": [
+      "real estate",
+      "realtor",
+      "homes"
+    ]
+  }
+]

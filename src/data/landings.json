@@ -4,6 +4,7 @@
     "slug": "gimnasios",
     "giro": "Gimnasios",
     "nombre": "El rack de discos",
+    "familia": "fitness",
     "fecha": "2026-11-18",
     "precio_desde": 2500,
     "mantenimiento_mes": 350,
@@ -30,6 +31,18 @@
       "Colores y tema",
       "Datos del aviso de privacidad"
     ],
+    "palabras_clave": [
+      "gym",
+      "gimnasio",
+      "crossfit",
+      "box",
+      "funcional",
+      "pesas",
+      "fitness",
+      "entrenamiento",
+      "pilates",
+      "cycling"
+    ],
     "plazo": "3 a 5 días hábiles",
     "tema_por_defecto": "rack",
     "temas": [
@@ -40,7 +53,8 @@
         "superficie": "#FFFFFF",
         "tinta": "#111111",
         "acento": "#C8102E",
-        "texto_acento": "#FFFFFF"
+        "texto_acento": "#FFFFFF",
+        "nombre_en": "Rack"
       },
       {
         "id": "acero",
@@ -49,7 +63,8 @@
         "superficie": "#E1E1DD",
         "tinta": "#1C1D1F",
         "acento": "#C2501B",
-        "texto_acento": "#FFFFFF"
+        "texto_acento": "#FFFFFF",
+        "nombre_en": "Steel"
       },
       {
         "id": "pino",
@@ -58,7 +73,8 @@
         "superficie": "#E2D9CB",
         "tinta": "#22261F",
         "acento": "#2E5B44",
-        "texto_acento": "#FFFFFF"
+        "texto_acento": "#FFFFFF",
+        "nombre_en": "Pine"
       },
       {
         "id": "noche",
@@ -67,7 +83,8 @@
         "superficie": "#18181B",
         "tinta": "#F5F5F4",
         "acento": "#FF5A1F",
-        "texto_acento": "#0C0C0D"
+        "texto_acento": "#0C0C0D",
+        "nombre_en": "Night"
       }
     ],
     "captura_movil": "src/assets/landings/gimnasios/movil.png",
@@ -75,6 +92,42 @@
     "ficha_tecnica": {
       "peso_kb": 270,
       "lighthouse_movil": 98
+    },
+    "en": {
+      "giro": "Gyms",
+      "nombre": "The plate rack",
+      "resumen": "For gyms, boxes and studios. Each plan is a weight plate on the rack and opens WhatsApp with the plan already written.",
+      "para": "Independent gyms, functional training boxes, and pilates or cycling studios.",
+      "plazo": "3 to 5 business days",
+      "incluye": [
+        "Plans as plates on the rack; each one opens WhatsApp with the plan already written",
+        "Schedule as a workout sheet, with today highlighted",
+        "Open or closed notice calculated from your hours",
+        "Sticky bar on mobile: WhatsApp, call and directions",
+        "Tour with photos and video of your gym",
+        "FAQ and privacy notice",
+        "Four color schemes or your brand colors"
+      ],
+      "editable": [
+        "Name, logo and neighborhood",
+        "Plans and prices",
+        "Hours and classes",
+        "Address and directions",
+        "WhatsApp and phone",
+        "Photos and video",
+        "Coaches",
+        "FAQ",
+        "Colors and theme",
+        "Privacy notice details"
+      ],
+      "palabras_clave": [
+        "gym",
+        "fitness center",
+        "crossfit",
+        "box",
+        "weights",
+        "training"
+      ]
     }
   }
 ]

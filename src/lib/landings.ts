@@ -3,10 +3,17 @@
  * y lo convierte en el modelo que usan las páginas: el tema por defecto, las
  * capturas ya importadas (astro:assets) y las rutas que salen del slug. Si algo
  * no cumple (campos, rutas de captura, contraste AA de un tema), el build falla.
+ *
+ * Prueba de escala: con TGM_LANDINGS=<ruta a un JSON> el build lee ese archivo
+ * en lugar de landings.json (lo genera `npm run prueba:datos`, con 60 landings
+ * ficticias, en .prueba/, que no se sube ni se publica).
  */
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import type { ImageMetadata } from 'astro';
 import { z } from 'astro/zod';
-import datos from '../data/landings.json';
+import datosReales from '../data/landings.json';
+import { type Idioma, rutaFicha } from '../i18n';
 import { AA_TEXTO, contraste } from './contraste';
 
 const capturas = import.meta.glob<{ default: ImageMetadata }>(
@@ -14,8 +21,22 @@ const capturas = import.meta.glob<{ default: ImageMetadata }>(
   { eager: true },
 );
 
+/** Familias de giros para los filtros de /landings. Las etiquetas viven en i18n. */
+export const FAMILIAS = [
+  'fitness',
+  'salud',
+  'belleza',
+  'educacion',
+  'servicios',
+  'hogar',
+  'eventos',
+  'hospedaje',
+] as const;
+export type Familia = (typeof FAMILIAS)[number];
+
 const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Usa un color hex de 6 dígitos (#RRGGBB)');
 const id = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Solo minúsculas, números y guiones');
+const palabras = z.array(z.string().min(1).max(40)).max(24);
 
 /** Pares texto/fondo que deben pasar AA en cada tema. */
 const PARES_AA = [
@@ -28,6 +49,7 @@ const esquemaTema = z
   .object({
     id,
     nombre: z.string().min(1).max(24),
+    nombre_en: z.string().min(1).max(24).optional(),
     fondo: hex,
     superficie: hex,
     tinta: hex,
@@ -56,12 +78,25 @@ const captura = z.string().transform((ruta, ctx) => {
   return imagen;
 });
 
+/** Textos en inglés de la ficha (las demos siguen en español). */
+const esquemaIngles = z.object({
+  giro: z.string().min(1).max(40),
+  nombre: z.string().min(1).max(40),
+  resumen: z.string().min(1).max(200),
+  para: z.string().min(1).max(200),
+  plazo: z.string().min(1).max(40).optional(),
+  incluye: z.array(z.string().min(1)).min(1).max(10),
+  editable: z.array(z.string().min(1)).min(1).max(16),
+  palabras_clave: palabras,
+});
+
 const esquemaLanding = z
   .object({
-    codigo: z.string().regex(/^TGM-\d{3}$/, 'El código va como TGM-001'),
+    codigo: z.string().regex(/^TGM-\d{3,4}$/, 'El código va como TGM-001'),
     slug: id,
     giro: z.string().min(1).max(40),
     nombre: z.string().min(1).max(40),
+    familia: z.enum(FAMILIAS),
     fecha: z.iso.date(),
     precio_desde: z.number().int().positive(),
     mantenimiento_mes: z.number().int().nonnegative(),
@@ -69,6 +104,8 @@ const esquemaLanding = z
     para: z.string().min(1).max(200),
     incluye: z.array(z.string().min(1)).min(1).max(10),
     editable: z.array(z.string().min(1)).min(1).max(16),
+    /** Sinónimos para el buscador ("gym", "box", "crossfit"…). */
+    palabras_clave: palabras,
     plazo: z.string().min(1).max(40),
     tema_por_defecto: id,
     temas: z.array(esquemaTema).min(1).max(6),
@@ -78,6 +115,7 @@ const esquemaLanding = z
       peso_kb: z.number().positive().nullable(),
       lighthouse_movil: z.number().int().min(0).max(100).nullable(),
     }),
+    en: esquemaIngles,
   })
   .superRefine((l, ctx) => {
     const ids = l.temas.map((t) => t.id);
@@ -98,9 +136,7 @@ const esquemaLanding = z
       ...l,
       tema,
       imagenes: { movil: captura_movil, escritorio: captura_escritorio },
-      /** Ficha en la vitrina. */
-      href: `/landings/${l.slug}/`,
-      /** Demo protegida (la publica scripts/collect-demos.mjs). */
+      /** Demo protegida (la publica scripts/collect-demos.mjs). Siempre en español. */
       demo: `/demos/${l.slug}/`,
     };
   });
@@ -119,21 +155,69 @@ const esquemaVitrina = z
   });
 
 export type Tema = z.output<typeof esquemaTema>;
-export type Landing = z.output<typeof esquemaLanding>;
+export type LandingDatos = z.output<typeof esquemaLanding>;
 
-function cargar(): Landing[] {
-  const resultado = esquemaVitrina.safeParse(datos);
+function leerDatos(): unknown {
+  const ruta = process.env.TGM_LANDINGS;
+  if (!ruta) return datosReales;
+  const absoluta = path.resolve(process.cwd(), ruta);
+  console.warn(`[vitrina] Usando datos de prueba: ${absoluta}`);
+  return JSON.parse(readFileSync(absoluta, 'utf8'));
+}
+
+function cargar(): LandingDatos[] {
+  const resultado = esquemaVitrina.safeParse(leerDatos());
   if (!resultado.success) {
     throw new Error(`src/data/landings.json no es válido:\n${z.prettifyError(resultado.error)}`);
   }
   return resultado.data.sort((a, b) => b.fecha.localeCompare(a.fecha) || b.codigo.localeCompare(a.codigo));
 }
 
-/** Todas las landings, de la más reciente a la más antigua. */
-export const landings: readonly Landing[] = cargar();
+const datos = cargar();
+
+/**
+ * Una landing ya en el idioma de la página: giro, nombre y textos de la ficha
+ * en inglés en /en/, y su ruta en ese idioma.
+ */
+export interface Landing extends LandingDatos {
+  idioma: Idioma;
+  href: string;
+  /** Nombre del tema en el idioma de la página. */
+  nombreTema: (tema: Tema) => string;
+}
+
+export function localizar(l: LandingDatos, idioma: Idioma): Landing {
+  const base = { ...l, idioma, href: rutaFicha(idioma, l.slug) };
+  if (idioma === 'es') return { ...base, nombreTema: (t) => t.nombre };
+  return {
+    ...base,
+    giro: l.en.giro,
+    nombre: l.en.nombre,
+    resumen: l.en.resumen,
+    para: l.en.para,
+    plazo: l.en.plazo ?? l.plazo,
+    incluye: l.en.incluye,
+    editable: l.en.editable,
+    nombreTema: (t) => t.nombre_en ?? t.nombre,
+  };
+}
+
+/** Todas las landings (datos crudos, de la más reciente a la más antigua). */
+export const todasLasLandings: readonly LandingDatos[] = datos;
+
+/** Las landings en un idioma, de la más reciente a la más antigua. */
+export function landingsEn(idioma: Idioma): Landing[] {
+  return datos.map((l) => localizar(l, idioma));
+}
 
 /** El precio más bajo de la vitrina, para el copy ("desde $2,500 MXN"). */
-export const precioMinimo = Math.min(...landings.map((l) => l.precio_desde));
+export const precioMinimo = Math.min(...datos.map((l) => l.precio_desde));
 
 /** El mantenimiento mensual más bajo de la vitrina. */
-export const mantenimientoMinimo = Math.min(...landings.map((l) => l.mantenimiento_mes));
+export const mantenimientoMinimo = Math.min(...datos.map((l) => l.mantenimiento_mes));
+
+/** Las familias que tienen al menos una landing, en el orden de FAMILIAS, con su cuenta. */
+export const familiasConLandings: { familia: Familia; total: number }[] = FAMILIAS.map((familia) => ({
+  familia,
+  total: datos.filter((l) => l.familia === familia).length,
+})).filter((f) => f.total > 0);
