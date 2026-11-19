@@ -1,0 +1,48 @@
+# Cabeceras de Netlify para tigemsha.com
+#
+# Netlify junta las cabeceras de todas las reglas que coinciden con una ruta.
+# Por eso la CSP del sitio NO va en /*: si llegara a /demos/*, bloquearía el
+# JS en línea de las demos. La CSP del sitio va en las rutas de Astro, una por
+# una, y /demos/* lleva solo la suya. Si agregas una página, agrégala aquí.
+
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Cross-Origin-Opener-Policy: same-origin
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: accelerometer=(), autoplay=(), camera=(), display-capture=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=(), browsing-topics=()
+
+# CSP del sitio: sin JS ni CSS en línea (astro.config.mjs no inlina nada).
+# connect-src 'self' permite que el visor revise si la demo existe;
+# frame-src 'self' permite el iframe de /demos/<slug>/.
+/
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
+/index.html
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
+/landings
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
+/landings/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
+/aviso-de-privacidad
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
+/aviso-de-privacidad/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
+/404.html
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
+
+# Archivos con hash: caché larga.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Vitrina: demos protegidas (ARQUITECTURA.md §Vitrina).
+# X-Frame-Options: SAMEORIGIN ya llega desde /*.
+# Las demos se ven en un iframe con sandbox sin allow-same-origin (origen opaco):
+# sus fuentes deben ir inlinadas en el build de demo, porque una petición de
+# fuente desde un origen opaco es CORS y aquí no se abre CORS.
+/demos/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+  Content-Security-Policy: frame-ancestors 'self'
+  Referrer-Policy: same-origin
+  Permissions-Policy: accelerometer=(), autoplay=(), camera=(), clipboard-read=(), clipboard-write=(), display-capture=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=(), browsing-topics=()
+  Cache-Control: public, max-age=0, must-revalidate
