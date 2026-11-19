@@ -5,6 +5,8 @@ node_modules/
 dist/
 .astro/
 .demos-dist/
+# Vitrina de prueba con 60 landings ficticias (npm run prueba:datos): no se publica
+.prueba/
 
 # Entorno
 .env

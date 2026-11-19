@@ -1,0 +1,742 @@
+---
+/**
+ * La vitrina con buscador. Dos modos con el mismo buscador, la misma tarjeta y
+ * el mismo estado vacío:
+ *   - carrusel (home): las más recientes en un carrusel arrastrable;
+ *   - rejilla (/landings): todas, con familias, orden, contador y "Mostrar más".
+ *
+ * Sin JS se ven las tarjetas del HTML y el buscador manda a /landings/?q=…
+ * Con JS (src/scripts/vitrina.ts) filtra en vivo: sin acentos ni mayúsculas y
+ * con los sinónimos de palabras_clave. Si hay más landings de las que trae el
+ * HTML, baja el índice compacto (/landings/indice.json) la primera vez que se
+ * busca.
+ */
+import proximasDatos from '../../data/proximas.json';
+import { type Idioma, ruta, rutaIndice, t } from '../../i18n';
+import { clavesDe, proximasDe } from '../../lib/indice';
+import { type Familia, familiasConLandings, type Landing, todasLasLandings } from '../../lib/landings';
+import { enlaceWhatsApp } from '../../lib/whatsapp';
+import Icono from '../Icono.astro';
+import Tigre from '../Tigre.astro';
+import TarjetaLanding from './TarjetaLanding.astro';
+
+interface Props {
+  idioma: Idioma;
+  modo: 'carrusel' | 'rejilla';
+  landings: Landing[];
+  /** Cuántas tarjetas trae el HTML (y cuántas agrega "Mostrar más"). */
+  limite: number;
+  /** id del campo de búsqueda (único por página). */
+  id: string;
+  /** Nivel de los títulos de las tarjetas. */
+  nivel?: 2 | 3;
+}
+
+const { idioma, modo, landings, limite, id, nivel = 3 } = Astro.props;
+const d = t(idioma);
+const total = landings.length;
+const enHtml = landings.slice(0, limite);
+const plazo = landings[0]?.plazo ?? '';
+const proximas = proximasDe(idioma);
+
+/** Las landings del HTML llevan lo que se busca, para filtrar sin bajar el índice. */
+const claves = (l: Landing) => {
+  const crudo = todasLasLandings.find((x) => x.slug === l.slug);
+  return crudo ? clavesDe(crudo, idioma) : { q: '', k: '' };
+};
+
+const estadoInicial =
+  modo === 'carrusel' ? d.vitrina.resumen(total, proximas.length) : d.landingsPagina.contador(total, total);
+
+// Textos para el navegador. Las funciones del diccionario se vuelven plantillas con {n}, {q}…
+const N = 99999;
+const M = 88888;
+const textos = {
+  resultados1: d.vitrina.resultados(1, '{q}'),
+  resultadosN: d.vitrina.resultados(N, '{q}').replace(String(N), '{n}'),
+  sinResultados: d.vitrina.sinResultados('{q}'),
+  resumen: estadoInicial,
+  contador1: d.landingsPagina.contador(1, 1),
+  contadorN: d.landingsPagina.contador(N, N).replaceAll(String(N), '{n}'),
+  contadorParcial: d.landingsPagina.contador(M, N).replace(String(M), '{n}').replace(String(N), '{total}'),
+  proxima: d.vitrina.vacioProxima('{g}'),
+  modelo: d.vitrina.modelo,
+  tarjetaAria: d.vitrina.tarjetaAria('{c}'),
+  waBusqueda: d.whatsapp.busqueda('{q}'),
+  waBase: enlaceWhatsApp(''),
+  proximas,
+};
+
+/** Los siguientes giros de la fila, al final del carrusel (se esconden mientras se busca). */
+const enCamino = proximasDatos.map((p) => ({
+  nombre: idioma === 'es' ? p.nombre : p.nombre_en,
+  familia: d.familias[p.familia as Familia] ?? '',
+}));
+const Titulo = nivel === 2 ? 'h2' : 'h3';
+
+const familias: { familia: Familia | ''; nombre: string; total: number }[] = [
+  { familia: '', nombre: d.landingsPagina.todas, total },
+  ...familiasConLandings.map((f) => ({ familia: f.familia, nombre: d.familias[f.familia], total: f.total })),
+];
+---
+
+<div
+  class:list={['vitrina', `vitrina--${modo}`]}
+  data-vitrina
+  data-modo={modo}
+  data-limite={limite}
+  data-total={total}
+  data-indice={rutaIndice(idioma)}
+>
+  <form class="buscador" role="search" action={ruta(idioma, 'landings')} method="get" data-vitrina-form>
+    <label class="visually-hidden" for={id}>{d.vitrina.buscarEtiqueta}</label>
+    <div class="buscador__campo">
+      <Icono nombre="magnifying-glass" clase="buscador__lupa" />
+      <input
+        id={id}
+        class="buscador__input"
+        type="search"
+        name="q"
+        placeholder={d.vitrina.placeholder}
+        autocomplete="off"
+        spellcheck="false"
+        enterkeyhint="search"
+        data-vitrina-q
+      />
+      <button class="btn btn--primario buscador__boton" type="submit">{d.vitrina.buscar}</button>
+    </div>
+
+    {
+      modo === 'rejilla' && (
+        <div class="filtros">
+          <div class="filtros__familias" role="group" aria-label={d.landingsPagina.filtros}>
+            {familias.map((f) => (
+              <button
+                type="button"
+                class="chip"
+                data-familia={f.familia}
+                aria-pressed={f.familia === '' ? 'true' : 'false'}
+              >
+                {f.nombre} <span class="chip__cuenta">{f.total}</span>
+              </button>
+            ))}
+          </div>
+          <label class="filtros__orden">
+            <span>{d.landingsPagina.orden}</span>
+            <select name="orden" data-vitrina-orden>
+              <option value="nuevas">{d.landingsPagina.ordenNuevas}</option>
+              <option value="az">{d.landingsPagina.ordenAZ}</option>
+            </select>
+          </label>
+        </div>
+      )
+    }
+  </form>
+
+  <div class="vitrina__barra">
+    <p class="vitrina__estado" role="status" data-vitrina-estado>{estadoInicial}</p>
+    {
+      modo === 'carrusel' && (
+        <div class="carrusel__controles" data-carrusel-controles>
+          <button class="boton-icono" type="button" data-carrusel-anterior aria-label={d.vitrina.anterior}>
+            <Icono nombre="caret-left" />
+          </button>
+          <button class="boton-icono" type="button" data-carrusel-siguiente aria-label={d.vitrina.siguiente}>
+            <Icono nombre="caret-right" />
+          </button>
+        </div>
+      )
+    }
+  </div>
+
+  <div
+    class:list={[modo === 'carrusel' ? 'carrusel' : 'rejilla']}
+    data-carrusel={modo === 'carrusel' ? '' : undefined}
+    data-vitrina-resultados
+  >
+    <div
+      class={modo === 'carrusel' ? 'carrusel__pista' : undefined}
+      tabindex={modo === 'carrusel' ? 0 : undefined}
+      role={modo === 'carrusel' ? 'region' : undefined}
+      aria-label={modo === 'carrusel' ? d.vitrina.carrusel : undefined}
+      data-carrusel-pista={modo === 'carrusel' ? '' : undefined}
+    >
+      <ul class:list={[modo === 'carrusel' ? 'carrusel__lista' : 'rejilla__lista']} data-vitrina-lista>
+        {
+          enHtml.map((landing, i) => {
+            const c = claves(landing);
+            return (
+              <li
+                class="vitrina__item"
+                data-slug={landing.slug}
+                data-q={c.q}
+                data-k={c.k}
+                data-f={landing.fecha}
+                data-m={landing.familia}
+                data-g={landing.giro}
+              >
+                <TarjetaLanding landing={landing} idioma={idioma} nivel={nivel} prioridad={modo === 'rejilla' && i < 2} />
+              </li>
+            );
+          })
+        }
+        {
+          modo === 'carrusel' &&
+            enCamino.map((p) => (
+              <li class="vitrina__item" data-vitrina-en-camino>
+                <article class="fantasma">
+                  <div class="fantasma__telefono" aria-hidden="true">
+                    <Tigre clase="fantasma__tigre" />
+                    <span class="fantasma__pronto">{d.vitrina.salePronto}</span>
+                  </div>
+                  <div class="fantasma__cuerpo">
+                    <Titulo class="fantasma__titulo">{p.nombre}</Titulo>
+                    <p class="fantasma__familia">
+                      {d.vitrina.salePronto} · {p.familia}
+                    </p>
+                    <a
+                      class="fantasma__cta"
+                      href={enlaceWhatsApp(d.whatsapp.proxima(p.nombre))}
+                      rel="noopener"
+                      aria-label={d.vitrina.proximaAria(p.nombre)}
+                    >
+                      <Icono nombre="bell" />
+                      {d.vitrina.proximaCta}
+                    </a>
+                  </div>
+                </article>
+              </li>
+            ))
+        }
+        {
+          modo === 'carrusel' && (
+            <li class="vitrina__item vitrina__item--pide" data-vitrina-pide>
+              <div class="pide">
+                <p class="pide__titulo">{d.vitrina.pideTitulo}</p>
+                <p class="pide__texto">{d.vitrina.pideTexto}</p>
+                <a class="btn btn--secundario pide__cta" href={enlaceWhatsApp(d.whatsapp.landings)} rel="noopener">
+                  <Icono nombre="whatsapp" />
+                  {d.vitrina.pideCta}
+                </a>
+              </div>
+            </li>
+          )
+        }
+      </ul>
+    </div>
+  </div>
+
+  {
+    modo === 'rejilla' && (
+      <div class="vitrina__mas">
+        <button class="btn btn--secundario" type="button" data-vitrina-mas hidden={total <= limite}>
+          {d.landingsPagina.mostrarMas}
+        </button>
+      </div>
+    )
+  }
+
+  <div class="vacio" data-vitrina-vacio hidden>
+    <p class="vacio__titulo">{d.vitrina.vacioTitulo}</p>
+    <p class="vacio__texto">{d.vitrina.vacioTexto(plazo)}</p>
+    <p class="vacio__proxima" data-vitrina-proxima hidden></p>
+    <a class="btn btn--primario" href={enlaceWhatsApp(d.whatsapp.landings)} rel="noopener" data-vitrina-pedir>
+      <Icono nombre="whatsapp" />
+      {d.vitrina.vacioCta}
+    </a>
+  </div>
+
+  <template data-vitrina-plantilla>
+    <li class="vitrina__item">
+      <TarjetaLanding idioma={idioma} nivel={nivel} />
+    </li>
+  </template>
+  <script type="application/json" data-vitrina-textos set:html={JSON.stringify(textos)} />
+</div>
+
+<script>
+  import { iniciarVitrinas } from '../../scripts/vitrina';
+  iniciarVitrinas();
+</script>
+
+<style>
+  /* minmax(0, 1fr): el carrusel no estira la columna con su ancho total. */
+  .vitrina {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-4);
+  }
+
+  .vitrina > * {
+    min-width: 0;
+  }
+
+  /* Buscador grande: el campo es la pieza principal de la vitrina. */
+  .buscador {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  .buscador__campo {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 4rem;
+    padding: var(--s-2) var(--s-3) var(--s-2) 0.875rem;
+    border: 2px solid var(--ink);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: var(--e1);
+    transition: border-color var(--dur-fast) ease;
+  }
+
+  .buscador__campo:focus-within {
+    border-color: var(--accent-ink);
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .buscador__campo :global(.buscador__lupa) {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: var(--s-2);
+    color: var(--ink-3);
+  }
+
+  /* En celular el texto de ejemplo cabe completo: letra angosta (16 px, sin zoom en iOS)
+     y sin botón; se busca mientras se escribe y Enter lleva a /landings. */
+  .buscador__input {
+    flex: 1;
+    min-width: 0;
+    min-height: 48px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 1rem;
+    font-stretch: 76%;
+    text-overflow: ellipsis;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .buscador__input::placeholder {
+    color: var(--ink-3);
+    opacity: 1;
+  }
+
+  .buscador__input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .buscador__boton {
+    display: none;
+    flex: none;
+  }
+
+  @media (min-width: 40rem) {
+    .buscador__campo {
+      min-height: 4.5rem;
+      padding: var(--s-2) var(--s-2) var(--s-2) var(--s-5);
+    }
+
+    .buscador__campo :global(.buscador__lupa) {
+      width: 1.5rem;
+      height: 1.5rem;
+      margin-right: var(--s-3);
+    }
+
+    .buscador__input {
+      font-size: 1.25rem;
+      font-stretch: 100%;
+    }
+
+    .buscador__boton {
+      display: inline-flex;
+      padding-inline: var(--s-5);
+    }
+  }
+
+  /* Familias y orden (/landings) */
+  .filtros {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3) var(--s-6);
+  }
+
+  .filtros__familias {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 44px;
+    padding: 0 var(--s-4);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      transform var(--dur-press) var(--ease-out),
+      background-color var(--dur-fast) ease,
+      border-color var(--dur-fast) ease,
+      color var(--dur-fast) ease;
+  }
+
+  .chip:active {
+    transform: scale(0.96);
+  }
+
+  .chip[aria-pressed='true'] {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .chip__cuenta {
+    font-stretch: var(--wdth-code);
+    font-variant-numeric: tabular-nums;
+    opacity: 0.75;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .chip[aria-pressed='false']:hover {
+      border-color: var(--ink);
+    }
+  }
+
+  .filtros__orden {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
+  .filtros__orden select {
+    min-height: 44px;
+    padding: 0 var(--s-3);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+  }
+
+  .vitrina__barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    min-height: 44px;
+  }
+
+  .vitrina__estado {
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
+  /* Carrusel: scroll nativo con snap; flechas, arrastre y teclado en src/scripts/carrusel.ts. */
+  .carrusel {
+    position: relative;
+  }
+
+  .carrusel__controles {
+    display: flex;
+    gap: var(--s-2);
+  }
+
+  .carrusel__controles[hidden] {
+    display: none;
+  }
+
+  /* La pista corre de orilla a orilla de la pantalla; la primera tarjeta queda en la línea del .wrap.
+     La orilla es la misma cuenta que el margen del .wrap (y la del scroll-padding, para el snap). */
+  .carrusel__pista {
+    --orilla: max(var(--gutter), (100vw - var(--container)) / 2);
+    margin-inline: calc(50% - 50vw);
+    padding: var(--s-2) var(--orilla) var(--s-6);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--orilla);
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .carrusel__pista::-webkit-scrollbar {
+    display: none;
+  }
+
+  .carrusel__pista:focus-visible {
+    outline-offset: -2px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .carrusel__pista {
+      scroll-behavior: smooth;
+    }
+  }
+
+  /* Mientras se arrastra con el mouse, sin snap ni suavizado: la pista sigue al puntero. */
+  .carrusel__pista[data-arrastrando] {
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .carrusel__pista {
+      cursor: grab;
+    }
+  }
+
+  .carrusel__lista {
+    display: flex;
+    gap: var(--s-4);
+    width: max-content;
+    padding: 0;
+    list-style: none;
+  }
+
+  .carrusel__lista > :global(.vitrina__item) {
+    flex: 0 0 min(16rem, 74vw);
+    scroll-snap-align: start;
+  }
+
+  @media (min-width: 64rem) {
+    .carrusel__lista > :global(.vitrina__item) {
+      flex-basis: 17.5rem;
+    }
+  }
+
+  /* Rejilla de /landings */
+  .rejilla__lista {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15.5rem), 1fr));
+    gap: var(--s-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (max-width: 29.99rem) {
+    .rejilla__lista {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--s-3);
+    }
+  }
+
+  .vitrina__mas {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--s-4);
+  }
+
+  /* Las tarjetas que entran al filtrar aparecen sin moverse (se busca muchas veces).
+     Solo después de que el script tomó la lista: al cargar, nada se desvanece. */
+  @media (prefers-reduced-motion: no-preference) {
+    [data-vitrina-lista][data-activa] > :global(.vitrina__item) {
+      transition: opacity var(--dur-base) var(--ease-out);
+    }
+
+    @starting-style {
+      [data-vitrina-lista][data-activa] > :global(.vitrina__item) {
+        opacity: 0;
+      }
+    }
+  }
+
+  /* Próximas: el teléfono vacío con "Sale pronto", del mismo tamaño que una tarjeta. */
+  .fantasma {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: var(--s-4);
+    height: 100%;
+    padding: var(--s-3) var(--s-3) var(--s-4);
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius-md);
+  }
+
+  .fantasma__telefono {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: var(--s-3);
+    aspect-ratio: 9 / 16;
+    border: 1px solid var(--line);
+    border-radius: calc(var(--radius-md) + 4px);
+    background: var(--surface);
+    color: var(--ink-3);
+  }
+
+  .fantasma :global(.fantasma__tigre) {
+    width: 3rem;
+    height: auto;
+    color: var(--line-strong);
+  }
+
+  .fantasma__pronto {
+    padding: 2px var(--s-3);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    color: var(--ink-2);
+    font-size: var(--fs-label);
+    font-weight: 700;
+  }
+
+  .fantasma__cuerpo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-1);
+    padding-inline: var(--s-1);
+  }
+
+  .fantasma__titulo {
+    font-size: var(--fs-title);
+    font-weight: 700;
+    font-stretch: 108%;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+  }
+
+  .fantasma__familia {
+    color: var(--ink-3);
+    font-size: var(--fs-label);
+  }
+
+  .fantasma__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    align-self: flex-start;
+    min-height: 44px;
+    margin-top: auto;
+    font-weight: 650;
+    transition: transform var(--dur-press) var(--ease-out);
+  }
+
+  .fantasma__cta:active {
+    transform: scale(0.97);
+  }
+
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .fantasma__cta:hover :global(.icono) {
+      animation: campana 600ms var(--ease-out);
+    }
+  }
+
+  @keyframes campana {
+    20% {
+      transform: rotate(14deg);
+    }
+    45% {
+      transform: rotate(-10deg);
+    }
+    70% {
+      transform: rotate(5deg);
+    }
+  }
+
+  /* Tarjeta "¿No está tu giro?" al final del carrusel */
+  .pide {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: var(--s-3);
+    height: 100%;
+    min-height: 24rem;
+    padding: var(--s-6);
+    border: 2px dashed var(--line-strong);
+    border-radius: var(--radius-md);
+  }
+
+  .pide__titulo {
+    font-family: var(--font-display);
+    font-size: var(--fs-title);
+    font-weight: 750;
+    font-stretch: 108%;
+    line-height: 1.15;
+  }
+
+  .pide__texto {
+    color: var(--ink-2);
+  }
+
+  .pide__cta {
+    margin-top: var(--s-2);
+    white-space: normal;
+  }
+
+  /* Estado vacío */
+  .vacio {
+    display: grid;
+    justify-items: start;
+    gap: var(--s-3);
+    padding: clamp(1.5rem, 1rem + 3vw, 3rem);
+    border: 2px dashed var(--line-strong);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+  }
+
+  .vacio[hidden] {
+    display: none;
+  }
+
+  .vacio__titulo {
+    font-family: var(--font-display);
+    font-size: var(--fs-headline);
+    font-weight: 750;
+    font-stretch: 108%;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    max-width: 20ch;
+  }
+
+  .vacio__texto,
+  .vacio__proxima {
+    color: var(--ink-2);
+    font-size: var(--fs-lead);
+    max-width: 48ch;
+  }
+
+  .vacio__proxima {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .vacio .btn {
+    margin-top: var(--s-2);
+    white-space: normal;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .vacio {
+      transition:
+        opacity var(--dur-state) var(--ease-out),
+        transform var(--dur-state) var(--ease-out);
+    }
+
+    @starting-style {
+      .vacio {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+    }
+  }
+</style>

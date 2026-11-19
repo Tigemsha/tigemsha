@@ -1,0 +1,249 @@
+---
+/**
+ * Tarjeta de la vitrina: el teléfono con la captura y su ficha corta. Toda la
+ * tarjeta es un solo enlace (enlace estirado desde el título), sin botones
+ * anidados. La usan el carrusel de la home, la rejilla de /landings y "Otras
+ * landings" de la ficha.
+ *
+ * Sin `landing` dibuja el molde vacío (dentro de un <template>) que
+ * src/scripts/vitrina.ts llena con el índice: así el HTML del servidor y el del
+ * navegador son el mismo.
+ */
+import { type Idioma, t } from '../../i18n';
+import { pesosMXN } from '../../lib/formato';
+import { ANCHOS_TARJETA, SIZES_TARJETA } from '../../lib/indice';
+import type { Landing } from '../../lib/landings';
+import CapturaMarcada from '../CapturaMarcada.astro';
+import FichaColor from '../FichaColor.astro';
+import Icono from '../Icono.astro';
+
+interface Props {
+  landing?: Landing;
+  idioma: Idioma;
+  nivel?: 2 | 3;
+  /** Solo para las primeras tarjetas visibles al cargar. */
+  prioridad?: boolean;
+}
+
+const { landing, idioma, nivel = 3, prioridad = false } = Astro.props;
+const d = t(idioma);
+const Titulo = nivel === 2 ? 'h2' : 'h3';
+const temas = landing ? landing.temas.slice(0, 4) : [undefined];
+---
+
+<article class="tarjeta">
+  <div class="tarjeta__telefono">
+    {
+      landing ? (
+        <CapturaMarcada
+          clase="tarjeta__captura"
+          landing={landing}
+          vista="movil"
+          anchos={ANCHOS_TARJETA}
+          sizes={SIZES_TARJETA}
+          prioridad={prioridad}
+        />
+      ) : (
+        <CapturaMarcada
+          clase="tarjeta__captura"
+          idioma={idioma}
+          vista="movil"
+          anchos={ANCHOS_TARJETA}
+          sizes={SIZES_TARJETA}
+        />
+      )
+    }
+  </div>
+  <div class="tarjeta__cuerpo">
+    <Titulo class="tarjeta__titulo">
+      <a class="tarjeta__enlace" href={landing?.href} data-t-enlace>
+        <span data-t-giro>{landing?.giro}</span><span class="visually-hidden" data-t-aria
+          >{landing ? d.vitrina.tarjetaAria(landing.codigo) : ''}</span
+        >
+      </a>
+    </Titulo>
+    <p class="tarjeta__meta">
+      <span class="codigo" data-t-codigo>{landing?.codigo}</span>
+      <span data-t-modelo>{landing ? `${d.vitrina.modelo} ${landing.nombre}` : ''}</span>
+    </p>
+    <ul class="tarjeta__temas" aria-label={d.vitrina.colores} data-t-temas>
+      {
+        temas.map((tema) => (
+          <li>
+            <FichaColor tema={tema} />
+          </li>
+        ))
+      }
+    </ul>
+    <p class="tarjeta__pie">
+      <span class="tarjeta__precio">
+        {d.vitrina.desde} <strong class="cifra" data-t-precio>{landing ? pesosMXN(landing.precio_desde) : ''}</strong> MXN
+      </span>
+      <span class="tarjeta__accion" aria-hidden="true">{d.vitrina.verDemo} <Icono nombre="arrow-right" /></span>
+    </p>
+  </div>
+</article>
+
+<style>
+  .tarjeta {
+    position: relative;
+    display: grid;
+    gap: var(--s-4);
+    height: 100%;
+    padding: var(--s-3) var(--s-3) var(--s-4);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    transition:
+      transform var(--dur-state) var(--ease-out),
+      border-color var(--dur-fast) ease;
+  }
+
+  /* La sombra vive en un pseudo-elemento y solo se anima su opacidad. */
+  .tarjeta::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    box-shadow: var(--e1);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--dur-state) var(--ease-out);
+  }
+
+  .tarjeta__telefono {
+    padding: 6px;
+    border-radius: calc(var(--radius-md) + 4px);
+    background: var(--ink);
+  }
+
+  .tarjeta :global(.tarjeta__captura) {
+    aspect-ratio: 9 / 16;
+    border-radius: calc(var(--radius-md) - 2px);
+  }
+
+  .tarjeta :global(.tarjeta__captura img) {
+    transition: transform 420ms var(--ease-out);
+  }
+
+  .tarjeta__cuerpo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    min-width: 0;
+    padding-inline: var(--s-1);
+  }
+
+  .tarjeta__titulo {
+    font-size: var(--fs-title);
+    font-weight: 700;
+    font-stretch: 108%;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+  }
+
+  .tarjeta__enlace {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .tarjeta__enlace::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: var(--radius-md);
+  }
+
+  .tarjeta__enlace:focus-visible {
+    outline: none;
+  }
+
+  .tarjeta:has(.tarjeta__enlace:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .tarjeta__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--s-3);
+    color: var(--ink-3);
+    font-size: var(--fs-label);
+  }
+
+  .tarjeta__meta .codigo {
+    color: var(--ink);
+    font-size: inherit;
+  }
+
+  .tarjeta__temas {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 2.5rem));
+    gap: var(--s-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .tarjeta__pie {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-1) var(--s-3);
+    margin-top: auto;
+    padding-top: var(--s-2);
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+  }
+
+  .tarjeta__precio strong {
+    color: var(--ink);
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .tarjeta__accion {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-1);
+    color: var(--accent-ink);
+    font-weight: 650;
+  }
+
+  .tarjeta__accion :global(.icono) {
+    transition: transform var(--dur-state) var(--ease-out);
+  }
+
+  .tarjeta:active {
+    transform: scale(0.98);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tarjeta:hover {
+      transform: translateY(-4px);
+      border-color: var(--line-strong);
+    }
+
+    .tarjeta:hover::after {
+      opacity: 1;
+    }
+
+    .tarjeta:hover :global(.tarjeta__captura img) {
+      transform: scale(1.03);
+    }
+
+    .tarjeta:hover .tarjeta__accion :global(.icono) {
+      transform: translateX(3px);
+    }
+  }
+
+  /* Con menos movimiento: sin desplazamientos; quedan el borde, la sombra y el press. */
+  @media (prefers-reduced-motion: reduce) {
+    .tarjeta:hover,
+    .tarjeta:hover :global(.tarjeta__captura img),
+    .tarjeta:hover .tarjeta__accion :global(.icono) {
+      transform: none;
+    }
+  }
+</style>

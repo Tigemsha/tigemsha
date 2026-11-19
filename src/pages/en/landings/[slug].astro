@@ -1,0 +1,16 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { type Landing, landingsEn } from '../../../lib/landings';
+import Ficha from '../../../vistas/Ficha.astro';
+
+export const getStaticPaths = (() =>
+  landingsEn('en').map((landing) => ({ params: { slug: landing.slug }, props: { landing } }))) satisfies GetStaticPaths;
+
+interface Props {
+  landing: Landing;
+}
+
+const { landing } = Astro.props;
+---
+
+<Ficha landing={landing} />

@@ -1,0 +1,517 @@
+---
+/**
+ * Ficha de una landing (/landings/<slug>/ y /en/landings/<slug>/): visor de la
+ * demo (siempre en español), precio, qué incluye, ficha técnica y preguntas.
+ */
+import Cierre from '../components/Cierre.astro';
+import Icono from '../components/Icono.astro';
+import Preguntas from '../components/Preguntas.astro';
+import VisorDemo from '../components/VisorDemo.astro';
+import TarjetaLanding from '../components/vitrina/TarjetaLanding.astro';
+import { sitio } from '../data/sitio';
+import { alternasFicha, ruta, t } from '../i18n';
+import { fechaLarga, pesosMXN } from '../lib/formato';
+import { type Landing, landingsEn, mantenimientoMinimo } from '../lib/landings';
+import { enlaceWhatsApp } from '../lib/whatsapp';
+import Base from '../layouts/Base.astro';
+
+interface Props {
+  landing: Landing;
+}
+
+const { landing } = Astro.props;
+const idioma = landing.idioma;
+const d = t(idioma);
+const f = d.ficha;
+const giro = landing.giro.toLowerCase();
+const url = new URL(landing.href, sitio.url).href;
+const laQuieroTexto = d.whatsapp.laQuiero(landing.codigo, landing.giro, url.replace(/^https:\/\//, ''));
+const laQuiero = enlaceWhatsApp(laQuieroTexto);
+const pregunta = enlaceWhatsApp(d.whatsapp.pregunta(landing.codigo, landing.giro));
+const otras = landingsEn(idioma)
+  .filter((l) => l.slug !== landing.slug)
+  .slice(0, 4);
+const precio = pesosMXN(landing.precio_desde);
+
+const medida = (valor: number | null, unidad: string) => (valor === null ? f.pendiente : `${valor} ${unidad}`);
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: `${f.titulo(giro)} · ${landing.nombre}`,
+  sku: landing.codigo,
+  description: landing.resumen,
+  url,
+  brand: { '@type': 'Organization', name: sitio.nombre, url: sitio.url },
+  offers: {
+    '@type': 'Offer',
+    price: landing.precio_desde,
+    priceCurrency: 'MXN',
+    availability: 'https://schema.org/InStock',
+    url,
+  },
+};
+---
+
+<Base
+  idioma={idioma}
+  titulo={f.tituloPagina(giro, landing.codigo)}
+  descripcion={f.descripcion(landing.resumen, precio)}
+  alternas={alternasFicha(landing.slug)}
+  schema={schema}
+  flotante={false}
+>
+  <div class="wrap ficha">
+    <nav class="migas" aria-label={f.migas}>
+      <ol>
+        <li><a href={ruta(idioma, 'landings')}>{d.landingsPagina.titulo}</a></li>
+        <li aria-current="page">{landing.giro}</li>
+      </ol>
+    </nav>
+
+    <header class="ficha__cabeza">
+      <h1 class="display ficha__titulo entra-1">{f.titulo(giro)}</h1>
+      <p class="ficha__meta entra-2">
+        <span class="codigo">{landing.codigo}</span>
+        <span>{f.modelo} {landing.nombre}</span>
+        <span>{f.publicada} <time datetime={landing.fecha}>{fechaLarga(landing.fecha, idioma)}</time></span>
+      </p>
+      <p class="entrada ficha__resumen entra-2">{landing.resumen}</p>
+      {idioma !== 'es' && <p class="ficha__idioma entra-2">{f.demoEnEspanol}</p>}
+    </header>
+
+    <section class="ficha__demo entra-4" aria-label={f.demoAria}>
+      <VisorDemo landing={landing} />
+    </section>
+
+    <aside class="ficha__compra" aria-labelledby="compra-titulo">
+      <div class="compra-caja">
+        <h2 id="compra-titulo" class="visually-hidden">{f.precioTitulo}</h2>
+        <p class="compra-caja__precio">
+          <span>{f.desde}</span>
+          <strong class="cifra">{precio}</strong>
+          <span>MXN</span>
+        </p>
+        <p class="compra-caja__mantenimiento">
+          {f.mantenimiento} <span class="cifra">{pesosMXN(landing.mantenimiento_mes)}</span>{' '}{f.alMes}
+        </p>
+        <div class="compra-caja__acciones">
+          <a class="btn btn--primario" href={laQuiero} rel="noopener">
+            <Icono nombre="whatsapp" />
+            {f.laQuiero}
+          </a>
+          <a class="btn btn--secundario" href={pregunta} rel="noopener">{f.pregunta}</a>
+        </div>
+        <dl class="compra-caja__datos">
+          <div>
+            <dt>{f.plazo}</dt>
+            <dd>{landing.plazo} {f.plazoSufijo}</dd>
+          </div>
+          <div>
+            <dt>{f.para}</dt>
+            <dd>{landing.para}</dd>
+          </div>
+        </dl>
+        <h3 class="compra-caja__subtitulo">{f.incluye}</h3>
+        <ul class="lista-check">
+          {
+            landing.incluye.map((item) => (
+              <li>
+                <Icono nombre="check" />
+                <span>{item}</span>
+              </li>
+            ))
+          }
+          <li><Icono nombre="check" /><span>{f.codigoTuyo}</span></li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <section class="seccion tecnica" aria-labelledby="tecnica-titulo">
+    <div class="wrap">
+      <div class="seccion__cabeza revela">
+        <h2 id="tecnica-titulo" class="titulo-seccion">{f.tecnica}</h2>
+        <p>{f.tecnicaTexto}</p>
+      </div>
+      <div class="tecnica__rejilla revela">
+        <div>
+          <h3 class="titulo">{f.editable}</h3>
+          <ul class="tecnica__lista">
+            {landing.editable.map((campo) => <li>{campo}</li>)}
+          </ul>
+        </div>
+        <div>
+          <h3 class="titulo">{f.datos}</h3>
+          <dl class="tecnica__datos">
+            <div>
+              <dt>{f.peso}</dt>
+              <dd>{medida(landing.ficha_tecnica.peso_kb, 'KB')}</dd>
+            </div>
+            <div>
+              <dt>{f.lighthouse}</dt>
+              <dd>{medida(landing.ficha_tecnica.lighthouse_movil, f.deCien)}</dd>
+            </div>
+            <div>
+              <dt>{f.tecnologia}</dt>
+              <dd>{f.tecnologiaValor}</dd>
+            </div>
+            <div>
+              <dt>{f.hosting}</dt>
+              <dd>{f.hostingValor}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion ficha-preguntas" aria-labelledby="ficha-preguntas-titulo">
+    <div class="wrap ficha-preguntas__rejilla">
+      <h2 id="ficha-preguntas-titulo" class="titulo-seccion">{d.preguntas.titulo}</h2>
+      <Preguntas preguntas={d.preguntas.landing(landing.plazo, pesosMXN(mantenimientoMinimo))} />
+    </div>
+  </section>
+
+  {
+    otras.length > 0 && (
+      <section class="seccion otras" aria-labelledby="otras-titulo">
+        <div class="wrap">
+          <div class="seccion__cabeza">
+            <h2 id="otras-titulo" class="titulo-seccion">{f.otras}</h2>
+          </div>
+          <ul class="otras__tarjetas revela">
+            {otras.map((l) => (
+              <li>
+                <TarjetaLanding landing={l} idioma={idioma} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <Cierre idioma={idioma} titulo={f.cierreTitulo} texto={f.cierreTexto(landing.codigo)} mensaje={laQuieroTexto} />
+
+  <div class="barra-compra" aria-label={f.barraAria} role="region">
+    <p class="barra-compra__precio">
+      <span class="codigo">{landing.codigo}</span>
+      <span>{f.desde} <strong class="cifra">{precio}</strong> MXN</span>
+    </p>
+    <a class="btn btn--primario" href={laQuiero} rel="noopener"><Icono nombre="whatsapp" /> {f.laQuieroCorto}</a>
+  </div>
+</Base>
+
+<style>
+  .ficha {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-8);
+    padding-block: var(--s-6) var(--section-y);
+  }
+
+  .migas ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    padding: 0;
+    list-style: none;
+    font-size: 0.9375rem;
+    color: var(--ink-3);
+  }
+
+  .migas li + li::before {
+    content: '/';
+    margin-right: var(--s-2);
+    color: var(--line-strong);
+  }
+
+  .migas a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .migas [aria-current='page'] {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .ficha__cabeza {
+    display: grid;
+    gap: var(--s-4);
+    margin-top: calc(var(--s-6) * -1);
+  }
+
+  .ficha__titulo {
+    font-size: clamp(2.25rem, 1.4rem + 3.2vw, 4rem);
+  }
+
+  .ficha__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--s-4);
+    color: var(--ink-3);
+    font-size: 0.9375rem;
+  }
+
+  .ficha__meta .codigo {
+    color: var(--ink);
+    font-size: inherit;
+  }
+
+  .ficha__resumen {
+    max-width: 52ch;
+  }
+
+  .ficha__idioma {
+    color: var(--ink-3);
+    font-size: 0.9375rem;
+  }
+
+  .ficha__demo {
+    min-width: 0;
+  }
+
+  .compra-caja {
+    display: grid;
+    gap: var(--s-4);
+    padding: var(--s-6);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+  }
+
+  .compra-caja__precio {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-2);
+    color: var(--ink-2);
+  }
+
+  .compra-caja__precio strong {
+    color: var(--ink);
+    font-size: clamp(2.25rem, 1.8rem + 1.6vw, 3rem);
+    font-weight: 750;
+    line-height: 1;
+  }
+
+  .compra-caja__mantenimiento {
+    margin-top: calc(var(--s-2) * -1);
+    color: var(--ink-3);
+    font-size: 0.9375rem;
+  }
+
+  .compra-caja__acciones {
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .compra-caja__acciones .btn {
+    white-space: normal;
+    text-align: center;
+  }
+
+  .compra-caja__datos {
+    display: grid;
+    gap: var(--s-3);
+    padding-block: var(--s-4);
+    border-block: 1px solid var(--line);
+  }
+
+  .compra-caja__datos dt {
+    color: var(--ink-3);
+    font-size: var(--fs-label);
+    font-weight: 600;
+  }
+
+  .compra-caja__datos dd {
+    margin: 0;
+    color: var(--ink);
+    font-size: 0.9375rem;
+  }
+
+  .compra-caja__subtitulo {
+    font-size: 1.0625rem;
+    font-weight: 700;
+  }
+
+  .lista-check {
+    display: grid;
+    gap: var(--s-2);
+    padding: 0;
+    list-style: none;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .lista-check li {
+    display: flex;
+    gap: var(--s-2);
+    align-items: flex-start;
+  }
+
+  .lista-check :global(.icono) {
+    margin-top: 0.15em;
+    color: var(--accent-ink);
+  }
+
+  @media (min-width: 64rem) {
+    .ficha {
+      grid-template-columns: minmax(0, 1fr) 22rem;
+      column-gap: var(--s-8);
+      row-gap: var(--s-6);
+      align-items: start;
+    }
+
+    .migas,
+    .ficha__cabeza {
+      grid-column: 1 / -1;
+    }
+
+    .ficha__demo {
+      grid-column: 1;
+    }
+
+    .ficha__compra {
+      grid-column: 2;
+      grid-row: 3 / span 2;
+      position: sticky;
+      top: var(--s-6);
+    }
+  }
+
+  /* Ficha técnica */
+  .tecnica {
+    border-block: 1px solid var(--line);
+    background: var(--surface);
+  }
+
+  .tecnica__rejilla {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-10);
+  }
+
+  .tecnica__rejilla h3 {
+    margin-bottom: var(--s-4);
+  }
+
+  .tecnica__lista {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    gap: var(--s-2) var(--s-6);
+    padding: 0;
+    list-style: none;
+    color: var(--ink-2);
+  }
+
+  .tecnica__lista li {
+    padding-block: var(--s-2);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .tecnica__datos {
+    display: grid;
+    gap: 0;
+  }
+
+  .tecnica__datos div {
+    display: grid;
+    gap: var(--s-1);
+    padding-block: var(--s-3);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .tecnica__datos dt {
+    color: var(--ink-3);
+    font-size: var(--fs-label);
+    font-weight: 600;
+  }
+
+  .tecnica__datos dd {
+    margin: 0;
+  }
+
+  @media (min-width: 64rem) {
+    .tecnica__rejilla {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: clamp(3rem, 1rem + 5vw, 6rem);
+    }
+  }
+
+  /* Preguntas */
+  .ficha-preguntas__rejilla {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-8);
+  }
+
+  @media (min-width: 64rem) {
+    .ficha-preguntas__rejilla {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+      gap: clamp(3rem, 1rem + 5vw, 6rem);
+      align-items: start;
+    }
+  }
+
+  .otras {
+    padding-top: 0;
+  }
+
+  .otras__tarjetas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15.5rem), 1fr));
+    gap: var(--s-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Barra fija de compra (celular y tablet) */
+  .barra-compra {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: var(--z-bar);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding: var(--s-3) var(--gutter) calc(var(--s-3) + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    background: var(--surface);
+    box-shadow: var(--e2);
+  }
+
+  .barra-compra__precio {
+    display: grid;
+    line-height: 1.3;
+    color: var(--ink-2);
+    font-size: 0.875rem;
+  }
+
+  .barra-compra__precio .codigo {
+    color: var(--ink);
+    font-size: 0.875rem;
+  }
+
+  .barra-compra__precio strong {
+    color: var(--ink);
+    font-size: 1.125rem;
+  }
+
+  /* La página reserva el alto de la barra para que no tape el pie. */
+  :global(body:has(.barra-compra)) {
+    padding-bottom: calc(4.75rem + env(safe-area-inset-bottom));
+  }
+
+  @media (min-width: 64rem) {
+    .barra-compra {
+      display: none;
+    }
+
+    :global(body:has(.barra-compra)) {
+      padding-bottom: 0;
+    }
+  }
+</style>

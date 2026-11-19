@@ -12,6 +12,9 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "preview:full": "node scripts/collect-demos.mjs --local && astro preview",
+    "sync-proximas": "node scripts/sync-proximas.mjs",
+    "build:prueba": "node scripts/vitrina-prueba.mjs && TGM_LANDINGS=.prueba/landings.json astro build --outDir .prueba/dist",
+    "preview:prueba": "astro preview --outDir .prueba/dist --port 4330",
     "collect-demos": "node scripts/collect-demos.mjs",
     "deploy:demos": "node scripts/collect-demos.mjs --estricto && cd .demos-dist && npx -y netlify-cli deploy --prod --no-build --dir=. --site 8333bdb3-9a84-41a4-bfb0-ece38c485182"
   },
