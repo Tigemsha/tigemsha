@@ -426,7 +426,7 @@ export const textos: Record<Idioma, Textos> = {
       solucion: {
         entrada: 'Lo que hacemos:',
         texto:
-          ' una landing lista para tu negocio, desde $2,500 MXN. Es una página que abre rápido en el celular, con tus precios, tu horario, cómo llegar y un botón que abre WhatsApp. Publicamos una nueva cada día para un giro distinto, y la ves funcionando antes de pagar.',
+          ' una landing lista para tu negocio, desde $2,500 MXN. Es una página que abre rápido en el celular, con tus precios, tu horario, cómo llegar y un botón que abre WhatsApp. Publicamos una nueva cada 2 días para un giro distinto, y la ves funcionando antes de pagar.',
       },
       pregunta: '¿Te pasa esto?',
       pista: 'Elige una de la vitrina o pídenos la de tu giro.',
@@ -437,7 +437,7 @@ export const textos: Record<Idioma, Textos> = {
       publicadas: (n) => (n === 1 ? 'landing publicada' : 'landings publicadas'),
       precioDesde: 'Lista para tu negocio desde',
       precio: '$2,500 MXN',
-      cadaDia: 'Una nueva cada día',
+      cadaDia: 'Una nueva cada 2 días',
       verLandings: 'Ver las landings',
       muestra: {
         titulo: 'Muestra: landing para gimnasios',
@@ -720,7 +720,7 @@ export const textos: Record<Idioma, Textos> = {
       solucion: {
         entrada: 'What we do:',
         texto:
-          ' a landing page ready for your business, from $2,500 MXN. It’s a page that loads fast on a phone, with your prices, your hours, directions and a button that opens WhatsApp. We publish a new one every day for a different kind of business, and you see it working before you pay.',
+          ' a landing page ready for your business, from $2,500 MXN. It’s a page that loads fast on a phone, with your prices, your hours, directions and a button that opens WhatsApp. We publish a new one every other day for a different kind of business, and you see it working before you pay.',
       },
       pregunta: 'Sound familiar?',
       pista: 'Pick one from the showcase or ask us for one for your kind of business.',
@@ -731,7 +731,7 @@ export const textos: Record<Idioma, Textos> = {
       publicadas: (n) => (n === 1 ? 'landing page published' : 'landing pages published'),
       precioDesde: 'Ready for your business from',
       precio: '$2,500 MXN',
-      cadaDia: 'A new one every day',
+      cadaDia: 'A new one every other day',
       verLandings: 'See the landing pages',
       muestra: {
         titulo: 'Sample: landing page for gyms',

@@ -151,7 +151,7 @@ export const es = {
 
   vitrina: {
     titulo: 'Landings listas para tu negocio.',
-    tenue: 'Una nueva cada día.',
+    tenue: 'Una nueva cada 2 días.',
     sub: (precio: string, plazo: string) =>
       `Las ves funcionando, eliges colores y la publicamos con tus datos en ${plazo}. Desde ${precio} MXN.`,
     buscarEtiqueta: 'Buscar una plantilla por giro',
@@ -197,7 +197,7 @@ export const es = {
     contador: (n: number, total: number) =>
       n === total ? `${total === 1 ? '1 landing' : `${total} landings`}` : `${n} de ${total} landings`,
     mostrarMas: 'Mostrar más',
-    unaNuevaCadaDia: 'Una nueva cada día',
+    unaNuevaCadaDia: 'Una nueva cada 2 días',
   },
 
   familias: {

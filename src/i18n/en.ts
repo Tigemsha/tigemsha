@@ -152,7 +152,7 @@ export const en: Diccionario = {
 
   vitrina: {
     titulo: 'Landing pages ready for your business.',
-    tenue: 'A new one every day.',
+    tenue: 'A new one every other day.',
     sub: (precio: string, plazo: string) =>
       `See them working, pick the colors and we publish it with your details in ${plazo}. From ${precio} MXN.`,
     buscarEtiqueta: 'Search templates by type of business',
@@ -200,7 +200,7 @@ export const en: Diccionario = {
         ? `${total === 1 ? '1 landing page' : `${total} landing pages`}`
         : `${n} of ${total} landing pages`,
     mostrarMas: 'Show more',
-    unaNuevaCadaDia: 'A new one every day',
+    unaNuevaCadaDia: 'A new one every other day',
   },
 
   familias: {
