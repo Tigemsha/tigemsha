@@ -1,29 +1,53 @@
 ---
-import { instagramUrl, sitio } from '../data/sitio';
+import { correoUrl, instagramUrl, tiktokUrl } from '../data/sitio';
+import { type Idioma, ruta, t } from '../i18n';
+import { whatsappDirecto } from '../lib/whatsapp';
+import Icono, { type NombreIcono } from './Icono.astro';
 import Tigre from './Tigre.astro';
 
+interface Props {
+  idioma: Idioma;
+}
+
+const { idioma } = Astro.props;
+const d = t(idioma);
+const inicio = ruta(idioma, 'inicio');
 const anio = new Date().getFullYear();
+
+const redes: { icono: NombreIcono; nombre: string; url: string }[] = [
+  { icono: 'instagram', nombre: d.pie.instagram, url: instagramUrl },
+  { icono: 'tiktok', nombre: d.pie.tiktok, url: tiktokUrl },
+  { icono: 'whatsapp', nombre: d.pie.whatsapp, url: whatsappDirecto },
+  { icono: 'envelope', nombre: d.pie.correo, url: correoUrl },
+];
 ---
 
 <footer class="pie tema-noche">
   <div class="wrap pie__fila">
-    <a class="pie__marca" href="/" aria-label="Tigemsha, ir al inicio">
+    <a class="pie__marca" href={inicio} aria-label={d.nav.inicioAria}>
       <Tigre clase="pie__tigre" />
       <span aria-hidden="true">Tigemsha</span>
     </a>
-    <nav aria-label="Pie de página">
+    <nav aria-label={d.pie.aria}>
       <ul class="pie__enlaces">
-        <li><a href="/landings/">Landings a la venta</a></li>
-        <li><a href="/#software">Software a medida</a></li>
-        <li><a href="/#preguntas">Preguntas frecuentes</a></li>
-        <li><a href={instagramUrl} rel="noopener">Instagram</a></li>
-        <li><a href="/aviso-de-privacidad/">Aviso de privacidad</a></li>
+        <li><a href={ruta(idioma, 'landings')}>{d.pie.enlaces.landings}</a></li>
+        <li><a href={`${inicio}#servicios`}>{d.pie.enlaces.servicios}</a></li>
+        <li><a href={`${inicio}#preguntas`}>{d.pie.enlaces.preguntas}</a></li>
+        <li><a href={ruta(idioma, 'aviso')}>{d.pie.enlaces.aviso}</a></li>
       </ul>
     </nav>
-    <p class="pie__legal">
-      © {anio} {sitio.nombre}. Las demos de la vitrina son muestras con marca de agua; prohibida su copia o
-      redistribución.
-    </p>
+    <ul class="pie__redes" aria-label={d.pie.redes}>
+      {
+        redes.map((r) => (
+          <li>
+            <a class="pie__red" href={r.url} rel="noopener" aria-label={r.nombre}>
+              <Icono nombre={r.icono} />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="pie__legal">{d.pie.legal(anio)}</p>
   </div>
 </footer>
 
@@ -77,15 +101,53 @@ const anio = new Date().getFullYear();
     color: var(--ink);
   }
 
+  .pie__redes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .pie__red {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    color: var(--ink);
+    transition:
+      transform var(--dur-press) var(--ease-out),
+      border-color var(--dur-fast) ease,
+      color var(--dur-fast) ease;
+  }
+
+  .pie__red :global(.icono) {
+    width: 1.375rem;
+    height: 1.375rem;
+  }
+
+  .pie__red:active {
+    transform: scale(0.94);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .pie__red:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+  }
+
   .pie__legal {
     max-width: 70ch;
   }
 
   @media (min-width: 64rem) {
     .pie__fila {
-      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-columns: auto minmax(0, 1fr) auto;
       align-items: center;
-      column-gap: var(--s-12);
+      column-gap: var(--s-10);
     }
 
     .pie__enlaces {

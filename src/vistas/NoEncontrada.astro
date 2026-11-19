@@ -1,0 +1,52 @@
+---
+import Tigre from '../components/Tigre.astro';
+import { type Idioma, ruta, t } from '../i18n';
+import { enlaceWhatsApp } from '../lib/whatsapp';
+import Base from '../layouts/Base.astro';
+
+interface Props {
+  idioma: Idioma;
+}
+
+const { idioma } = Astro.props;
+const d = t(idioma);
+const e = d.error404;
+---
+
+<Base idioma={idioma} titulo={e.titulo} descripcion={e.descripcion} noindex>
+  <section class="wrap error" aria-labelledby="error-titulo">
+    <Tigre clase="error__tigre entra-4" />
+    <h1 id="error-titulo" class="display error__titulo entra-1">{e.h1}</h1>
+    <p class="entrada entra-2">{e.texto}</p>
+    <div class="acciones entra-3">
+      <a class="btn btn--primario" href={ruta(idioma, 'landings')}>{e.landings}</a>
+      <a class="btn btn--secundario" href={ruta(idioma, 'inicio')}>{e.inicio}</a>
+    </div>
+    <p class="error__ayuda">
+      {e.ayuda} <a href={enlaceWhatsApp(d.whatsapp.cotizar)} rel="noopener">{e.ayudaEnlace}</a>.
+    </p>
+  </section>
+</Base>
+
+<style>
+  .error {
+    display: grid;
+    gap: var(--s-6);
+    justify-items: start;
+    padding-block: clamp(3rem, 2rem + 6vw, 7rem);
+  }
+
+  .error :global(.error__tigre) {
+    width: 4.5rem;
+    height: auto;
+    color: var(--accent);
+  }
+
+  .error__titulo {
+    max-width: 14ch;
+  }
+
+  .error__ayuda {
+    color: var(--ink-2);
+  }
+</style>

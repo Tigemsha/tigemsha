@@ -4,38 +4,68 @@ import '../styles/base.css';
 import fuenteArchivo from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
 import Cabecera from '../components/Cabecera.astro';
 import Pie from '../components/Pie.astro';
+import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
 import { sitio } from '../data/sitio';
+import { type Alternas, etiquetaLang, type Idioma, idiomas, localeOg, t } from '../i18n';
 
 interface Props {
+  idioma: Idioma;
   titulo: string;
   descripcion: string;
+  /** La misma página en cada idioma: hreflang y selector ES/EN. Sin ella (404), el selector lleva al inicio. */
+  alternas?: Alternas;
   /** Datos estructurados schema.org (JSON-LD). */
   schema?: Record<string, unknown> | Record<string, unknown>[];
   noindex?: boolean;
+  /** La cabecera en banda noche, sobre un hero oscuro (home). */
+  cabeceraNoche?: boolean;
+  /** Botón flotante de WhatsApp en celular. Las fichas no lo llevan: ya tienen su barra de compra. */
+  flotante?: boolean;
 }
 
-const { titulo, descripcion, schema, noindex = false } = Astro.props;
-const canonica = new URL(Astro.url.pathname, Astro.site ?? sitio.url).href;
-const imagenOg = new URL('/og.png', Astro.site ?? sitio.url).href;
+const {
+  idioma,
+  titulo,
+  descripcion,
+  alternas,
+  schema,
+  noindex = false,
+  cabeceraNoche = false,
+  flotante = true,
+} = Astro.props;
+const d = t(idioma);
+const base = Astro.site ?? sitio.url;
+const absoluta = (ruta: string) => new URL(ruta, base).href;
+const canonica = absoluta(Astro.url.pathname);
+const imagenOg = absoluta('/og.png');
 const tituloCompleto = titulo === sitio.nombre ? titulo : `${titulo} · ${sitio.nombre}`;
+const otroIdioma = idiomas.filter((i) => i !== idioma);
 ---
 
 <!doctype html>
-<html lang="es-MX">
+<html lang={etiquetaLang[idioma]}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{tituloCompleto}</title>
     <meta name="description" content={descripcion} />
     {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonica} />}
+    {
+      !noindex &&
+        alternas && [
+          ...idiomas.map((i) => <link rel="alternate" hreflang={etiquetaLang[i]} href={absoluta(alternas[i])} />),
+          <link rel="alternate" hreflang="x-default" href={absoluta(alternas.es)} />,
+        ]
+    }
     <link rel="preload" href={fuenteArchivo} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <meta name="theme-color" content="#f2f4f4" />
+    <meta name="theme-color" content={cabeceraNoche ? '#0e1418' : '#f2f4f4'} />
 
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="es_MX" />
+    <meta property="og:locale" content={localeOg[idioma]} />
+    {otroIdioma.map((i) => <meta property="og:locale:alternate" content={localeOg[i]} />)}
     <meta property="og:site_name" content={sitio.nombre} />
     <meta property="og:title" content={tituloCompleto} />
     <meta property="og:description" content={descripcion} />
@@ -43,17 +73,22 @@ const tituloCompleto = titulo === sitio.nombre ? titulo : `${titulo} · ${sitio.
     <meta property="og:image" content={imagenOg} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Tigemsha: software a la medida para empresas en México" />
+    <meta property="og:image:alt" content={d.meta.ogAlt} />
     <meta name="twitter:card" content="summary_large_image" />
 
     {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
   </head>
   <body>
-    <a class="saltar" href="#contenido">Saltar al contenido</a>
-    <Cabecera />
+    <a class="saltar" href="#contenido">{d.nav.saltar}</a>
+    <Cabecera idioma={idioma} alternas={alternas} noche={cabeceraNoche} />
     <main id="contenido" tabindex="-1">
       <slot />
     </main>
-    <Pie />
+    <Pie idioma={idioma} />
+    {flotante && <WhatsAppFlotante idioma={idioma} />}
+    <script>
+      import { iniciarRevelados } from '../scripts/revela';
+      iniciarRevelados();
+    </script>
   </body>
 </html>

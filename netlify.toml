@@ -17,3 +17,10 @@
   to = "https://tigemsha-demos.netlify.app/demos/:splat"
   status = 200
   force = true
+
+# 404 en inglés para lo que no existe bajo /en/ (sin force: las páginas que sí
+# existen se sirven normal). El resto usa /404.html, en español.
+[[redirects]]
+  from = "/en/*"
+  to = "/en/404/"
+  status = 404

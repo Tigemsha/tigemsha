@@ -1,21 +1,25 @@
 ---
+import Aviso from '../components/Aviso.astro';
 import { sitio } from '../data/sitio';
-import Base from '../layouts/Base.astro';
+import { alternasDe, t } from '../i18n';
 import { fechaLarga } from '../lib/formato';
-import { enlaceWhatsApp, mensajes } from '../lib/whatsapp';
+import { enlaceWhatsApp } from '../lib/whatsapp';
+import Base from '../layouts/Base.astro';
 
-const whatsapp = enlaceWhatsApp(mensajes.privacidad);
+const whatsapp = enlaceWhatsApp(t('es').whatsapp.privacidad);
 ---
 
 <Base
+  idioma="es"
   titulo="Aviso de privacidad"
   descripcion="Qué datos personales recaba Tigemsha, para qué los usa y cómo ejercer tus derechos ARCO conforme a la LFPDPPP."
+  alternas={alternasDe('aviso')}
 >
-  <article class="wrap aviso">
-    <header class="aviso__cabeza">
-      <h1 class="display aviso__titulo">Aviso de privacidad</h1>
+  <Aviso>
+    <header>
+      <h1 class="display">Aviso de privacidad</h1>
       <p class="aviso__fecha">
-        Última actualización: <time datetime={sitio.avisoActualizado}>{fechaLarga(sitio.avisoActualizado)}</time>
+        Última actualización: <time datetime={sitio.avisoActualizado}>{fechaLarga(sitio.avisoActualizado, 'es')}</time>
       </p>
       <p class="entrada">
         Este aviso explica qué datos personales recabamos, para qué los usamos y cómo puedes ejercer tus
@@ -47,8 +51,8 @@ const whatsapp = enlaceWhatsApp(mensajes.privacidad);
     <section aria-labelledby="datos">
       <h2 id="datos">Qué datos recabamos</h2>
       <p>
-        Este sitio no tiene formularios. Solo recabamos datos cuando tú nos escribes por WhatsApp o por
-        Instagram:
+        Este sitio no tiene formularios. Solo recabamos datos cuando tú nos escribes por WhatsApp, por
+        Instagram, por TikTok o por correo:
       </p>
       <ul>
         <li>Tu nombre y tu número de teléfono o usuario.</li>
@@ -84,8 +88,8 @@ const whatsapp = enlaceWhatsApp(mensajes.privacidad);
       <p>
         No transferimos tus datos a terceros, salvo cuando lo requiera una autoridad competente conforme a
         la ley. Para operar usamos proveedores que tratan datos por cuenta nuestra: WhatsApp e Instagram
-        (Meta) como canales de mensajes, y el servicio de hosting de este sitio y, si nos pides
-        publicarla, el de tu landing.
+        (Meta), TikTok y Gmail (Google) como canales de mensajes, y el servicio de hosting de este sitio
+        y, si nos pides publicarla, el de tu landing.
       </p>
     </section>
 
@@ -112,7 +116,8 @@ const whatsapp = enlaceWhatsApp(mensajes.privacidad);
       <h2 id="cookies">Cookies y rastreo</h2>
       <p>
         Este sitio y sus demos no usan cookies ni herramientas de analítica o publicidad. Los botones de
-        WhatsApp e Instagram te llevan a esas plataformas, que tienen sus propios avisos de privacidad.
+        WhatsApp, Instagram y TikTok te llevan a esas plataformas, que tienen sus propios avisos de
+        privacidad.
       </p>
     </section>
 
@@ -139,55 +144,5 @@ const whatsapp = enlaceWhatsApp(mensajes.privacidad);
         la Secretaría Anticorrupción y Buen Gobierno, autoridad garante conforme a la LFPDPPP.
       </p>
     </section>
-  </article>
+  </Aviso>
 </Base>
-
-<style>
-  .aviso {
-    display: grid;
-    gap: var(--s-10);
-    padding-block: clamp(2.5rem, 1.5rem + 4vw, 4.5rem) var(--section-y);
-    max-width: calc(var(--measure) + 2 * var(--gutter));
-  }
-
-  .aviso__cabeza {
-    display: grid;
-    gap: var(--s-4);
-  }
-
-  .aviso__titulo {
-    font-size: var(--fs-headline);
-  }
-
-  .aviso__fecha {
-    color: var(--ink-3);
-    font-size: 0.9375rem;
-  }
-
-  .aviso section {
-    display: grid;
-    gap: var(--s-3);
-  }
-
-  .aviso h2 {
-    font-size: var(--fs-title);
-    font-weight: 700;
-    font-stretch: 104%;
-    line-height: 1.2;
-  }
-
-  .aviso p,
-  .aviso li {
-    color: var(--ink-2);
-  }
-
-  .aviso ul {
-    display: grid;
-    gap: var(--s-1);
-    padding-left: 1.25rem;
-  }
-
-  .aviso li::marker {
-    color: var(--ink-3);
-  }
-</style>

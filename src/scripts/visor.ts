@@ -40,7 +40,35 @@ function presionar(botones: HTMLButtonElement[], clave: 'tema' | 'dispositivo', 
   }
 }
 
+interface Textos {
+  cargando: string;
+  sinDemo: string;
+  sinDemoTema: string;
+  conTema: string;
+  iframe: string;
+}
+
+/** Textos por idioma (VisorDemo.astro los pone en data-textos). */
+function leerTextos(raiz: HTMLElement): Textos {
+  const porDefecto: Textos = {
+    cargando: 'Cargando la demo en vivo…',
+    sinDemo: 'La demo en vivo se publica pronto. Mientras, mira la captura.',
+    sinDemoTema: 'La demo en vivo todavía no está publicada. {nombre} queda elegido.',
+    conTema: 'Demo con la combinación {nombre}.',
+    iframe: 'Demo en vivo de la landing {codigo}',
+  };
+  try {
+    return { ...porDefecto, ...(JSON.parse(raiz.dataset.textos ?? '{}') as Partial<Textos>) };
+  } catch {
+    return porDefecto;
+  }
+}
+
+const llenar = (plantilla: string, valores: Record<string, string>) =>
+  plantilla.replace(/\{(\w+)\}/g, (_, clave: string) => valores[clave] ?? '');
+
 function iniciar(raiz: HTMLElement): void {
+  const textos = leerTextos(raiz);
   const demo = raiz.dataset.demo;
   const codigo = raiz.dataset.codigo ?? '';
   const marco = raiz.querySelector<HTMLElement>('[data-visor-marco]');
@@ -74,14 +102,14 @@ function iniciar(raiz: HTMLElement): void {
     presionar(botonesTema, 'tema', id);
     const nombre = botonesTema.find((b) => b.dataset.tema === id)?.dataset.nombre ?? id;
     if (raiz.dataset.estado === 'sin-demo') {
-      aviso.textContent = `La demo en vivo todavía no está publicada. ${nombre} queda elegido.`;
+      aviso.textContent = llenar(textos.sinDemoTema, { nombre });
       return;
     }
     // Antes de tgm-ready la demo no escucha: el tema queda marcado y se manda cuando avise.
     if (!demoLista) return;
     // Sin allow-same-origin el iframe tiene origen opaco: '*' es el único destino válido.
     demoLista.postMessage({ type: 'tgm-theme', theme: id }, '*');
-    aviso.textContent = `Demo con la combinación ${nombre}.`;
+    aviso.textContent = llenar(textos.conTema, { nombre });
   };
 
   window.addEventListener('message', (evento: MessageEvent) => {
@@ -100,16 +128,16 @@ function iniciar(raiz: HTMLElement): void {
   });
 
   const cargar = async () => {
-    estado.textContent = 'Cargando la demo en vivo…';
+    estado.textContent = textos.cargando;
     if (!(await demoPublicada(demo))) {
       raiz.dataset.estado = 'sin-demo';
-      estado.textContent = 'La demo en vivo se publica pronto. Mientras, mira la captura.';
+      estado.textContent = textos.sinDemo;
       abrir?.setAttribute('hidden', '');
       return;
     }
     const nuevo = document.createElement('iframe');
     nuevo.className = 'visor__iframe';
-    nuevo.title = `Demo en vivo de la landing ${codigo}`;
+    nuevo.title = llenar(textos.iframe, { codigo });
     nuevo.setAttribute('sandbox', 'allow-scripts allow-popups allow-popups-to-escape-sandbox');
     nuevo.setAttribute('loading', 'lazy');
     nuevo.setAttribute('referrerpolicy', 'same-origin');

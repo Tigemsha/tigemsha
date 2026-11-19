@@ -1,10 +1,14 @@
 ---
 /** Preguntas frecuentes con <details>: se abren sin JS y con teclado. */
-import type { Pregunta } from '../data/preguntas';
 import Icono from './Icono.astro';
 
+export interface Pregunta {
+  pregunta: string;
+  respuesta: string;
+}
+
 interface Props {
-  preguntas: Pregunta[];
+  preguntas: readonly Pregunta[];
 }
 
 const { preguntas } = Astro.props;

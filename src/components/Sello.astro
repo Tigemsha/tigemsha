@@ -1,14 +1,19 @@
 ---
 /** Sello "Muestra · TGM-001" sobre una captura o sobre la demo en vivo. No recibe clics. */
+import { type Idioma, t } from '../i18n';
+
 interface Props {
+  idioma: Idioma;
   codigo: string;
   clase?: string;
 }
 
-const { codigo, clase = '' } = Astro.props;
+const { idioma, codigo, clase = '' } = Astro.props;
 ---
 
-<span class:list={['sello', 'codigo', clase]} aria-hidden="true">Muestra · {codigo}</span>
+<span class:list={['sello', 'codigo', clase]} aria-hidden="true" data-sello
+  >{t(idioma).captura.sello} · <span data-sello-codigo>{codigo}</span></span
+>
 
 <style>
   .sello {

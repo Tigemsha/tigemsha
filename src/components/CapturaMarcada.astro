@@ -2,13 +2,19 @@
 /**
  * Captura de una landing con marca de agua: un patrón al ~8 % solo sobre la
  * imagen y el sello con el código. Nada de esto recibe clics.
+ *
+ * Sin `landing` dibuja el molde vacío que usa la vitrina en el navegador para
+ * las tarjetas que no vienen en el HTML (src/scripts/vitrina.ts lo llena).
  */
 import { Picture } from 'astro:assets';
+import { type Idioma, t } from '../i18n';
 import type { Landing } from '../lib/landings';
 import Sello from './Sello.astro';
 
 interface Props {
-  landing: Landing;
+  landing?: Landing;
+  /** Idioma del molde vacío (con landing se usa el suyo). */
+  idioma?: Idioma;
   vista: keyof Landing['imagenes'];
   anchos: number[];
   sizes: string;
@@ -19,27 +25,36 @@ interface Props {
   clase?: string;
 }
 
-const NOMBRE_VISTA = { movil: 'celular', escritorio: 'escritorio' } as const;
-
 const { landing, vista, anchos, sizes, prioridad = false, sello = true, clase = '' } = Astro.props;
-const alt = `Captura en ${NOMBRE_VISTA[vista]} de la landing ${landing.codigo} para ${landing.giro.toLowerCase()}`;
+const idioma = landing?.idioma ?? Astro.props.idioma ?? 'es';
+const d = t(idioma);
+const alt = landing ? d.captura.alt(vista, landing.codigo, landing.giro.toLowerCase()) : '';
 ---
 
 <figure class:list={['captura', clase]}>
-  <Picture
-    src={landing.imagenes[vista]}
-    alt={alt}
-    formats={['avif']}
-    fallbackFormat="webp"
-    widths={anchos}
-    sizes={sizes}
-    loading={prioridad ? 'eager' : 'lazy'}
-    fetchpriority={prioridad ? 'high' : 'auto'}
-    decoding="async"
-    draggable="false"
-  />
+  {
+    landing ? (
+      <Picture
+        src={landing.imagenes[vista]}
+        alt={alt}
+        formats={['avif']}
+        fallbackFormat="webp"
+        widths={anchos}
+        sizes={sizes}
+        loading={prioridad ? 'eager' : 'lazy'}
+        fetchpriority={prioridad ? 'high' : 'auto'}
+        decoding="async"
+        draggable="false"
+      />
+    ) : (
+      <picture data-captura-molde>
+        <source type="image/avif" sizes={sizes} />
+        <img alt="" sizes={sizes} loading="lazy" decoding="async" draggable="false" />
+      </picture>
+    )
+  }
   <span class="captura__marca" aria-hidden="true"></span>
-  {sello && <Sello codigo={landing.codigo} />}
+  {sello && <Sello idioma={idioma} codigo={landing?.codigo ?? ''} />}
 </figure>
 
 <style>

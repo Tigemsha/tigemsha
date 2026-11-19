@@ -55,6 +55,12 @@ function cspPorRuta() {
 export default defineConfig({
   site: 'https://tigemsha.com',
   trailingSlash: 'ignore',
+  // Español en / e inglés en /en/ (diccionarios en src/i18n/).
+  i18n: {
+    locales: ['es', 'en'],
+    defaultLocale: 'es',
+    routing: { prefixDefaultLocale: false },
+  },
   build: {
     format: 'directory',
     inlineStylesheets: 'never',

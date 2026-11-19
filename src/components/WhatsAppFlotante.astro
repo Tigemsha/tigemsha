@@ -1,0 +1,88 @@
+---
+/**
+ * Botón flotante de WhatsApp, solo en celular y solo con JS: aparece cuando el
+ * hero ya no se ve (para no repetir su botón) y se esconde cuando entra el
+ * cierre, que trae el suyo, o cuando el teclado está abierto en un campo.
+ */
+import { type Idioma, t } from '../i18n';
+import { enlaceWhatsApp } from '../lib/whatsapp';
+import Icono from './Icono.astro';
+
+interface Props {
+  idioma: Idioma;
+}
+
+const { idioma } = Astro.props;
+const d = t(idioma);
+---
+
+<a
+  class="flotante"
+  href={enlaceWhatsApp(d.whatsapp.flotante)}
+  rel="noopener"
+  aria-label={d.flotante}
+  data-flotante
+  data-visible="false"
+>
+  <Icono nombre="whatsapp" />
+</a>
+
+<script>
+  import { iniciarFlotante } from '../scripts/flotante';
+  iniciarFlotante();
+</script>
+
+<style>
+  .flotante {
+    display: none;
+  }
+
+  @media (max-width: 63.99rem) and (scripting: enabled) {
+    .flotante {
+      position: fixed;
+      right: max(var(--gutter), env(safe-area-inset-right));
+      bottom: calc(var(--s-4) + env(safe-area-inset-bottom));
+      z-index: var(--z-flotante);
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-pill);
+      background: var(--accent);
+      color: var(--on-accent);
+      box-shadow: var(--e-device);
+      -webkit-tap-highlight-color: transparent;
+      transition:
+        opacity var(--dur-state) var(--ease-out),
+        transform var(--dur-state) var(--ease-out),
+        visibility 0s linear 0s;
+    }
+
+    .flotante :global(.icono) {
+      width: 1.625rem;
+      height: 1.625rem;
+    }
+
+    .flotante:active {
+      transform: scale(0.94);
+    }
+
+    /* Escondido: se va más rápido de lo que entra y deja de recibir toques. */
+    .flotante[data-visible='false'] {
+      opacity: 0;
+      transform: translateY(12px) scale(0.96);
+      visibility: hidden;
+      transition:
+        opacity var(--dur-fast) ease,
+        transform var(--dur-fast) ease,
+        visibility 0s linear var(--dur-fast);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flotante,
+    .flotante[data-visible='false'] {
+      transform: none;
+    }
+  }
+</style>

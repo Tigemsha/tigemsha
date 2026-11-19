@@ -1,47 +1,94 @@
 ---
-import { enlaceWhatsApp, mensajes } from '../lib/whatsapp';
+import { type Alternas, etiquetaLang, type Idioma, idiomas, ruta, t } from '../i18n';
+import { enlaceWhatsApp } from '../lib/whatsapp';
 import Icono from './Icono.astro';
 import Tigre from './Tigre.astro';
 
-const ruta = Astro.url.pathname;
-const enLandings = ruta.startsWith('/landings');
+interface Props {
+  idioma: Idioma;
+  alternas?: Alternas | undefined;
+  /** Banda noche, sobre el hero oscuro de la home. */
+  noche?: boolean;
+}
+
+const { idioma, alternas, noche = false } = Astro.props;
+const d = t(idioma);
+const inicio = ruta(idioma, 'inicio');
+const landings = ruta(idioma, 'landings');
+const enLandings = Astro.url.pathname.startsWith(landings);
+const destino = (i: Idioma) => alternas?.[i] ?? ruta(i, 'inicio');
 ---
 
-<header class="cabecera">
+<header class:list={['cabecera', { 'tema-noche cabecera--noche': noche }]}>
   <div class="wrap cabecera__fila">
-    <a class="marca" href="/" aria-label="Tigemsha, ir al inicio">
+    <a class="marca" href={inicio} aria-label={d.nav.inicioAria}>
       <Tigre clase="marca__tigre" />
       <span class="marca__nombre" aria-hidden="true">Tigemsha</span>
     </a>
-    <nav class="cabecera__nav" aria-label="Principal">
+    <nav class="cabecera__nav" aria-label={d.nav.principal}>
       <ul>
         <li>
-          <a href="/landings/" aria-current={enLandings ? 'page' : undefined}>Landings</a>
+          <a href={landings} aria-current={enLandings ? 'page' : undefined}>
+            <span class="nav__largo">{d.nav.landings}</span>
+            <span class="nav__corto" aria-hidden="true">{d.nav.landingsCorto}</span>
+          </a>
         </li>
-        <li class="solo-amplio"><a href="/#software">Software a medida</a></li>
-        <li class="solo-amplio"><a href="/#preguntas">Preguntas</a></li>
+        <li class="solo-amplio"><a href={`${inicio}#servicios`}>{d.nav.servicios}</a></li>
+        <li class="solo-amplio"><a href={`${inicio}#preguntas`}>{d.nav.preguntas}</a></li>
       </ul>
     </nav>
-    <a class="btn btn--primario cabecera__wa" href={enlaceWhatsApp(mensajes.cotizar)} rel="noopener">
+    <ul class="idiomas" aria-label={d.idioma.etiqueta}>
+      {
+        idiomas.map((i) => (
+          <li>
+            <a
+              class="idiomas__enlace"
+              href={destino(i)}
+              lang={etiquetaLang[i]}
+              hreflang={etiquetaLang[i]}
+              aria-current={i === idioma ? 'true' : undefined}
+            >
+              <span aria-hidden="true">{i.toUpperCase()}</span>
+              <span class="visually-hidden">{d.idioma.nombres[i]}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <a
+      class="btn btn--primario cabecera__wa"
+      href={enlaceWhatsApp(d.whatsapp.contacto)}
+      rel="noopener"
+      aria-label={d.nav.whatsappAria}
+    >
       <Icono nombre="whatsapp" />
-      <span class="cabecera__wa-texto">WhatsApp</span>
+      <span class="cabecera__wa-texto" aria-hidden="true">{d.nav.whatsapp}</span>
     </a>
   </div>
 </header>
 
 <style>
   .cabecera {
+    position: relative;
+    z-index: 2;
     border-bottom: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--ink);
+  }
+
+  .cabecera--noche {
+    border-bottom-color: transparent;
   }
 
   .cabecera__fila {
     display: flex;
     align-items: center;
-    gap: var(--s-2);
+    gap: var(--s-1);
     min-height: 4.5rem;
   }
 
   .marca {
+    flex: none;
     display: inline-flex;
     align-items: center;
     gap: var(--s-2);
@@ -55,6 +102,13 @@ const enLandings = ruta.startsWith('/landings');
     width: 2rem;
     height: auto;
     color: var(--accent);
+    transition: transform var(--dur-state) var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .marca:hover :global(.marca__tigre) {
+      transform: rotate(-8deg) scale(1.06);
+    }
   }
 
   .marca__nombre {
@@ -65,23 +119,33 @@ const enLandings = ruta.startsWith('/landings');
     letter-spacing: -0.02em;
   }
 
-  .cabecera__nav ul {
+  .cabecera__nav ul,
+  .idiomas {
     display: flex;
     gap: var(--s-1);
     padding: 0;
     list-style: none;
   }
 
-  .cabecera__nav a {
+  .cabecera__nav a,
+  .idiomas__enlace {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     min-height: 44px;
     padding: 0 var(--s-3);
     border-radius: var(--radius);
     color: var(--ink);
     font-weight: 600;
     text-decoration: none;
-    transition: background-color var(--dur-fast) ease;
+    transition:
+      background-color var(--dur-fast) ease,
+      transform var(--dur-press) var(--ease-out);
+  }
+
+  .cabecera__nav a:active,
+  .idiomas__enlace:active {
+    transform: scale(0.97);
   }
 
   .cabecera__nav a[aria-current='page'] {
@@ -91,8 +155,30 @@ const enLandings = ruta.startsWith('/landings');
     text-decoration-color: var(--accent);
   }
 
+  /* ES / EN: dos letras, la activa con fondo de tinta. */
+  .idiomas {
+    gap: 2px;
+    padding: 2px;
+    border: 1px solid var(--line);
+    border-radius: calc(var(--radius) + 2px);
+  }
+
+  .idiomas__enlace {
+    min-width: 40px;
+    padding: 0 var(--s-2);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .idiomas__enlace[aria-current='true'] {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
   @media (hover: hover) and (pointer: fine) {
-    .cabecera__nav a:hover {
+    .cabecera__nav a:hover,
+    .idiomas__enlace:not([aria-current='true']):hover {
       background: var(--surface);
     }
   }
@@ -101,19 +187,47 @@ const enLandings = ruta.startsWith('/landings');
     display: none;
   }
 
+  .cabecera__nav a {
+    white-space: nowrap;
+  }
+
+  .nav__corto {
+    display: none;
+  }
+
+  /* En celular solo cabe el otro idioma: el enlace cambia de ES a EN y viceversa. */
+  @media (max-width: 29.99rem) {
+    .nav__largo {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .nav__corto {
+      display: inline;
+    }
+
+    .idiomas li:has([aria-current='true']) {
+      display: none;
+    }
+
+    .cabecera__nav a {
+      padding-inline: var(--s-2);
+    }
+  }
+
   .cabecera__wa {
     min-width: 44px;
     min-height: 44px;
+    margin-left: var(--s-1);
     padding-inline: var(--s-3);
   }
 
   .cabecera__wa-texto {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
+    display: none;
   }
 
   @media (min-width: 30rem) {
@@ -122,11 +236,7 @@ const enLandings = ruta.startsWith('/landings');
     }
 
     .cabecera__wa-texto {
-      position: static;
-      width: auto;
-      height: auto;
-      overflow: visible;
-      clip-path: none;
+      display: inline;
     }
   }
 
@@ -136,7 +246,7 @@ const enLandings = ruta.startsWith('/landings');
     }
 
     .cabecera__fila {
-      gap: var(--s-4);
+      gap: var(--s-3);
     }
   }
 </style>

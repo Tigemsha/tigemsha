@@ -1,0 +1,57 @@
+---
+/** Envoltorio del aviso de privacidad (es y en): medida de lectura y jerarquía. */
+---
+
+<article class="wrap aviso">
+  <slot />
+</article>
+
+<style>
+  .aviso {
+    display: grid;
+    gap: var(--s-10);
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 4.5rem) var(--section-y);
+    max-width: calc(var(--measure) + 2 * var(--gutter));
+  }
+
+  .aviso :global(header) {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  .aviso :global(h1) {
+    font-size: var(--fs-headline);
+  }
+
+  .aviso :global(.aviso__fecha) {
+    color: var(--ink-3);
+    font-size: 0.9375rem;
+  }
+
+  .aviso :global(section) {
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .aviso :global(h2) {
+    font-size: var(--fs-title);
+    font-weight: 700;
+    font-stretch: 104%;
+    line-height: 1.2;
+  }
+
+  .aviso :global(p),
+  .aviso :global(li) {
+    color: var(--ink-2);
+  }
+
+  .aviso :global(ul) {
+    display: grid;
+    gap: var(--s-1);
+    padding-left: 1.25rem;
+  }
+
+  .aviso :global(li::marker) {
+    color: var(--ink-3);
+  }
+</style>

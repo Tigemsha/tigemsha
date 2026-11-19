@@ -1,39 +1,38 @@
 ---
 /** Cierre en banda noche: WhatsApp, Instagram y aviso de privacidad. */
 import { instagramUrl, sitio } from '../data/sitio';
-import { enlaceWhatsApp, mensajes } from '../lib/whatsapp';
+import { type Idioma, ruta, t } from '../i18n';
+import { enlaceWhatsApp } from '../lib/whatsapp';
 import Icono from './Icono.astro';
 
 interface Props {
+  idioma: Idioma;
   titulo?: string;
   texto?: string;
   mensaje?: string;
 }
 
-const {
-  titulo = 'Cuéntanos qué necesitas',
-  texto = 'Escríbenos por WhatsApp. Si es una landing, dinos el código y tu giro; si es un proyecto, cuéntanos qué proceso quieres resolver y quién lo va a usar.',
-  mensaje = mensajes.contacto,
-} = Astro.props;
+const { idioma } = Astro.props;
+const d = t(idioma);
+const { titulo = d.cierre.titulo, texto = d.cierre.texto, mensaje = d.whatsapp.contacto } = Astro.props;
 ---
 
-<section class="cierre tema-noche" id="contacto" aria-labelledby="cierre-titulo">
-  <div class="wrap cierre__fila">
+<section class="cierre tema-noche" id="contacto" aria-labelledby="cierre-titulo" data-cierre>
+  <div class="wrap cierre__fila revela">
     <h2 id="cierre-titulo" class="titulo-seccion cierre__titulo">{titulo}</h2>
     <div class="cierre__cuerpo">
       <p>{texto}</p>
       <div class="acciones">
         <a class="btn btn--primario" href={enlaceWhatsApp(mensaje)} rel="noopener">
-          <Icono nombre="whatsapp" /> Escribir por WhatsApp
+          <Icono nombre="whatsapp" />
+          {d.cierre.whatsapp}
         </a>
         <a class="btn btn--secundario" href={instagramUrl} rel="noopener">
           <Icono nombre="instagram" /> @{sitio.instagram}
         </a>
       </div>
       <p class="cierre__aviso">
-        Lo que nos mandes se usa solo para atenderte. Lee el <a href="/aviso-de-privacidad/"
-          >aviso de privacidad</a
-        >.
+        {d.cierre.aviso} <a href={ruta(idioma, 'aviso')}>{d.cierre.avisoEnlace}</a>.
       </p>
     </div>
   </div>

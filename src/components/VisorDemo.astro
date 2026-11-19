@@ -5,6 +5,7 @@
  * selector de dispositivo, iframe con sandbox y "Pruébala con otros colores"
  * por postMessage. El protocolo está en README.md.
  */
+import { t } from '../i18n';
 import type { Landing } from '../lib/landings';
 import CapturaMarcada from './CapturaMarcada.astro';
 import FichaColor from './FichaColor.astro';
@@ -16,19 +17,34 @@ interface Props {
 }
 
 const { landing } = Astro.props;
+const v = t(landing.idioma).visor;
 const dispositivos = [
-  { id: 'celular', nombre: 'Celular', icono: 'device-mobile' },
-  { id: 'tablet', nombre: 'Tablet', icono: 'device-tablet' },
-  { id: 'escritorio', nombre: 'Escritorio', icono: 'desktop' },
+  { id: 'celular', nombre: v.celular, icono: 'device-mobile' },
+  { id: 'tablet', nombre: v.tablet, icono: 'device-tablet' },
+  { id: 'escritorio', nombre: v.escritorio, icono: 'desktop' },
 ] as const;
+// Textos del visor para src/scripts/visor.ts ({nombre} y {codigo} se llenan allá).
+const textos = {
+  cargando: v.cargando,
+  sinDemo: v.sinDemo,
+  sinDemoTema: v.sinDemoTema('{nombre}'),
+  conTema: v.conTema('{nombre}'),
+  iframe: v.iframe('{codigo}'),
+};
 ---
 
-<div class="visor" data-visor data-demo={landing.demo} data-codigo={landing.codigo}>
+<div
+  class="visor"
+  data-visor
+  data-demo={landing.demo}
+  data-codigo={landing.codigo}
+  data-textos={JSON.stringify(textos)}
+>
   <div class="visor__controles">
     <div
       class="segmentado"
       role="group"
-      aria-label="Tamaño de pantalla de la demo"
+      aria-label={v.dispositivos}
       data-visor-dispositivos
       hidden
     >
@@ -42,7 +58,7 @@ const dispositivos = [
       }
     </div>
     <a class="visor__abrir" href={landing.demo} target="_blank" rel="noopener" data-visor-abrir>
-      Abrir la demo en otra pestaña <Icono nombre="arrow-square-out" />
+      {v.abrir} <Icono nombre="arrow-square-out" />
     </a>
   </div>
 
@@ -66,18 +82,15 @@ const dispositivos = [
           sizes="(min-width: 75rem) 800px, 100vw"
           sello={false}
         />
-        <Sello codigo={landing.codigo} clase="visor__sello" />
+        <Sello idioma={landing.idioma} codigo={landing.codigo} clase="visor__sello" />
         <p class="visor__estado" data-visor-estado role="status"></p>
       </div>
     </div>
   </div>
 
   <div class="visor__temas">
-    <h2 class="titulo" id="temas-titulo">Pruébala con otros colores</h2>
-    <p class="visor__nota">
-      Cada combinación cambia los colores de la demo en vivo. Al comprarla eliges una o nos pides los
-      colores de tu marca.
-    </p>
+    <h2 class="titulo" id="temas-titulo">{v.temasTitulo}</h2>
+    <p class="visor__nota">{v.temasNota}</p>
     <div class="fichas-tema" role="group" aria-labelledby="temas-titulo">
       {
         landing.temas.map((tema) => (
@@ -85,11 +98,11 @@ const dispositivos = [
             type="button"
             class="ficha-tema"
             data-tema={tema.id}
-            data-nombre={tema.nombre}
+            data-nombre={landing.nombreTema(tema)}
             aria-pressed={tema.id === landing.tema_por_defecto ? 'true' : 'false'}
           >
             <FichaColor tema={tema} />
-            <span>{tema.nombre}</span>
+            <span>{landing.nombreTema(tema)}</span>
           </button>
         ))
       }

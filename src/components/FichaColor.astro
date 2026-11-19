@@ -2,22 +2,24 @@
 /**
  * Ficha de paleta: los 4 colores de un tema en franjas (fondo, superficie,
  * tinta y acción), como una tira del muestrario. Usa atributos SVG, no estilos
- * en línea, para que la CSP no necesite 'unsafe-inline'.
+ * en línea, para que la CSP no necesite 'unsafe-inline'. Sin tema dibuja el
+ * molde que llena la vitrina en el navegador.
  */
 import type { Tema } from '../lib/landings';
 
 interface Props {
-  tema: Tema;
+  tema?: Tema | undefined;
   clase?: string;
 }
 
 const { tema, clase = '' } = Astro.props;
+const colores = tema ? [tema.fondo, tema.superficie, tema.tinta, tema.acento] : ['', '', '', ''];
 const franjas = [
-  { x: 0, w: 3, color: tema.fondo },
-  { x: 3, w: 2, color: tema.superficie },
-  { x: 5, w: 2, color: tema.tinta },
-  { x: 7, w: 3, color: tema.acento },
-];
+  { x: 0, w: 3 },
+  { x: 3, w: 2 },
+  { x: 5, w: 2 },
+  { x: 7, w: 3 },
+].map((f, i) => ({ ...f, color: colores[i] ?? '' }));
 ---
 
 <svg
@@ -27,7 +29,7 @@ const franjas = [
   aria-hidden="true"
   focusable="false"
 >
-  {franjas.map((f) => <rect x={f.x} y="0" width={f.w} height="6" fill={f.color} />)}
+  {franjas.map((f) => <rect x={f.x} y="0" width={f.w} height="6" fill={f.color || undefined} />)}
 </svg>
 
 <style>

@@ -1,0 +1,140 @@
+---
+/**
+ * English translation of the privacy notice. The Spanish version
+ * (/aviso-de-privacidad/) is the one that governs under Mexican law (LFPDPPP).
+ */
+import Aviso from '../../components/Aviso.astro';
+import { sitio } from '../../data/sitio';
+import { alternasDe, ruta, t } from '../../i18n';
+import { fechaLarga } from '../../lib/formato';
+import { enlaceWhatsApp } from '../../lib/whatsapp';
+import Base from '../../layouts/Base.astro';
+
+const whatsapp = enlaceWhatsApp(t('en').whatsapp.privacidad);
+---
+
+<Base
+  idioma="en"
+  titulo="Privacy notice"
+  descripcion="What personal data Tigemsha collects, what it is used for and how to exercise your ARCO rights under Mexico’s data protection law (LFPDPPP)."
+  alternas={alternasDe('aviso')}
+>
+  <Aviso>
+    <header>
+      <h1 class="display">Privacy notice</h1>
+      <p class="aviso__fecha">
+        Last updated: <time datetime={sitio.avisoActualizado}>{fechaLarga(sitio.avisoActualizado, 'en')}</time>
+      </p>
+      <p class="entrada">
+        This notice explains what personal data we collect, what we use it for and how you can exercise
+        your rights under Mexico’s Federal Law on the Protection of Personal Data Held by Private Parties
+        (LFPDPPP), published in the Official Gazette of the Federation on March 20, 2025.
+      </p>
+      <p>
+        This is a translation. If it differs from the <a href={ruta('es', 'aviso')} hreflang="es-MX" lang="es-MX"
+          >Spanish version</a
+        >, the Spanish version prevails.
+      </p>
+    </header>
+
+    <section aria-labelledby="responsible">
+      <h2 id="responsible">Who is responsible for your data</h2>
+      <p>
+        {sitio.nombre} is responsible for processing your personal data. For anything related to your
+        privacy, message us on WhatsApp at <a href={whatsapp} rel="noopener">{sitio.telefono}</a>.
+      </p>
+      {
+        sitio.domicilio ? (
+          <p>Address for notices: {sitio.domicilio}.</p>
+        ) : (
+          <p>If you need our address for legal notices, ask on WhatsApp and we will send it to you in writing.</p>
+        )
+      }
+    </section>
+
+    <section aria-labelledby="data">
+      <h2 id="data">What data we collect</h2>
+      <p>
+        This site has no forms. We only collect data when you message us on WhatsApp, Instagram, TikTok or
+        by email:
+      </p>
+      <ul>
+        <li>Your name and your phone number or username.</li>
+        <li>The name, type and address of your business.</li>
+        <li>Whatever you choose to send us for your project: logo, photos, hours, prices and text.</li>
+        <li>Your tax details, only if you ask for an invoice.</li>
+      </ul>
+      <p>
+        We do not ask for sensitive personal data. The provider that hosts this site also logs technical
+        data of each visit (IP address, browser, page and time) to run and protect it.
+      </p>
+    </section>
+
+    <section aria-labelledby="purposes">
+      <h2 id="purposes">What we use it for</h2>
+      <p>We use your data to:</p>
+      <ul>
+        <li>Answer your messages and send you a quote.</li>
+        <li>Prepare, deliver and publish your landing page or your project.</li>
+        <li>Charge you and, if you ask, issue your invoice.</li>
+        <li>Provide the support and maintenance you hire.</li>
+      </ul>
+      <p>These purposes are necessary to serve you. We do not use your data for anything else or sell it.</p>
+    </section>
+
+    <section aria-labelledby="transfers">
+      <h2 id="transfers">Who we share it with</h2>
+      <p>
+        We do not transfer your data to third parties, except when a competent authority requires it by
+        law. To operate we use providers that process data on our behalf: WhatsApp and Instagram (Meta),
+        TikTok and Gmail (Google) as messaging channels, and the hosting service of this site and, if you
+        ask us to publish it, the one of your landing page.
+      </p>
+    </section>
+
+    <section aria-labelledby="arco">
+      <h2 id="arco">Your ARCO rights</h2>
+      <p>
+        You can access your data, correct it, cancel it or object to its processing (ARCO rights). You can
+        also withdraw your consent or ask us to limit its use. To do so,
+        <a href={whatsapp} rel="noopener">send us a WhatsApp</a> with:
+      </p>
+      <ul>
+        <li>Your name and a way to reply to you.</li>
+        <li>A document proving your identity or, if applicable, that of your representative.</li>
+        <li>Which data it is and which right you want to exercise.</li>
+        <li>Any detail that helps us find your information.</li>
+      </ul>
+      <p>
+        We reply within 20 business days at most. If your request applies, we carry it out within the
+        following 15 business days.
+      </p>
+    </section>
+
+    <section aria-labelledby="cookies">
+      <h2 id="cookies">Cookies and tracking</h2>
+      <p>
+        This site and its demos use no cookies and no analytics or advertising tools. The WhatsApp,
+        Instagram and TikTok buttons take you to those platforms, which have their own privacy notices.
+      </p>
+    </section>
+
+    <section aria-labelledby="retention">
+      <h2 id="retention">How long we keep it</h2>
+      <p>For as long as our business relationship lasts and as long as tax law requires. Then we delete it.</p>
+    </section>
+
+    <section aria-labelledby="changes">
+      <h2 id="changes">Changes to this notice</h2>
+      <p>If we change this notice, we publish the new version on this page with its update date.</p>
+    </section>
+
+    <section aria-labelledby="authority">
+      <h2 id="authority">If you disagree</h2>
+      <p>
+        If you believe your right to personal data protection was violated, you can go to Mexico’s
+        Secretariat of Anti-Corruption and Good Governance, the authority in charge under the LFPDPPP.
+      </p>
+    </section>
+  </Aviso>
+</Base>
