@@ -1,0 +1,19 @@
+# tigemsha.com en Netlify: cada push a main se construye y se publica en el CI.
+# Este archivo manda sobre lo que diga el panel (que traía dir=build de CRA).
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+# Las demos no se construyen aquí (su código es privado). Viven en el sitio
+# tigemsha-demos y se sirven con proxy para que la URL pública siga siendo
+# tigemsha.com/demos/<slug>/ (mismo origen que el visor de la ficha).
+# Se publican con `npm run deploy:demos`.
+[[redirects]]
+  from = "/demos/*"
+  to = "https://tigemsha-demos.netlify.app/demos/:splat"
+  status = 200
+  force = true

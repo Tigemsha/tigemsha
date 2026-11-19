@@ -36,6 +36,8 @@
   Cache-Control: public, max-age=31536000, immutable
 
 # Vitrina: demos protegidas (ARQUITECTURA.md §Vitrina).
+# /demos/* es un proxy al sitio tigemsha-demos (netlify.toml); las cabeceras que
+# cuentan son las de ese sitio (.demos-dist/_headers). Estas quedan de respaldo.
 # X-Frame-Options: SAMEORIGIN ya llega desde /*.
 # Las demos se ven en un iframe con sandbox sin allow-same-origin (origen opaco):
 # sus fuentes deben ir inlinadas en el build de demo, porque una petición de

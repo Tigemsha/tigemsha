@@ -1,9 +1,10 @@
 # Dependencias
 node_modules/
 
-# Build de Astro
+# Build de Astro y sitio de demos (las demos nunca van al repo)
 dist/
 .astro/
+.demos-dist/
 
 # Entorno
 .env

@@ -11,8 +11,9 @@
     "check": "astro check",
     "build": "astro check && astro build",
     "preview": "astro preview",
+    "preview:full": "node scripts/collect-demos.mjs --local && astro preview",
     "collect-demos": "node scripts/collect-demos.mjs",
-    "deploy": "npm run build && npm run collect-demos && npx -y netlify-cli deploy --prod --dir=dist"
+    "deploy:demos": "node scripts/collect-demos.mjs --estricto && npx -y netlify-cli deploy --prod --dir=.demos-dist --site 8333bdb3-9a84-41a4-bfb0-ece38c485182"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.6",

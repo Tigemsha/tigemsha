@@ -21,10 +21,13 @@ npm install
 | --- | --- |
 | `npm run dev` | Servidor de desarrollo. |
 | `npm run check` | `astro check` (tipos y plantillas). |
-| `npm run build` | `astro check` y build estático en `dist/`. |
-| `npm run preview` | Sirve `dist/` en local. |
-| `npm run collect-demos` | Copia el `dist-demo/` de cada landing a `dist/demos/<slug>/`. |
-| `npm run deploy` | `build` + `collect-demos` + `netlify deploy --prod --dir=dist`. Requiere `netlify login` y `netlify link`. |
+| `npm run build` | `astro check` y build estático en `dist/`. Es lo que corre Netlify en cada push a `main`. |
+| `npm run preview` | Sirve `dist/` en local (sin demos). |
+| `npm run preview:full` | Copia las demos a `dist/demos/` y sirve `dist/`: la vista local completa, con el visor funcionando. Corre antes `npm run build`. |
+| `npm run collect-demos` | Arma `.demos-dist/` con las demos de cada landing. Si no hay demos, avisa y no falla. |
+| `npm run deploy:demos` | Arma `.demos-dist/` y lo publica en el sitio `tigemsha-demos`. Falla si no hay demos, para no publicar un sitio vacío. Requiere `netlify login`. |
+
+El sitio principal **no** se publica desde aquí: se publica solo al hacer push a `main`.
 
 ## Estructura
 
@@ -44,7 +47,8 @@ src/
 public/
   _headers               ← cabeceras de Netlify (CSP, HSTS y protección de /demos/*)
   robots.txt             ← Disallow: /demos/
-scripts/collect-demos.mjs
+scripts/collect-demos.mjs ← arma .demos-dist/ (sitio de demos)
+netlify.toml              ← build del CI y proxy de /demos/*
 ```
 
 ## Agregar una landing a la vitrina
@@ -123,7 +127,41 @@ if (window.parent !== window) window.parent.postMessage({ type: 'tgm-ready', the
 
 - Las **fuentes van inlinadas** (data URI) en el CSS de la demo. Una petición de fuente desde un origen opaco es CORS y `/demos/*` no abre CORS.
 - Sin source maps (`collect-demos` además descarta los `.map`).
+- Rutas relativas o con base `/demos/<slug>/`: la demo se sirve en esa ruta, tanto en `tigemsha-demos` como en tigemsha.com.
 - Marca de agua, `noindex` y el aviso de licencia, como dice `ARQUITECTURA.md` §Vitrina.
+
+## Deploy
+
+Hay dos sitios en Netlify:
+
+| Sitio | Qué publica | Cómo se publica |
+| --- | --- | --- |
+| `tigemsha` (tigemsha.com) | Este repo (`dist/`) | Netlify CI en cada push a `main`. `netlify.toml` fija `npm run build`, `publish = "dist"` y Node 24, y manda sobre el panel. |
+| `tigemsha-demos` ([tigemsha-demos.netlify.app](https://tigemsha-demos.netlify.app)) | `.demos-dist/` | `npm run deploy:demos`, desde la Mac donde viven las landings. |
+
+Las demos **no se construyen en el CI** ni se suben a este repo (que es público): su código vive solo en los repos privados de cada landing. `netlify.toml` hace un proxy:
+
+```toml
+[[redirects]]
+  from = "/demos/*"
+  to = "https://tigemsha-demos.netlify.app/demos/:splat"
+  status = 200
+  force = true
+```
+
+Así la URL pública sigue siendo `tigemsha.com/demos/<slug>/`, del mismo origen que el visor, y la CSP del sitio (`frame-src 'self'`) no cambia.
+
+### Publicar una demo nueva
+
+1. En la landing: `npm run build:demo` (genera `dist-demo/`) y que su `landing.json` tenga el `slug`.
+2. Aquí: `npm run deploy:demos`. Arma `.demos-dist/` con:
+   - `demos/<slug>/`, copiado del `dist-demo/` de cada landing en `../../code-projects/landings/*/` (o en `LANDINGS_DIR`), sin archivos `.map`;
+   - `_headers` para todo el sitio de demos: `X-Robots-Tag: noindex, nofollow, noarchive`, `Content-Security-Policy: frame-ancestors 'self' https://tigemsha.com https://www.tigemsha.com`, `Referrer-Policy: same-origin`, `X-Content-Type-Options: nosniff` y una `Permissions-Policy` restrictiva;
+   - `robots.txt` con `Disallow: /`;
+   - un `index.html` que manda a `https://tigemsha.com/landings/`.
+3. Agrega su entrada en `src/data/landings.json` con sus capturas y haz push a `main` (lo hace el coordinador).
+
+Para probar todo en local: `npm run build && npm run preview:full` y abre `/landings/<slug>/`.
 
 ## Seguridad
 
@@ -131,6 +169,4 @@ if (window.parent !== window) window.parent.postMessage({ type: 'tgm-ready', the
 
 - Para todo el sitio: HSTS, `X-Content-Type-Options`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy`, `Permissions-Policy` y COOP.
 - La CSP del sitio va en cada ruta de Astro y no en `/*`, porque Netlify junta las cabeceras de todas las reglas que coinciden y la CSP del sitio bloquearía el JS en línea de las demos. **Si agregas una página, agrega su ruta en `_headers`.** El build no inlina CSS ni JS (`astro.config.mjs`), así que la CSP no necesita `'unsafe-inline'`.
-- Para `/demos/*`: `X-Robots-Tag: noindex, nofollow, noarchive`, `frame-ancestors 'self'`, `Referrer-Policy: same-origin` y una `Permissions-Policy` restrictiva.
-
-Las demos **no se suben a este repo**, que es público. `collect-demos` las copia en el deploy desde `../../code-projects/landings/*/dist-demo` (o desde `LANDINGS_DIR`).
+- Para `/demos/*`, las cabeceras que cuentan son las del sitio de demos (`.demos-dist/_headers`), que pasan por el proxy. `public/_headers` repite las de `ARQUITECTURA.md` §Vitrina como respaldo; ambas políticas son compatibles.
