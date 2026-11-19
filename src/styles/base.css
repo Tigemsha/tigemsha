@@ -37,8 +37,13 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* clip (no hidden): nada que se salga de lado ensancha la página en el celular
+   (el navegador la alejaría para que quepa) y position: sticky sigue funcionando.
+   relative: también recorta lo absoluto que no tiene otro ancestro posicionado. */
 main {
+  position: relative;
   flex: 1 0 auto;
+  overflow-x: clip;
 }
 
 /* `hidden` siempre gana, aunque la clase del elemento le ponga display (.btn, grid…). */
@@ -269,6 +274,14 @@ a {
   gap: var(--s-2);
   min-height: 44px;
   font-weight: 650;
+}
+
+.enlace-flecha {
+  transition: transform var(--dur-press) var(--ease-out);
+}
+
+.enlace-flecha:active {
+  transform: scale(0.98);
 }
 
 .enlace-flecha .icono {
