@@ -65,7 +65,6 @@ netlify.toml              ← build del CI y proxy de /demos/*
   "fecha": "2026-11-19",
   "precio_desde": 2500,
   "mantenimiento_mes": 350,
-  "demo": "/demos/dentistas/",     // siempre /demos/<slug>/
   "resumen": "…",                  // 200 caracteres máximo
   "para": "…",
   "incluye": ["…"],
@@ -81,7 +80,7 @@ netlify.toml              ← build del CI y proxy de /demos/*
 }
 ```
 
-El build falla si falta un campo, si una captura no existe, si se repite un código o un slug, o si un tema no pasa AA (4.5:1) en tinta/fondo, tinta/superficie y texto_acento/acento. La vitrina se ordena sola por fecha y aguanta de 1 a 30 landings.
+La ruta de la ficha (`/landings/<slug>/`) y la de la demo (`/demos/<slug>/`) salen del `slug`. El build falla si falta un campo, si una captura no existe, si se repite un código o un slug, o si un tema no pasa AA (4.5:1) en tinta/fondo, tinta/superficie y texto_acento/acento. La vitrina se ordena sola por fecha y aguanta de 1 a 30 landings.
 
 ## Protocolo entre el visor y la demo
 

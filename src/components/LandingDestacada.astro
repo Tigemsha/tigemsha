@@ -17,7 +17,6 @@ interface Props {
 
 const { landing, nivel = 3, prioridad = false } = Astro.props;
 const Titulo = nivel === 2 ? 'h2' : 'h3';
-const href = `/landings/${landing.slug}/`;
 ---
 
 <article class="destacada" aria-labelledby={`destacada-${landing.slug}`}>
@@ -81,7 +80,7 @@ const href = `/landings/${landing.slug}/`;
     </div>
 
     <div class="acciones">
-      <a class="btn btn--primario" href={href}>Ver demo y detalles <Icono nombre="arrow-right" /></a>
+      <a class="btn btn--primario" href={landing.href}>Ver demo y detalles <Icono nombre="arrow-right" /></a>
       <a class="btn btn--secundario" href={enlaceWhatsApp(mensajes.laQuiero(landing))} rel="noopener">
         <Icono nombre="whatsapp" /> La quiero
       </a>

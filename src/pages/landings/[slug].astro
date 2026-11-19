@@ -25,7 +25,7 @@ const laQuiero = enlaceWhatsApp(mensajes.laQuiero(landing));
 const pregunta = enlaceWhatsApp(mensajes.pregunta(landing));
 const otras = landings.filter((l) => l.slug !== landing.slug).slice(0, 3);
 const precio = pesosMXN(landing.precio_desde);
-const url = `${sitio.url}/landings/${landing.slug}/`;
+const url = new URL(landing.href, sitio.url).href;
 
 const medida = (valor: number | null, unidad: string) =>
   valor === null ? 'Se mide al publicar la demo' : `${valor} ${unidad}`;

@@ -93,7 +93,7 @@ const schema = {
           </a>
         </div>
       </div>
-      <a class="hero__visual entra-4" href={`/landings/${ultima.slug}/`}>
+      <a class="hero__visual entra-4" href={ultima.href}>
         <span class="visually-hidden"
           >Ver la demo de la landing más reciente, {ultima.codigo} para {ultima.giro.toLowerCase()}:</span
         >
@@ -119,7 +119,7 @@ const schema = {
         </h2>
         <p>
           La ves funcionando antes de pagar, la pruebas con otros colores y la armamos con tus datos. La
-          más reciente es la <a href={`/landings/${ultima.slug}/`}>{ultima.codigo}, {ultima.giro.toLowerCase()}</a>, publicada el {
+          más reciente es la <a href={ultima.href}>{ultima.codigo}, {ultima.giro.toLowerCase()}</a>, publicada el {
             fechaCorta(ultima.fecha)
           }.
         </p>

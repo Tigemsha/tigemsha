@@ -19,7 +19,6 @@ interface Props {
 
 const { landing, nivel = 3, prioridad = false } = Astro.props;
 const Titulo = nivel === 2 ? 'h2' : 'h3';
-const href = `/landings/${landing.slug}/`;
 ---
 
 <article class="tira">
@@ -34,7 +33,7 @@ const href = `/landings/${landing.slug}/`;
   />
   <div class="tira__cuerpo">
     <Titulo class="tira__titulo">
-      <a class="tira__enlace" href={href}>
+      <a class="tira__enlace" href={landing.href}>
         {landing.giro}<span class="visually-hidden">: ver demo y precio de {landing.codigo}</span>
       </a>
     </Titulo>

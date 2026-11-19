@@ -1,7 +1,8 @@
 /**
  * Vitrina "Landings a la venta": lee src/data/landings.json, lo valida con zod
- * y resuelve las capturas a imágenes de astro:assets. Si algo no cumple
- * (campos, rutas de captura, contraste AA de un tema), el build falla.
+ * y lo convierte en el modelo que usan las páginas: el tema por defecto, las
+ * capturas ya importadas (astro:assets) y las rutas que salen del slug. Si algo
+ * no cumple (campos, rutas de captura, contraste AA de un tema), el build falla.
  */
 import type { ImageMetadata } from 'astro';
 import { z } from 'astro/zod';
@@ -12,8 +13,6 @@ const capturas = import.meta.glob<{ default: ImageMetadata }>(
   '/src/assets/landings/**/*.{png,jpg,jpeg,webp,avif}',
   { eager: true },
 );
-
-const clave = (ruta: string) => `/${ruta.replace(/^\/+/, '')}`;
 
 const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Usa un color hex de 6 dígitos (#RRGGBB)');
 const id = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Solo minúsculas, números y guiones');
@@ -47,11 +46,15 @@ const esquemaTema = z
     }
   });
 
-const rutaCaptura = z
-  .string()
-  .refine((ruta) => clave(ruta) in capturas, {
-    message: 'La captura no existe. Usa una ruta dentro de src/assets/landings/',
-  });
+/** "src/assets/landings/…" → la imagen ya importada. */
+const captura = z.string().transform((ruta, ctx) => {
+  const imagen = capturas[`/${ruta.replace(/^\/+/, '')}`]?.default;
+  if (!imagen) {
+    ctx.addIssue({ code: 'custom', message: 'La captura no existe. Usa una ruta dentro de src/assets/landings/' });
+    return z.NEVER;
+  }
+  return imagen;
+});
 
 const esquemaLanding = z
   .object({
@@ -62,7 +65,6 @@ const esquemaLanding = z
     fecha: z.iso.date(),
     precio_desde: z.number().int().positive(),
     mantenimiento_mes: z.number().int().nonnegative(),
-    demo: z.string().regex(/^\/demos\/[a-z0-9-]+\/$/),
     resumen: z.string().min(1).max(200),
     para: z.string().min(1).max(200),
     incluye: z.array(z.string().min(1)).min(1).max(10),
@@ -70,27 +72,37 @@ const esquemaLanding = z
     plazo: z.string().min(1).max(40),
     tema_por_defecto: id,
     temas: z.array(esquemaTema).min(1).max(6),
-    captura_movil: rutaCaptura,
-    captura_escritorio: rutaCaptura,
+    captura_movil: captura,
+    captura_escritorio: captura,
     ficha_tecnica: z.object({
       peso_kb: z.number().positive().nullable(),
       lighthouse_movil: z.number().int().min(0).max(100).nullable(),
     }),
   })
   .superRefine((l, ctx) => {
-    if (l.demo !== `/demos/${l.slug}/`) {
-      ctx.addIssue({ code: 'custom', message: `${l.codigo}: "demo" debe ser /demos/${l.slug}/` });
-    }
     const ids = l.temas.map((t) => t.id);
     if (new Set(ids).size !== ids.length) {
       ctx.addIssue({ code: 'custom', message: `${l.codigo}: hay temas con el mismo id` });
     }
-    if (!ids.includes(l.tema_por_defecto)) {
+  })
+  .transform(({ captura_movil, captura_escritorio, ...l }, ctx) => {
+    const tema = l.temas.find((t) => t.id === l.tema_por_defecto);
+    if (!tema) {
       ctx.addIssue({
         code: 'custom',
         message: `${l.codigo}: tema_por_defecto "${l.tema_por_defecto}" no está en temas`,
       });
+      return z.NEVER;
     }
+    return {
+      ...l,
+      tema,
+      imagenes: { movil: captura_movil, escritorio: captura_escritorio },
+      /** Ficha en la vitrina. */
+      href: `/landings/${l.slug}/`,
+      /** Demo protegida (la publica scripts/collect-demos.mjs). */
+      demo: `/demos/${l.slug}/`,
+    };
   });
 
 const esquemaVitrina = z
@@ -106,30 +118,15 @@ const esquemaVitrina = z
     }
   });
 
-export type Tema = z.infer<typeof esquemaTema>;
-type LandingDatos = z.infer<typeof esquemaLanding>;
-
-export interface Landing extends LandingDatos {
-  tema: Tema;
-  imagenes: { movil: ImageMetadata; escritorio: ImageMetadata };
-}
+export type Tema = z.output<typeof esquemaTema>;
+export type Landing = z.output<typeof esquemaLanding>;
 
 function cargar(): Landing[] {
   const resultado = esquemaVitrina.safeParse(datos);
   if (!resultado.success) {
     throw new Error(`src/data/landings.json no es válido:\n${z.prettifyError(resultado.error)}`);
   }
-  return resultado.data
-    .map((l) => {
-      const tema = l.temas.find((t) => t.id === l.tema_por_defecto) ?? l.temas[0];
-      const movil = capturas[clave(l.captura_movil)]?.default;
-      const escritorio = capturas[clave(l.captura_escritorio)]?.default;
-      if (!tema || !movil || !escritorio) {
-        throw new Error(`${l.codigo}: faltan el tema o las capturas`);
-      }
-      return { ...l, tema, imagenes: { movil, escritorio } };
-    })
-    .sort((a, b) => b.fecha.localeCompare(a.fecha) || b.codigo.localeCompare(a.codigo));
+  return resultado.data.sort((a, b) => b.fecha.localeCompare(a.fecha) || b.codigo.localeCompare(a.codigo));
 }
 
 /** Todas las landings, de la más reciente a la más antigua. */
