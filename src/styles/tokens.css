@@ -40,6 +40,10 @@
   --exito: #1f7a4d;
   --aviso: #8a5a00;
   --error: #b42318;
+  /* Ilustración del hero (antes → después): papel de nota y celda con error. */
+  --nota: #fbe7a1;
+  --nota-tinta: #4a3a00;
+  --celda-error: #fde2df;
 
   /* Contrato semántico (mismo contrato que el kit de landings) */
   --bg: var(--cemento);
@@ -117,12 +121,19 @@
   --rise-lead: 12px;
   --rise-support: 8px;
   --rise-cta: 6px;
+  /* v2: revelados al hacer scroll, tarjetas que se voltean y la marquesina. */
+  --dur-revela: 640ms;
+  --revela-sube: 28px;
+  --dur-flip: 560ms;
+  --dur-marquesina: 48s;
 
   /* Capas */
   --z-bar: 20;
+  --z-flotante: 30;
 }
 
-/* Banda noche: solo en el cierre. Re-mapea el contrato, los componentes no cambian. */
+/* Banda noche: el hero de la home (v2), la cara "con Tigemsha" de los personajes
+   y el cierre. Re-mapea el contrato, los componentes no cambian. */
 .tema-noche {
   --bg: var(--noche);
   --surface: var(--noche-superficie);

@@ -1,0 +1,598 @@
+---
+/**
+ * Escena "antes → después" del hero, solo con HTML y CSS (sin imágenes):
+ * facturas, un Excel con errores, una nota y un chat lleno caen desordenados,
+ * vuelan al centro y se vuelven un panel ordenado; al final llega el aviso de
+ * "Reporte de ventas listo". Se reproduce una vez al cargar (≈ 4 s) y se queda
+ * en el "después". src/scripts/hero.ts la repite y la pausa.
+ *
+ * Línea de tiempo (choreograph):
+ *   papeles     llegan   300–900 ms   escalonados, se quedan quietos hasta 1.8 s
+ *   papeles     se van   1.8–2.5 s    vuelan al centro del panel (causa)
+ *   panel       aparece  2.2–2.7 s    se solapa con la llegada (efecto)
+ *   filas       entran   2.6–3.1 s    pasos que se acortan
+ *   barras      crecen   2.8–3.3 s    desde abajo
+ *   aviso       llega    3.4–3.8 s    el remate
+ * Solo transform y opacity. Con menos movimiento: el "después", quieto.
+ */
+import { type Idioma, t } from '../../i18n';
+import Icono from '../Icono.astro';
+import Tigre from '../Tigre.astro';
+
+interface Props {
+  idioma: Idioma;
+}
+
+const { idioma } = Astro.props;
+const d = t(idioma).antesDespues;
+const facturas = ['f1', 'f2', 'f3'] as const;
+const barras = [38, 52, 44, 66, 58, 80, 92];
+---
+
+<div class="escena" role="img" aria-label={d.aria} data-escena>
+  <div class="escena__etiquetas" aria-hidden="true">
+    <span class="etiqueta-escena etiqueta-escena--antes">{t(idioma).personajes.hoy}</span>
+    <span class="etiqueta-escena etiqueta-escena--despues">{t(idioma).personajes.ahora}</span>
+  </div>
+
+  <div class="escena__antes" aria-hidden="true">
+    {
+      facturas.map((id) => (
+        <div class:list={['papel', 'factura', `papel--${id}`]}>
+          <span class="factura__titulo">{d.factura}</span>
+          <span class="factura__linea" />
+          <span class="factura__linea factura__linea--corta" />
+          <span class="factura__monto">{d.monto}</span>
+          <span class="factura__sello">{d.sat}</span>
+        </div>
+      ))
+    }
+    <div class="papel excel papel--excel">
+      {d.excel.map((celda) => <span class="excel__celda excel__celda--cabeza">{celda}</span>)}
+      {
+        d.excelFilas.map((fila) =>
+          fila.map((celda) => (
+            <span class:list={['excel__celda', { 'excel__celda--error': celda.startsWith('#') }]}>{celda}</span>
+          )),
+        )
+      }
+    </div>
+    <div class="papel nota papel--nota">{d.nota}</div>
+    <div class="papel chat papel--chat">
+      <Icono nombre="whatsapp" clase="chat__icono" />
+      <span>{d.mensajes}</span>
+    </div>
+  </div>
+
+  <div class="panel" aria-hidden="true">
+    <div class="panel__cabeza">
+      <span class="panel__titulo"><Tigre clase="panel__tigre" />{d.panel}</span>
+      <span class="panel__ejemplo">{d.ejemplo}</span>
+    </div>
+    <ul class="panel__filas">
+      {
+        d.filas.map((fila) => (
+          <li class="panel__fila">
+            <Icono nombre="check-circle" clase="panel__check" />
+            <span class="panel__tema">{fila.tema}</span>
+            <span class="panel__valor">{fila.valor}</span>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="panel__grafica">
+      <span class="panel__grafica-titulo">{d.ventas}</span>
+      <div class="panel__barras">
+        {barras.map((alto) => <span class:list={['barra', `barra--${alto}`]} />)}
+      </div>
+    </div>
+  </div>
+
+  <div class="aviso" aria-hidden="true">
+    <span class="aviso__icono"><Icono nombre="whatsapp" /></span>
+    <span class="aviso__texto">{d.aviso}</span>
+    <span class="aviso__hora">8:00</span>
+  </div>
+</div>
+
+<style>
+  /* Todo se mide en cqi: la escena escala como una sola pieza. */
+  .escena {
+    position: relative;
+    container-type: inline-size;
+    aspect-ratio: 6 / 5;
+    width: 100%;
+    font-family: var(--font-body);
+    line-height: 1.25;
+    user-select: none;
+  }
+
+  .escena__etiquetas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    display: grid;
+  }
+
+  .etiqueta-escena {
+    grid-area: 1 / 1;
+    justify-self: start;
+    padding: 0.6cqi 2.2cqi;
+    border-radius: var(--radius-pill);
+    font-size: clamp(0.6875rem, 2.6cqi, 0.875rem);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .etiqueta-escena--antes {
+    border: 1px solid var(--line-strong);
+    color: var(--ink-2);
+  }
+
+  .etiqueta-escena--despues {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  /* Papeles (el "antes") */
+  .papel {
+    position: absolute;
+    border-radius: 1.2cqi;
+    background: var(--papel);
+    color: var(--tinta);
+    box-shadow: 0 1.4cqi 3cqi -1cqi rgb(0 0 0 / 0.45);
+    transform: rotate(var(--r));
+  }
+
+  .factura {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-content: start;
+    gap: 1.4cqi;
+    width: 34cqi;
+    height: 22cqi;
+    padding: 2.4cqi;
+  }
+
+  .factura__titulo {
+    font-size: 3cqi;
+    font-weight: 750;
+  }
+
+  .factura__linea {
+    grid-column: 1 / -1;
+    height: 1.1cqi;
+    border-radius: 1cqi;
+    background: var(--linea);
+  }
+
+  .factura__linea--corta {
+    width: 60%;
+  }
+
+  .factura__monto {
+    font-size: 2.8cqi;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .factura__sello {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 0.3cqi 1.2cqi;
+    border: 0.35cqi solid var(--error);
+    border-radius: 0.8cqi;
+    color: var(--error);
+    font-size: 2.2cqi;
+    font-weight: 800;
+    transform: rotate(-12deg);
+  }
+
+  .papel--f1 {
+    --r: -8deg;
+    --dx: 29cqi;
+    --dy: 25cqi;
+    --entra: 300ms;
+    --sale: 1800ms;
+    top: 6cqi;
+    left: 4cqi;
+  }
+
+  .papel--f2 {
+    --r: 7deg;
+    --dx: -25cqi;
+    --dy: 29cqi;
+    --entra: 380ms;
+    --sale: 1860ms;
+    top: 4cqi;
+    left: 60cqi;
+  }
+
+  .papel--f3 {
+    --r: -4deg;
+    --dx: 7cqi;
+    --dy: -15cqi;
+    --entra: 440ms;
+    --sale: 1900ms;
+    top: 46cqi;
+    left: 26cqi;
+  }
+
+  .excel {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 0.8fr;
+    width: 46cqi;
+    overflow: hidden;
+    padding: 0;
+    font-size: 2.6cqi;
+  }
+
+  .excel__celda {
+    padding: 1cqi 1.4cqi;
+    border-right: 1px solid var(--linea);
+    border-bottom: 1px solid var(--linea);
+    white-space: nowrap;
+  }
+
+  .excel__celda--cabeza {
+    background: var(--cemento);
+    font-weight: 700;
+  }
+
+  .excel__celda--error {
+    background: var(--celda-error);
+    color: var(--error);
+    font-weight: 700;
+  }
+
+  .papel--excel {
+    --r: 5deg;
+    --dx: -23cqi;
+    --dy: -4cqi;
+    --entra: 500ms;
+    --sale: 1930ms;
+    top: 30cqi;
+    left: 50cqi;
+  }
+
+  .nota {
+    display: grid;
+    place-items: center;
+    width: 24cqi;
+    height: 20cqi;
+    padding: 2cqi;
+    border-radius: 0.6cqi;
+    background: var(--nota);
+    color: var(--nota-tinta);
+    font-size: 3.2cqi;
+    font-weight: 700;
+    font-stretch: 88%;
+    text-align: center;
+  }
+
+  .papel--nota {
+    --r: -7deg;
+    --dx: 32cqi;
+    --dy: -22cqi;
+    --entra: 560ms;
+    --sale: 1960ms;
+    top: 54cqi;
+    left: 6cqi;
+  }
+
+  .chat {
+    display: flex;
+    align-items: center;
+    gap: 1.6cqi;
+    padding: 1.6cqi 2.8cqi;
+    border-radius: var(--radius-pill);
+    font-size: 3cqi;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .chat :global(.chat__icono) {
+    width: 4cqi;
+    height: 4cqi;
+    color: var(--exito);
+  }
+
+  .papel--chat {
+    --r: 3deg;
+    --dx: -22cqi;
+    --dy: -31cqi;
+    --entra: 620ms;
+    --sale: 1990ms;
+    top: 70cqi;
+    left: 54cqi;
+  }
+
+  /* El panel (el "después"): su estado normal es el final. */
+  .panel {
+    position: absolute;
+    top: 9cqi;
+    left: 8cqi;
+    display: grid;
+    align-content: start;
+    gap: 2.6cqi;
+    width: 84cqi;
+    padding: 3.6cqi;
+    border: 1px solid var(--line-strong);
+    border-radius: 2.4cqi;
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: 0 3cqi 6cqi -2cqi rgb(0 0 0 / 0.5);
+  }
+
+  .panel__cabeza {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2cqi;
+  }
+
+  .panel__titulo {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.6cqi;
+    font-family: var(--font-display);
+    font-size: 4cqi;
+    font-weight: 800;
+    font-stretch: 108%;
+  }
+
+  .panel :global(.panel__tigre) {
+    width: 4.6cqi;
+    height: auto;
+    color: var(--accent);
+  }
+
+  .panel__ejemplo {
+    padding: 0.4cqi 1.6cqi;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    color: var(--ink-2);
+    font-size: 2.4cqi;
+    font-weight: 600;
+  }
+
+  .panel__filas {
+    display: grid;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--line);
+  }
+
+  .panel__fila {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1.8cqi;
+    padding-block: 1.7cqi;
+    border-bottom: 1px solid var(--line);
+    font-size: 3cqi;
+  }
+
+  .panel :global(.panel__check) {
+    width: 3.6cqi;
+    height: 3.6cqi;
+    color: var(--accent);
+  }
+
+  .panel__tema {
+    color: var(--ink-2);
+  }
+
+  .panel__valor {
+    color: var(--accent-ink);
+    font-weight: 700;
+    font-stretch: 90%;
+  }
+
+  .panel__grafica {
+    display: grid;
+    gap: 1.4cqi;
+  }
+
+  .panel__grafica-titulo {
+    color: var(--ink-2);
+    font-size: 2.6cqi;
+    font-weight: 600;
+  }
+
+  .panel__barras {
+    display: flex;
+    align-items: flex-end;
+    gap: 1.6cqi;
+    height: 11cqi;
+  }
+
+  .barra {
+    flex: 1;
+    height: 100%;
+    border-radius: 0.6cqi 0.6cqi 0 0;
+    background: var(--accent);
+    opacity: 0.35;
+    transform-origin: bottom;
+  }
+
+  .barra:last-child {
+    opacity: 1;
+  }
+
+  .barra--38 { transform: scaleY(0.38); }
+  .barra--52 { transform: scaleY(0.52); }
+  .barra--44 { transform: scaleY(0.44); }
+  .barra--66 { transform: scaleY(0.66); }
+  .barra--58 { transform: scaleY(0.58); }
+  .barra--80 { transform: scaleY(0.8); }
+  .barra--92 { transform: scaleY(0.92); }
+
+  /* El aviso de WhatsApp: el remate. */
+  .aviso {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1.8cqi;
+    width: 62cqi;
+    padding: 2cqi 2.4cqi;
+    border-radius: 2cqi;
+    background: var(--papel);
+    color: var(--tinta);
+    box-shadow: 0 2cqi 5cqi -1cqi rgb(0 0 0 / 0.55);
+    font-size: 3cqi;
+  }
+
+  .aviso__icono {
+    display: grid;
+    place-items: center;
+    width: 6cqi;
+    height: 6cqi;
+    border-radius: 50%;
+    background: var(--tigre);
+    color: var(--tinta);
+  }
+
+  .aviso__icono :global(.icono) {
+    width: 3.8cqi;
+    height: 3.8cqi;
+  }
+
+  .aviso__texto {
+    font-weight: 700;
+  }
+
+  .aviso__hora {
+    color: var(--tinta-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* La secuencia. Sin movimiento reducido, cada pieza entra a su tiempo. */
+  @keyframes papel-llega {
+    from {
+      opacity: 0;
+      transform: translateY(-4cqi) rotate(var(--r)) scale(1.06);
+    }
+    to {
+      opacity: 1;
+      transform: rotate(var(--r));
+    }
+  }
+
+  @keyframes papel-se-ordena {
+    from {
+      opacity: 1;
+      transform: rotate(var(--r));
+    }
+    70% {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+      transform: translate(var(--dx), var(--dy)) rotate(0deg) scale(0.3);
+    }
+  }
+
+  @keyframes aparece {
+    from {
+      opacity: 0;
+      transform: scale(0.94);
+    }
+  }
+
+  @keyframes sube-poco {
+    from {
+      opacity: 0;
+      transform: translateY(1.6cqi);
+    }
+  }
+
+  @keyframes crece {
+    from {
+      transform: scaleY(0.04);
+    }
+  }
+
+  @keyframes llega-arriba {
+    from {
+      opacity: 0;
+      transform: translateY(3cqi) scale(0.96);
+    }
+  }
+
+  @keyframes desvanece {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes funde-entrada {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .papel {
+      animation:
+        papel-llega 520ms var(--ease-out) var(--entra) both,
+        papel-se-ordena 700ms var(--ease-in-out) var(--sale) forwards;
+    }
+
+    .etiqueta-escena--antes {
+      animation: desvanece 240ms ease 2200ms forwards;
+    }
+
+    .etiqueta-escena--despues {
+      animation: funde-entrada 240ms ease 2200ms both;
+    }
+
+    .panel {
+      animation: aparece 520ms var(--ease-out) 2200ms both;
+    }
+
+    .panel__fila {
+      animation: sube-poco 420ms var(--ease-out) both;
+    }
+
+    .panel__fila:nth-child(1) { animation-delay: 2600ms; }
+    .panel__fila:nth-child(2) { animation-delay: 2680ms; }
+    .panel__fila:nth-child(3) { animation-delay: 2740ms; }
+    .panel__fila:nth-child(4) { animation-delay: 2790ms; }
+
+    .barra {
+      animation: crece 520ms var(--ease-out) both;
+    }
+
+    .barra:nth-child(1) { animation-delay: 2800ms; }
+    .barra:nth-child(2) { animation-delay: 2840ms; }
+    .barra:nth-child(3) { animation-delay: 2875ms; }
+    .barra:nth-child(4) { animation-delay: 2905ms; }
+    .barra:nth-child(5) { animation-delay: 2930ms; }
+    .barra:nth-child(6) { animation-delay: 2950ms; }
+    .barra:nth-child(7) { animation-delay: 2965ms; }
+
+    .aviso {
+      animation: llega-arriba 420ms var(--ease-out) 3400ms both;
+    }
+  }
+
+  /* Menos movimiento: el "después", quieto y completo. */
+  @media (prefers-reduced-motion: reduce) {
+    .escena__antes,
+    .etiqueta-escena--antes {
+      display: none;
+    }
+  }
+
+  /* Pausa (src/scripts/hero.ts) */
+  :global([data-pausa='true']) .escena *,
+  :global([data-pausa='true']) .escena {
+    animation-play-state: paused;
+  }
+</style>

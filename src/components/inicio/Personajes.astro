@@ -1,0 +1,431 @@
+---
+/**
+ * "¿Quién hace esto en tu negocio?": Anita, Luis, Marta y Jorge. Cada tarjeta
+ * cuenta el dolor de hoy y, al voltearse, cómo queda cuando lo hace una
+ * computadora, con las horas al mes de vuelta (marcadas como estimación).
+ *
+ * Se voltea al pasar el mouse, al tocar el botón y, en pantallas táctiles, sola
+ * al quedarse en pantalla (src/scripts/personajes.ts). Sin JS o con menos
+ * movimiento, las dos caras se ven una debajo de la otra, quietas.
+ */
+import { type Idioma, t } from '../../i18n';
+import { enlaceWhatsApp } from '../../lib/whatsapp';
+import Icono, { type NombreIcono } from '../Icono.astro';
+
+interface Props {
+  idioma: Idioma;
+}
+
+const { idioma } = Astro.props;
+const d = t(idioma);
+const p = d.personajes;
+
+const ICONOS: Record<string, NombreIcono> = {
+  anita: 'receipt',
+  luis: 'package',
+  marta: 'calendar-check',
+  jorge: 'chart-bar',
+};
+---
+
+<section class="seccion personajes" id="quien" aria-labelledby="personajes-titulo">
+  <div class="wrap">
+    <div class="seccion__cabeza revela">
+      <h2 id="personajes-titulo" class="titulo-seccion">{p.titulo}</h2>
+      <p>{p.sub}</p>
+    </div>
+
+    <ul class="personajes__lista revela" data-personajes>
+      {
+        p.lista.map((persona) => (
+          <li>
+            <article class="persona" data-persona data-cara="hoy" aria-labelledby={`persona-${persona.id}`}>
+              <div class="persona__giro">
+                <div class="cara cara--hoy" data-cara-hoy>
+                  <div class="persona__quien">
+                    <span class="avatar" aria-hidden="true">
+                      {persona.nombre.charAt(0)}
+                    </span>
+                    <div>
+                      <h3 id={`persona-${persona.id}`} class="persona__nombre">
+                        {persona.nombre}
+                      </h3>
+                      <p class="persona__puesto">{persona.puesto}</p>
+                    </div>
+                    <Icono nombre={ICONOS[persona.id] ?? 'receipt'} clase="persona__icono" />
+                  </div>
+                  <p class="persona__etiqueta">{p.hoy}</p>
+                  <p class="persona__cifra">{persona.cifra}</p>
+                  <p class="persona__texto">{persona.dolor}</p>
+                  <button class="persona__voltear" type="button" data-voltear="ahora">
+                    {p.verAhora}
+                    <Icono nombre="arrows-clockwise" />
+                  </button>
+                </div>
+
+                <div class="cara cara--ahora tema-noche" data-cara-ahora>
+                  <div class="persona__quien" aria-hidden="true">
+                    <span class="avatar avatar--ahora">{persona.nombre.charAt(0)}</span>
+                    <div>
+                      <p class="persona__nombre">{persona.nombre}</p>
+                      <p class="persona__puesto">{persona.puesto}</p>
+                    </div>
+                    <Icono nombre="check-circle" clase="persona__icono" />
+                  </div>
+                  <p class="persona__etiqueta persona__etiqueta--ahora">{p.ahora}</p>
+                  <p class="persona__texto">{persona.ahora}</p>
+                  <p class="persona__horas">
+                    <span class="persona__numero cifra" data-cuenta={persona.horas}>
+                      {persona.horas}
+                    </span>
+                    <span class="persona__horas-texto">
+                      {p.horas}
+                      <span class="persona__estimacion">{p.estimacion}</span>
+                    </span>
+                  </p>
+                  <div class="persona__acciones">
+                    <a class="btn btn--primario" href={enlaceWhatsApp(persona.mensaje)} rel="noopener">
+                      <Icono nombre="whatsapp" />
+                      {persona.cta}
+                    </a>
+                    <button class="persona__voltear" type="button" data-voltear="hoy">
+                      {p.verAntes}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="personajes__nota">{p.nota}</p>
+
+    <div class="personajes__cierre revela">
+      <p>{p.cierre}</p>
+      <div>
+        <a class="btn btn--primario" href={enlaceWhatsApp(d.whatsapp.personajes)} rel="noopener">
+          <Icono nombre="whatsapp" />
+          {p.cta}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { iniciarPersonajes } from '../../scripts/personajes';
+  iniciarPersonajes();
+</script>
+
+<style>
+  .personajes__lista {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  /* En celular, una fila que se desliza: cada tarjeta a casi todo el ancho y la siguiente asomándose. */
+  @media (max-width: 39.99rem) {
+    .personajes__lista {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: 86%;
+      margin-inline: calc(-1 * var(--gutter));
+      padding: 0 var(--gutter) var(--s-2);
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--gutter);
+      scrollbar-width: none;
+    }
+
+    .personajes__lista::-webkit-scrollbar {
+      display: none;
+    }
+
+    .personajes__lista > li {
+      scroll-snap-align: start;
+    }
+  }
+
+  @media (min-width: 40rem) {
+    .personajes__lista {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 72rem) {
+    .personajes__lista {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .personajes__lista > li {
+    display: grid;
+  }
+
+  .persona {
+    display: grid;
+  }
+
+  .persona__giro {
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .cara {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    padding: var(--s-6);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--ink);
+  }
+
+  .cara--ahora {
+    border-color: var(--line);
+    background: var(--bg);
+  }
+
+  .persona__quien {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--s-3);
+  }
+
+  .avatar {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    font-weight: 800;
+    font-stretch: var(--wdth-display);
+  }
+
+  .avatar--ahora {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  .persona__nombre {
+    font-family: var(--font-display);
+    font-size: var(--fs-title);
+    font-weight: 750;
+    font-stretch: 108%;
+    line-height: 1.1;
+  }
+
+  .persona__puesto {
+    color: var(--ink-3);
+    font-size: var(--fs-label);
+    font-weight: 600;
+  }
+
+  .persona__quien :global(.persona__icono) {
+    width: 1.75rem;
+    height: 1.75rem;
+    color: var(--ink-3);
+  }
+
+  .cara--ahora .persona__quien :global(.persona__icono) {
+    color: var(--accent);
+  }
+
+  .persona__etiqueta {
+    justify-self: start;
+    align-self: flex-start;
+    margin-top: var(--s-2);
+    padding: 1px var(--s-2);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    color: var(--ink-2);
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+
+  .persona__etiqueta--ahora {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .persona__cifra {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 1.25rem + 0.8vw, 1.875rem);
+    font-weight: 800;
+    font-stretch: 108%;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+  }
+
+  .persona__texto {
+    color: var(--ink-2);
+  }
+
+  .persona__horas {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    margin-top: auto;
+    padding-top: var(--s-3);
+    border-top: 1px solid var(--line);
+  }
+
+  .persona__numero {
+    color: var(--accent);
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .persona__horas-texto {
+    display: grid;
+    gap: 2px;
+    color: var(--ink);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .persona__estimacion {
+    justify-self: start;
+    padding: 0 var(--s-2);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    color: var(--ink-2);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .persona__acciones {
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .persona__acciones .btn {
+    white-space: normal;
+  }
+
+  .persona__voltear {
+    display: none;
+    align-self: flex-start;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 44px;
+    margin-top: auto;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--accent-ink);
+    font-weight: 650;
+    cursor: pointer;
+    transition: transform var(--dur-press) var(--ease-out);
+  }
+
+  .persona__acciones .persona__voltear {
+    margin-top: 0;
+    justify-self: center;
+    align-self: center;
+  }
+
+  .persona__voltear:active {
+    transform: scale(0.97);
+  }
+
+  .personajes__nota {
+    margin-top: var(--s-4);
+    color: var(--ink-3);
+    font-size: var(--fs-label);
+  }
+
+  .personajes__cierre {
+    display: grid;
+    gap: var(--s-5);
+    margin-top: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+    padding-top: var(--s-8);
+    border-top: 1px solid var(--line);
+  }
+
+  .personajes__cierre p {
+    font-size: var(--fs-lead);
+    font-weight: 600;
+    line-height: 1.45;
+    max-width: 40ch;
+  }
+
+  .personajes__cierre .btn {
+    white-space: normal;
+  }
+
+  @media (min-width: 64rem) {
+    .personajes__cierre {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+    }
+  }
+
+  /*
+   * Tarjetas que se voltean: solo con JS y con movimiento. El giro es un
+   * transform 3D (ease-in-out: se mueve en pantalla). La cara de atrás deja de
+   * recibir foco y toques al terminar el giro (visibility con retraso).
+   */
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    .persona {
+      perspective: 1600px;
+    }
+
+    .persona__giro {
+      gap: 0;
+      transform-style: preserve-3d;
+      transition: transform var(--dur-flip) var(--ease-in-out);
+    }
+
+    .cara {
+      grid-area: 1 / 1;
+      min-height: 25rem;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      transition: visibility 0s linear 0s;
+    }
+
+    .cara--ahora {
+      transform: rotateY(180deg);
+    }
+
+    .persona[data-cara='ahora'] .persona__giro,
+    .persona[data-hover] .persona__giro {
+      transform: rotateY(180deg);
+    }
+
+    .persona:not([data-cara='ahora']):not([data-hover]) .cara--ahora,
+    .persona:is([data-cara='ahora'], [data-hover]) .cara--hoy {
+      visibility: hidden;
+      transition-delay: var(--dur-flip);
+    }
+
+    .persona__voltear {
+      display: inline-flex;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .persona__voltear:hover :global(.icono) {
+        transform: rotate(90deg);
+      }
+
+      .persona__voltear :global(.icono) {
+        transition: transform var(--dur-state) var(--ease-out);
+      }
+    }
+  }
+</style>

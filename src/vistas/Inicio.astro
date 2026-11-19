@@ -1,0 +1,140 @@
+---
+/**
+ * Home v2 (DIRECCION.md, sección v2), en el orden de la historia:
+ * el resultado (hero) → quién hace hoy ese trabajo (personajes) → cómo lo
+ * resolvemos (servicios) → lo que ya se puede comprar (vitrina) → quién nos
+ * conoce (clientes) → dónde aprender con nosotros (redes) → dudas → WhatsApp.
+ */
+import Cierre from '../components/Cierre.astro';
+import Icono from '../components/Icono.astro';
+import Clientes from '../components/inicio/Clientes.astro';
+import Hero from '../components/inicio/Hero.astro';
+import Personajes from '../components/inicio/Personajes.astro';
+import Redes from '../components/inicio/Redes.astro';
+import Preguntas from '../components/Preguntas.astro';
+import Servicios from '../components/servicios/Servicios.astro';
+import Vitrina from '../components/vitrina/Vitrina.astro';
+import { correoUrl, instagramUrl, sitio, tiktokUrl } from '../data/sitio';
+import { alternasDe, type Idioma, ruta, t } from '../i18n';
+import { pesosMXN } from '../lib/formato';
+import { landingsEn, mantenimientoMinimo, precioMinimo } from '../lib/landings';
+import { enlaceWhatsApp } from '../lib/whatsapp';
+import Base from '../layouts/Base.astro';
+
+interface Props {
+  idioma: Idioma;
+}
+
+const { idioma } = Astro.props;
+const d = t(idioma);
+const landings = landingsEn(idioma);
+const ultima = landings[0];
+if (!ultima) throw new Error('La vitrina necesita al menos una landing');
+const desde = pesosMXN(precioMinimo);
+const preguntas = [
+  ...d.preguntas.landing(ultima.plazo, pesosMXN(mantenimientoMinimo)),
+  d.preguntas.software,
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: sitio.nombre,
+  url: sitio.url,
+  logo: `${sitio.url}/favicon.svg`,
+  description: d.meta.inicioDescripcion,
+  email: sitio.correo,
+  areaServed: ['MX', 'US', 'ES'],
+  sameAs: [instagramUrl, tiktokUrl],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'sales',
+    url: `https://wa.me/${sitio.whatsapp}`,
+    email: correoUrl.replace('mailto:', ''),
+    availableLanguage: ['es', 'en'],
+  },
+};
+---
+
+<Base
+  idioma={idioma}
+  titulo={d.meta.inicioTitulo}
+  descripcion={d.meta.inicioDescripcion}
+  alternas={alternasDe('inicio')}
+  schema={schema}
+  cabeceraNoche
+>
+  <Hero idioma={idioma} />
+
+  <Personajes idioma={idioma} />
+
+  <Servicios lang={idioma} totalLandings={landings.length} />
+
+  <section class="seccion vitrina-inicio" id="landings" aria-labelledby="landings-titulo">
+    <div class="wrap">
+      <div class="seccion__cabeza revela">
+        <h2 id="landings-titulo" class="titulo-seccion">
+          {d.vitrina.titulo} <span class="tenue">{d.vitrina.tenue}</span>
+        </h2>
+        <p>{d.vitrina.sub(desde, ultima.plazo)}</p>
+      </div>
+
+      <Vitrina idioma={idioma} modo="carrusel" landings={landings} limite={12} id="buscar-inicio" />
+
+      <div class="vitrina-inicio__pie">
+        <a class="enlace-flecha" href={ruta(idioma, 'landings')}>
+          {d.vitrina.verTodas(landings.length)}
+          <Icono nombre="arrow-right" />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Clientes idioma={idioma} />
+
+  <Redes idioma={idioma} />
+
+  <section class="seccion preguntas-inicio" id="preguntas" aria-labelledby="preguntas-titulo">
+    <div class="wrap preguntas-inicio__rejilla">
+      <div class="seccion__cabeza revela">
+        <h2 id="preguntas-titulo" class="titulo-seccion">{d.preguntas.titulo}</h2>
+        <p>
+          {d.preguntas.ayuda}{' '}
+          <a href={enlaceWhatsApp(d.whatsapp.cotizar)} rel="noopener">{d.preguntas.ayudaEnlace}</a>.
+        </p>
+      </div>
+      <Preguntas preguntas={preguntas} />
+    </div>
+  </section>
+
+  <Cierre idioma={idioma} />
+</Base>
+
+<style>
+  .vitrina-inicio {
+    overflow-x: clip;
+  }
+
+  .vitrina-inicio__pie {
+    display: flex;
+    margin-block: var(--s-2) var(--s-10);
+  }
+
+  .preguntas-inicio {
+    border-top: 1px solid var(--line);
+  }
+
+  .preguntas-inicio__rejilla {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-4);
+  }
+
+  @media (min-width: 64rem) {
+    .preguntas-inicio__rejilla {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+      gap: clamp(3rem, 1rem + 5vw, 6rem);
+      align-items: start;
+    }
+  }
+</style>

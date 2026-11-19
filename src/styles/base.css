@@ -355,13 +355,125 @@ a {
   .entra-4 {
     animation: asoma var(--dur-hero) var(--ease-out) 240ms both;
   }
+
+  /* Decoración del hero (la línea de prueba): solo funde. */
+  .entra-5 {
+    animation: funde 400ms var(--ease-out) 320ms both;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .entra-1,
   .entra-2,
   .entra-3,
-  .entra-4 {
+  .entra-4,
+  .entra-5 {
     animation: funde var(--dur-base) ease both;
   }
 }
+
+/*
+ * Revelados al hacer scroll (DIRECCION v2). Se marca el contenedor con
+ * .revela y suben sus hijos directos, escalonados con pasos que se acortan
+ * (no uniformes). Los hijos son envoltorios: nunca el botón o la tarjeta que
+ * ya tiene su propio hover o press.
+ *   - Con scroll-driven animations: CSS puro, ligado al scroll (view()).
+ *   - Sin ellas: src/scripts/revela.ts marca data-revela con IntersectionObserver.
+ *   - Con menos movimiento: todo visible y quieto.
+ */
+.revela > :nth-child(2) {
+  --revela-desfase: 8%;
+  --revela-retraso: 90ms;
+}
+
+.revela > :nth-child(3) {
+  --revela-desfase: 14%;
+  --revela-retraso: 150ms;
+}
+
+.revela > :nth-child(4) {
+  --revela-desfase: 18%;
+  --revela-retraso: 200ms;
+}
+
+.revela > :nth-child(5) {
+  --revela-desfase: 21%;
+  --revela-retraso: 240ms;
+}
+
+.revela > :nth-child(n + 6) {
+  --revela-desfase: 23%;
+  --revela-retraso: 270ms;
+}
+
+@keyframes revela {
+  from {
+    opacity: 0;
+    transform: translateY(var(--revela-sube));
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .revela > * {
+      animation: revela var(--ease-out) both;
+      animation-timeline: view();
+      animation-range: entry var(--revela-desfase, 0%) entry calc(var(--revela-desfase, 0%) + 55%);
+    }
+  }
+
+  @supports not (animation-timeline: view()) {
+    .revela[data-revela='pendiente'] > * {
+      opacity: 0;
+      transform: translateY(var(--revela-sube));
+    }
+
+    .revela[data-revela='visto'] > * {
+      transition:
+        opacity var(--dur-revela) var(--ease-out) var(--revela-retraso, 0ms),
+        transform var(--dur-revela) var(--ease-out) var(--revela-retraso, 0ms);
+    }
+  }
+}
+
+/* Botón de icono redondo (pausas, flechas del carrusel). 44 px de área táctil. */
+.boton-icono {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--dur-press) var(--ease-out),
+    border-color var(--dur-fast) ease,
+    background-color var(--dur-fast) ease,
+    opacity var(--dur-fast) ease;
+}
+
+.boton-icono:active {
+  transform: scale(0.94);
+}
+
+.boton-icono:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.boton-icono:disabled:active {
+  transform: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .boton-icono:not(:disabled):hover {
+    border-color: var(--ink);
+  }
+}
+
+/* Tema del navegador: selección, caret y barra de desplazamiento ya van arriba;
+   los números de precios y conteos van tabulares en .cifra. */

@@ -1,0 +1,277 @@
+---
+/**
+ * Hero v2 (DIRECCION.md): el resultado en el titular, una frase que rota entre
+ * tareas reales, la escena "antes → después" y WhatsApp prellenado.
+ *
+ * Entrada (choreograph): h1 0 ms (lead, 12 px) · frase y sub 100 ms (8 px) ·
+ * botones 180 ms (6 px) · escena 240 ms (asoma) · prueba 320 ms (solo funde).
+ * La frase rota cada 2.4 s; como dura más de 5 s, el botón de pausa la detiene
+ * (WCAG 2.2.2). Con menos movimiento queda la primera frase, quieta.
+ */
+import { type Idioma, ruta, t } from '../../i18n';
+import { enlaceWhatsApp } from '../../lib/whatsapp';
+import Icono from '../Icono.astro';
+import AntesDespues from './AntesDespues.astro';
+
+interface Props {
+  idioma: Idioma;
+}
+
+const { idioma } = Astro.props;
+const d = t(idioma);
+const h = d.hero;
+---
+
+<section class="hero tema-noche" aria-labelledby="hero-titulo" data-hero>
+  <div class="wrap hero__rejilla">
+    <div class="hero__texto">
+      <h1 id="hero-titulo" class="display hero__titulo entra-1">{h.titulo}</h1>
+
+      <p class="hero__rota entra-2">
+        <span class="visually-hidden">{h.rotaAccesible}</span>
+        <span aria-hidden="true">
+          <span class="hero__rota-inicio">{h.rotaInicio}</span>
+          <span class="rota">
+            {h.rota.map((frase) => <span class="rota__frase">{frase}.</span>)}
+          </span>
+        </span>
+      </p>
+
+      <p class="entrada hero__sub entra-2">{h.sub}</p>
+
+      <div class="acciones hero__acciones entra-3">
+        <a class="btn btn--primario hero__cta" href={enlaceWhatsApp(d.whatsapp.hero)} rel="noopener">
+          <Icono nombre="whatsapp" />
+          {h.ctaPrincipal}
+        </a>
+        <a class="btn btn--secundario" href={`${ruta(idioma, 'inicio')}#landings`}>
+          {h.ctaSecundario}
+          <Icono nombre="arrow-right" />
+        </a>
+      </div>
+
+      <p class="hero__prueba entra-5">
+        <Icono nombre="globe" />
+        {h.prueba}
+      </p>
+    </div>
+
+    <div class="hero__visual entra-4">
+      <AntesDespues idioma={idioma} />
+      <div class="hero__controles">
+        <button class="boton-icono" type="button" aria-pressed="false" aria-label={h.pausar} title={h.pausar} data-hero-pausa>
+          <Icono nombre="pause" clase="hero__icono-pausa" />
+          <Icono nombre="play" clase="hero__icono-play" />
+        </button>
+        <button class="boton-icono" type="button" aria-label={h.repetir} title={h.repetir} data-hero-repetir>
+          <Icono nombre="arrows-clockwise" />
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { iniciarHero } from '../../scripts/hero';
+  iniciarHero();
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: clip;
+    padding-block: clamp(2rem, 1rem + 4vw, 4.5rem) clamp(3rem, 2rem + 4vw, 5.5rem);
+    background-color: var(--bg);
+    /* Cuadrícula tenue, como las portadas de Instagram de la marca. */
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    background-position: center top;
+    color: var(--ink);
+  }
+
+  /* La cuadrícula se apaga hacia abajo para que el texto respire. */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgb(14 20 24 / 0.55), var(--bg) 92%);
+    pointer-events: none;
+  }
+
+  .hero__rejilla {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2rem, 1rem + 4vw, 3.5rem);
+    align-items: center;
+  }
+
+  .hero__texto {
+    display: grid;
+    gap: var(--s-5);
+    justify-items: start;
+  }
+
+  .hero__titulo {
+    max-width: 15ch;
+    color: var(--ink);
+  }
+
+  .hero__rota {
+    font-family: var(--font-display);
+    font-size: clamp(1.625rem, 1.15rem + 1.9vw, 2.5rem);
+    font-weight: 700;
+    font-stretch: 104%;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: var(--ink-2);
+  }
+
+  .hero__rota-inicio {
+    margin-right: 0.25em;
+  }
+
+  /* Las cinco frases en la misma celda: el renglón mide lo de la más larga y no brinca. */
+  /* overflow: cada frase entra y sale dentro de su renglón, sin pisar el de arriba. */
+  .rota {
+    display: inline-grid;
+    vertical-align: top;
+    overflow: hidden;
+    padding-block: 0.06em 0.14em;
+    margin-block: -0.06em -0.14em;
+    color: var(--accent);
+  }
+
+  .rota__frase {
+    grid-area: 1 / 1;
+  }
+
+  .hero__sub {
+    max-width: 44ch;
+  }
+
+  .hero__acciones .btn {
+    white-space: normal;
+    text-align: left;
+  }
+
+  .hero__prueba {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
+  .hero__prueba :global(.icono) {
+    color: var(--accent);
+  }
+
+  .hero__visual {
+    position: relative;
+    width: 100%;
+    max-width: 36rem;
+    justify-self: center;
+  }
+
+  .hero__controles {
+    display: none;
+    justify-content: flex-end;
+    gap: var(--s-2);
+    margin-top: var(--s-3);
+  }
+
+  .hero__controles .boton-icono {
+    background: transparent;
+    color: var(--ink);
+  }
+
+  .hero :global(.hero__icono-play) {
+    display: none;
+  }
+
+  [data-pausa='true'] :global(.hero__icono-play) {
+    display: block;
+  }
+
+  [data-pausa='true'] :global(.hero__icono-pausa) {
+    display: none;
+  }
+
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    .hero__controles {
+      display: flex;
+    }
+  }
+
+  @keyframes rota {
+    0% {
+      opacity: 0;
+      transform: translateY(0.45em);
+    }
+    4%,
+    18% {
+      opacity: 1;
+      transform: none;
+    }
+    22%,
+    100% {
+      opacity: 0;
+      transform: translateY(-0.45em);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .rota__frase {
+      animation: rota 12s var(--ease-out) infinite both;
+    }
+
+    .rota__frase:nth-child(2) { animation-delay: 2.4s; }
+    .rota__frase:nth-child(3) { animation-delay: 4.8s; }
+    .rota__frase:nth-child(4) { animation-delay: 7.2s; }
+    .rota__frase:nth-child(5) { animation-delay: 9.6s; }
+
+    [data-pausa='true'] .rota__frase {
+      animation-play-state: paused;
+    }
+  }
+
+  /* Menos movimiento: la primera frase, quieta (las demás siguen en el texto accesible). */
+  @media (prefers-reduced-motion: reduce) {
+    .rota__frase:not(:first-child) {
+      visibility: hidden;
+    }
+  }
+
+  @media (max-width: 29.99rem) {
+    .hero__acciones {
+      width: 100%;
+    }
+
+    .hero__acciones .btn {
+      flex: 1 1 100%;
+      justify-content: center;
+      text-align: center;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .hero {
+      display: grid;
+      align-items: center;
+      min-height: min(calc(100svh - 4.5rem), 54rem);
+    }
+
+    .hero__rejilla {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      column-gap: clamp(2.5rem, 1rem + 4vw, 5rem);
+    }
+
+    .hero__visual {
+      justify-self: end;
+    }
+  }
+</style>
