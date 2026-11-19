@@ -64,6 +64,15 @@ const INDEX = `<!doctype html>
 </html>
 `;
 
+// Config propia del sitio de demos. Sin ella, `netlify deploy` hereda el
+// netlify.toml del sitio principal (build + proxy de /demos/*) y el sitio de
+// demos se redirige a sí mismo en bucle.
+const NETLIFY_TOML = `# Sitio tigemsha-demos: archivos estáticos ya construidos, sin build ni redirects.
+[build]
+  publish = "."
+  command = ""
+`;
+
 const existe = async (ruta) => {
   try {
     await stat(ruta);
@@ -141,6 +150,7 @@ async function main() {
   await writeFile(path.join(salida, '_headers'), HEADERS);
   await writeFile(path.join(salida, 'robots.txt'), ROBOTS);
   await writeFile(path.join(salida, 'index.html'), INDEX);
+  await writeFile(path.join(salida, 'netlify.toml'), NETLIFY_TOML);
 
   for (const { nombre, slug, demo } of demos) {
     if (!vitrina.has(slug)) {
