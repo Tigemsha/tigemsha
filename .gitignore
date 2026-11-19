@@ -19,3 +19,6 @@ dist/
 .vscode/*
 !.vscode/extensions.json
 *.log
+
+# Netlify CLI (estado local)
+.netlify/
