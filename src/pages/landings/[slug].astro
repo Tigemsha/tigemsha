@@ -52,7 +52,6 @@ const schema = {
   titulo={`Landing para ${giro} ${landing.codigo}`}
   descripcion={`${landing.resumen} Desde ${precio} MXN. Mírala funcionando y pruébala con otros colores.`}
   schema={schema}
-  claseBody="con-barra"
 >
   <div class="wrap ficha">
     <nav class="migas" aria-label="Ruta">
@@ -495,7 +494,8 @@ const schema = {
     font-size: 1.125rem;
   }
 
-  :global(body.con-barra) {
+  /* La página reserva el alto de la barra para que no tape el pie. */
+  :global(body:has(.barra-compra)) {
     padding-bottom: calc(4.75rem + env(safe-area-inset-bottom));
   }
 
@@ -504,7 +504,7 @@ const schema = {
       display: none;
     }
 
-    :global(body.con-barra) {
+    :global(body:has(.barra-compra)) {
       padding-bottom: 0;
     }
   }

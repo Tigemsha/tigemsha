@@ -12,11 +12,9 @@ interface Props {
   /** Datos estructurados schema.org (JSON-LD). */
   schema?: Record<string, unknown> | Record<string, unknown>[];
   noindex?: boolean;
-  /** Clase extra para <body> (por ejemplo, para reservar la barra fija). */
-  claseBody?: string;
 }
 
-const { titulo, descripcion, schema, noindex = false, claseBody } = Astro.props;
+const { titulo, descripcion, schema, noindex = false } = Astro.props;
 const canonica = new URL(Astro.url.pathname, Astro.site ?? sitio.url).href;
 const imagenOg = new URL('/og.png', Astro.site ?? sitio.url).href;
 const tituloCompleto = titulo === sitio.nombre ? titulo : `${titulo} · ${sitio.nombre}`;
@@ -50,7 +48,7 @@ const tituloCompleto = titulo === sitio.nombre ? titulo : `${titulo} · ${sitio.
 
     {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
   </head>
-  <body class={claseBody}>
+  <body>
     <a class="saltar" href="#contenido">Saltar al contenido</a>
     <Cabecera />
     <main id="contenido" tabindex="-1">
