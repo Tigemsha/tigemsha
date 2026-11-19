@@ -1,0 +1,52 @@
+---
+import Tigre from '../components/Tigre.astro';
+import Base from '../layouts/Base.astro';
+import { enlaceWhatsApp, mensajes } from '../lib/whatsapp';
+---
+
+<Base
+  titulo="Página no encontrada"
+  descripcion="Esta dirección no existe en tigemsha.com."
+  noindex
+>
+  <section class="wrap error" aria-labelledby="error-titulo">
+    <Tigre clase="error__tigre" />
+    <h1 id="error-titulo" class="display error__titulo">Esta página no existe</h1>
+    <p class="entrada">
+      Puede que el enlace esté mal escrito o que la página haya cambiado de lugar. Desde aquí puedes
+      seguir:
+    </p>
+    <div class="acciones">
+      <a class="btn btn--primario" href="/landings">Ver landings a la venta</a>
+      <a class="btn btn--secundario" href="/">Ir al inicio</a>
+    </div>
+    <p class="error__ayuda">
+      ¿Buscabas algo en particular? <a href={enlaceWhatsApp(mensajes.cotizar)} rel="noopener"
+        >Escríbenos por WhatsApp</a
+      >.
+    </p>
+  </section>
+</Base>
+
+<style>
+  .error {
+    display: grid;
+    gap: var(--s-6);
+    justify-items: start;
+    padding-block: clamp(3rem, 2rem + 6vw, 7rem);
+  }
+
+  .error :global(.error__tigre) {
+    width: 4.5rem;
+    height: auto;
+    color: var(--accent);
+  }
+
+  .error__titulo {
+    max-width: 14ch;
+  }
+
+  .error__ayuda {
+    color: var(--ink-2);
+  }
+</style>

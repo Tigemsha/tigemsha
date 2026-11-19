@@ -1,0 +1,194 @@
+---
+import { sitio } from '../data/sitio';
+import Base from '../layouts/Base.astro';
+import { fechaLarga } from '../lib/formato';
+import { enlaceWhatsApp } from '../lib/whatsapp';
+
+const whatsapp = enlaceWhatsApp('Hola, tengo una solicitud sobre mis datos personales (aviso de privacidad).');
+const telefono = '+52 1 55 6941 8799';
+---
+
+<Base
+  titulo="Aviso de privacidad"
+  descripcion="Qué datos personales recaba Tigemsha, para qué los usa y cómo ejercer tus derechos ARCO conforme a la LFPDPPP."
+>
+  <article class="wrap aviso">
+    <header class="aviso__cabeza">
+      <h1 class="display aviso__titulo">Aviso de privacidad</h1>
+      <p class="aviso__fecha">
+        Última actualización: <time datetime={sitio.avisoActualizado}>{fechaLarga(sitio.avisoActualizado)}</time>
+      </p>
+      <p class="entrada">
+        Este aviso explica qué datos personales recabamos, para qué los usamos y cómo puedes ejercer tus
+        derechos, conforme a la Ley Federal de Protección de Datos Personales en Posesión de los
+        Particulares (LFPDPPP), publicada en el Diario Oficial de la Federación el 20 de marzo de 2025.
+      </p>
+    </header>
+
+    <section aria-labelledby="responsable">
+      <h2 id="responsable">Quién es responsable de tus datos</h2>
+      <p>
+        {sitio.nombre} es responsable del tratamiento de tus datos personales. Para cualquier asunto
+        relacionado con tu privacidad, escríbenos por WhatsApp al <a href={whatsapp} rel="noopener"
+          >{telefono}</a
+        >.
+      </p>
+      {
+        sitio.domicilio ? (
+          <p>Domicilio para oír y recibir notificaciones: {sitio.domicilio}.</p>
+        ) : (
+          <p>
+            Si necesitas nuestro domicilio para oír y recibir notificaciones, pídelo por WhatsApp y te lo
+            damos por escrito.
+          </p>
+        )
+      }
+    </section>
+
+    <section aria-labelledby="datos">
+      <h2 id="datos">Qué datos recabamos</h2>
+      <p>
+        Este sitio no tiene formularios. Solo recabamos datos cuando tú nos escribes por WhatsApp o por
+        Instagram:
+      </p>
+      <ul>
+        <li>Tu nombre y tu número de teléfono o usuario.</li>
+        <li>El nombre, el giro y la dirección de tu negocio.</li>
+        <li>
+          Lo que decidas mandarnos para tu proyecto: logo, fotos, horarios, precios y textos.
+        </li>
+        <li>Tus datos fiscales, solo si pides factura.</li>
+      </ul>
+      <p>
+        No te pedimos datos personales sensibles. Además, el proveedor que aloja este sitio registra
+        datos técnicos de cada visita (dirección IP, navegador, página y hora) para operarlo y protegerlo.
+      </p>
+    </section>
+
+    <section aria-labelledby="finalidades">
+      <h2 id="finalidades">Para qué los usamos</h2>
+      <p>Usamos tus datos para:</p>
+      <ul>
+        <li>Responder tus mensajes y mandarte una cotización.</li>
+        <li>Preparar, entregar y publicar tu landing o tu proyecto.</li>
+        <li>Cobrar y, si lo pides, emitir tu factura.</li>
+        <li>Darte el soporte y el mantenimiento que contrates.</li>
+      </ul>
+      <p>
+        Estas finalidades son necesarias para atenderte. No usamos tus datos para otras finalidades ni
+        los vendemos.
+      </p>
+    </section>
+
+    <section aria-labelledby="transferencias">
+      <h2 id="transferencias">Con quién los compartimos</h2>
+      <p>
+        No transferimos tus datos a terceros, salvo cuando lo requiera una autoridad competente conforme a
+        la ley. Para operar usamos proveedores que tratan datos por cuenta nuestra: WhatsApp e Instagram
+        (Meta) como canales de mensajes, y el servicio de hosting de este sitio y, si nos pides
+        publicarla, el de tu landing.
+      </p>
+    </section>
+
+    <section aria-labelledby="arco">
+      <h2 id="arco">Tus derechos ARCO</h2>
+      <p>
+        Puedes acceder a tus datos, rectificarlos, cancelarlos u oponerte a su tratamiento (derechos
+        ARCO). También puedes revocar tu consentimiento o pedirnos que limitemos su uso. Para hacerlo,
+        <a href={whatsapp} rel="noopener">mándanos un WhatsApp</a> con:
+      </p>
+      <ul>
+        <li>Tu nombre y un medio para responderte.</li>
+        <li>Un documento que acredite tu identidad o, en su caso, la de tu representante.</li>
+        <li>Qué datos son y qué derecho quieres ejercer.</li>
+        <li>Cualquier dato que nos ayude a localizar tu información.</li>
+      </ul>
+      <p>
+        Te respondemos en un plazo máximo de 20 días hábiles. Si procede, lo hacemos efectivo dentro de
+        los 15 días hábiles siguientes.
+      </p>
+    </section>
+
+    <section aria-labelledby="cookies">
+      <h2 id="cookies">Cookies y rastreo</h2>
+      <p>
+        Este sitio y sus demos no usan cookies ni herramientas de analítica o publicidad. Los botones de
+        WhatsApp e Instagram te llevan a esas plataformas, que tienen sus propios avisos de privacidad.
+      </p>
+    </section>
+
+    <section aria-labelledby="conservacion">
+      <h2 id="conservacion">Cuánto tiempo los guardamos</h2>
+      <p>
+        Mientras dure nuestra relación comercial y el tiempo que exijan las leyes fiscales. Después los
+        eliminamos.
+      </p>
+    </section>
+
+    <section aria-labelledby="cambios">
+      <h2 id="cambios">Cambios a este aviso</h2>
+      <p>
+        Si cambiamos este aviso, publicamos la nueva versión en esta página con su fecha de
+        actualización.
+      </p>
+    </section>
+
+    <section aria-labelledby="autoridad">
+      <h2 id="autoridad">Si no estás de acuerdo</h2>
+      <p>
+        Si consideras que tu derecho a la protección de datos personales fue vulnerado, puedes acudir a
+        la Secretaría Anticorrupción y Buen Gobierno, autoridad garante conforme a la LFPDPPP.
+      </p>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .aviso {
+    display: grid;
+    gap: var(--s-10);
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 4.5rem) var(--section-y);
+    max-width: calc(var(--measure) + 2 * var(--gutter));
+  }
+
+  .aviso__cabeza {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  .aviso__titulo {
+    font-size: var(--fs-headline);
+  }
+
+  .aviso__fecha {
+    color: var(--ink-3);
+    font-size: 0.9375rem;
+  }
+
+  .aviso section {
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .aviso h2 {
+    font-size: var(--fs-title);
+    font-weight: 700;
+    font-stretch: 104%;
+    line-height: 1.2;
+  }
+
+  .aviso p,
+  .aviso li {
+    color: var(--ink-2);
+  }
+
+  .aviso ul {
+    display: grid;
+    gap: var(--s-1);
+    padding-left: 1.25rem;
+  }
+
+  .aviso li::marker {
+    color: var(--ink-3);
+  }
+</style>
