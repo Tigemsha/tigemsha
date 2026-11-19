@@ -1,0 +1,236 @@
+---
+/**
+ * Clientes: los ocho logos en una marquesina que se pausa con hover, con foco
+ * o con su botón, y que queda como rejilla quieta con menos movimiento. Los
+ * logos van en grises (una sola voz para ocho marcas) y con un tamaño que
+ * compensa su forma: todos ocupan un área parecida.
+ */
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+import bancoAzteca from '../../assets/clientes/banco-azteca.png';
+import elektra from '../../assets/clientes/elektra.png';
+import fixingBrokenHouses from '../../assets/clientes/fixing-broken-houses.png';
+import granAlianza from '../../assets/clientes/gran-alianza-mexicana.png';
+import grupoSalinas from '../../assets/clientes/grupo-salinas.png';
+import liverpool from '../../assets/clientes/liverpool.png';
+import mazarron from '../../assets/clientes/mazarron.png';
+import nestle from '../../assets/clientes/nestle.png';
+import { type Idioma, t } from '../../i18n';
+import Icono from '../Icono.astro';
+
+interface Props {
+  idioma: Idioma;
+}
+
+const { idioma } = Astro.props;
+const d = t(idioma).clientes;
+
+const logos: { imagen: ImageMetadata; nombre: string }[] = [
+  { imagen: liverpool, nombre: 'Liverpool' },
+  { imagen: nestle, nombre: 'Nestlé' },
+  { imagen: bancoAzteca, nombre: 'Banco Azteca' },
+  { imagen: elektra, nombre: 'Elektra' },
+  { imagen: grupoSalinas, nombre: 'Grupo Salinas' },
+  { imagen: granAlianza, nombre: 'Gran Alianza Mexicana (GAM)' },
+  { imagen: mazarron, nombre: 'Concejalía de Cultura del Ayuntamiento de Mazarrón' },
+  { imagen: fixingBrokenHouses, nombre: 'Fixing Broken Houses' },
+];
+
+/** Área parecida para todos: ancho = √(área · proporción). */
+const AREA = 5200;
+const medidas = logos.map(({ imagen }) => {
+  const proporcion = imagen.width / imagen.height;
+  const ancho = Math.round(Math.sqrt(AREA * proporcion));
+  return { ancho, alto: Math.round(ancho / proporcion) };
+});
+const grupos = [false, true];
+---
+
+<section class="clientes" id="clientes" aria-labelledby="clientes-titulo">
+  <div class="wrap clientes__cabeza revela">
+    <h2 id="clientes-titulo" class="titulo-seccion">{d.titulo}</h2>
+    <p>{d.sub}</p>
+  </div>
+
+  <div class="marquesina" data-marquesina>
+    <div class="marquesina__pista">
+      {
+        grupos.map((copia) => (
+          <ul class="marquesina__grupo" aria-hidden={copia ? 'true' : undefined}>
+            {logos.map((logo, i) => (
+              <li>
+                <Image
+                  src={logo.imagen}
+                  alt={copia ? '' : logo.nombre}
+                  width={medidas[i]?.ancho ?? 120}
+                  height={medidas[i]?.alto ?? 40}
+                  densities={[1, 2]}
+                  format="webp"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                  class="marquesina__logo"
+                />
+              </li>
+            ))}
+          </ul>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="wrap clientes__pie">
+    <p class="clientes__tambien">{d.tambien}</p>
+    <button class="boton-icono clientes__pausa" type="button" aria-pressed="false" aria-label={d.pausar} title={d.pausar} data-marquesina-pausa>
+      <Icono nombre="pause" clase="clientes__icono-pausa" />
+      <Icono nombre="play" clase="clientes__icono-play" />
+    </button>
+  </div>
+  <p class="wrap clientes__marcas">{d.marcas}</p>
+</section>
+
+<script>
+  import { iniciarMarquesina } from '../../scripts/marquesina';
+  iniciarMarquesina();
+</script>
+
+<style>
+  .clientes {
+    padding-block: var(--section-y);
+    border-block: 1px solid var(--line);
+    background: var(--surface);
+    overflow-x: clip;
+  }
+
+  .clientes__cabeza {
+    display: grid;
+    gap: var(--s-4);
+    margin-bottom: clamp(2rem, 1.4rem + 2.4vw, 3rem);
+  }
+
+  .clientes__cabeza p {
+    color: var(--ink-2);
+    font-size: var(--fs-lead);
+    max-width: 48ch;
+  }
+
+  /* La marquesina corre de orilla a orilla y se desvanece en los bordes. */
+  .marquesina {
+    overflow: hidden;
+    padding-block: var(--s-4);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+
+  .marquesina__pista {
+    display: flex;
+    width: max-content;
+  }
+
+  .marquesina__grupo {
+    display: flex;
+    align-items: center;
+    gap: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+    padding: 0 clamp(1.25rem, 0.75rem + 2vw, 2.5rem);
+    list-style: none;
+  }
+
+  .marquesina__grupo li {
+    display: grid;
+    place-items: center;
+    min-height: 5rem;
+  }
+
+  .marquesina :global(.marquesina__logo) {
+    max-width: none;
+    opacity: 0.82;
+    transition: opacity var(--dur-fast) ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .marquesina__grupo li:hover :global(.marquesina__logo) {
+      opacity: 1;
+    }
+  }
+
+  @keyframes marquesina {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .marquesina__pista {
+      animation: marquesina var(--dur-marquesina) linear infinite;
+    }
+
+    .marquesina:hover .marquesina__pista,
+    .marquesina:focus-within .marquesina__pista,
+    :global([data-marquesina-pausada]) .marquesina__pista {
+      animation-play-state: paused;
+    }
+  }
+
+  /* Menos movimiento: rejilla quieta, una sola copia. */
+  @media (prefers-reduced-motion: reduce) {
+    .marquesina {
+      mask-image: none;
+    }
+
+    .marquesina__pista {
+      width: auto;
+    }
+
+    .marquesina__grupo {
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      row-gap: var(--s-6);
+    }
+
+    .marquesina__grupo[aria-hidden='true'] {
+      display: none;
+    }
+  }
+
+  .clientes__pie {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    margin-top: var(--s-6);
+  }
+
+  .clientes__tambien {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .clientes__pausa {
+    display: none;
+    flex: none;
+  }
+
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    .clientes__pausa {
+      display: inline-grid;
+    }
+  }
+
+  .clientes :global(.clientes__icono-play) {
+    display: none;
+  }
+
+  :global([data-marquesina-pausada]) :global(.clientes__icono-play) {
+    display: block;
+  }
+
+  :global([data-marquesina-pausada]) :global(.clientes__icono-pausa) {
+    display: none;
+  }
+
+  .clientes__marcas {
+    margin-top: var(--s-3);
+    color: var(--ink-3);
+    font-size: var(--fs-label);
+  }
+</style>

@@ -1,0 +1,258 @@
+---
+/**
+ * "Aprende con nosotros": las 6 portadas reales de @tigemsha en Instagram
+ * (recursos/redes/REDES.md), una tarjeta de TikTok y botones para seguir.
+ */
+import type { ImageMetadata } from 'astro';
+import { Picture } from 'astro:assets';
+import igAutomatizar from '../../assets/redes/ig-automatizar-empresa.jpg';
+import igGithub from '../../assets/redes/ig-github-cli.jpg';
+import igJava from '../../assets/redes/ig-java4shell.jpg';
+import igNext from '../../assets/redes/ig-nextjs-seguridad.jpg';
+import igClone from '../../assets/redes/ig-structuredclone.jpg';
+import igValeLaPena from '../../assets/redes/ig-vale-la-pena-automatizar.jpg';
+import { instagramUrl, sitio, tiktokUrl } from '../../data/sitio';
+import { type Idioma, t } from '../../i18n';
+import Icono from '../Icono.astro';
+
+interface Props {
+  idioma: Idioma;
+}
+
+const { idioma } = Astro.props;
+const d = t(idioma).redes;
+
+/** Enlaces de REDES.md. Los posts que todavía no salen llevan al perfil. */
+const posts: { id: keyof typeof d.posts; imagen: ImageMetadata; url: string }[] = [
+  { id: 'ig-automatizar-empresa', imagen: igAutomatizar, url: instagramUrl },
+  { id: 'ig-vale-la-pena-automatizar', imagen: igValeLaPena, url: instagramUrl },
+  { id: 'ig-nextjs-seguridad', imagen: igNext, url: instagramUrl },
+  { id: 'ig-structuredclone', imagen: igClone, url: 'https://www.instagram.com/p/Df2obZkGh9d/' },
+  { id: 'ig-github-cli', imagen: igGithub, url: 'https://www.instagram.com/p/Df5NOfeAbr1/' },
+  { id: 'ig-java4shell', imagen: igJava, url: 'https://www.instagram.com/p/Df5ouFECE9V/' },
+];
+---
+
+<section class="seccion redes" id="aprende" aria-labelledby="redes-titulo">
+  <div class="wrap">
+    <div class="redes__cabeza revela">
+      <div class="redes__texto">
+        <h2 id="redes-titulo" class="titulo-seccion">{d.titulo}</h2>
+        <p>{d.sub}</p>
+      </div>
+      <div class="acciones">
+        <a class="btn btn--primario" href={instagramUrl} rel="noopener">
+          <Icono nombre="instagram" />
+          {d.seguirInstagram}
+        </a>
+        <a class="btn btn--secundario" href={tiktokUrl} rel="noopener">
+          <Icono nombre="tiktok" />
+          {d.seguirTiktok}
+        </a>
+      </div>
+    </div>
+
+    <ul class="redes__rejilla revela">
+      {
+        posts.map((post) => (
+          <li>
+            <a class="post" href={post.url} rel="noopener" aria-label={d.postAria(d.posts[post.id])}>
+              <Picture
+                src={post.imagen}
+                alt=""
+                formats={['avif']}
+                fallbackFormat="webp"
+                widths={[240, 360, 480, 720]}
+                sizes="(min-width: 64rem) 276px, (min-width: 40rem) 30vw, 45vw"
+                loading="lazy"
+                decoding="async"
+                class="post__imagen"
+              />
+            </a>
+          </li>
+        ))
+      }
+      <li class="redes__tiktok">
+        <a class="tiktok" href={sitio.tiktokVideo} rel="noopener">
+          <Icono nombre="tiktok" clase="tiktok__logo" />
+          <span class="tiktok__usuario">@{sitio.tiktok}</span>
+          <span class="tiktok__titulo">{d.tiktokTitulo}</span>
+          <span class="tiktok__texto">{d.tiktokTexto}</span>
+          <span class="tiktok__cta">
+            <Icono nombre="play" />
+            {d.tiktokCta}
+          </span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .redes__cabeza {
+    display: grid;
+    gap: var(--s-6);
+    margin-bottom: clamp(2rem, 1.4rem + 2.4vw, 3.5rem);
+  }
+
+  .redes__texto {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  .redes__texto p {
+    color: var(--ink-2);
+    font-size: var(--fs-lead);
+    max-width: 44ch;
+  }
+
+  @media (min-width: 64rem) {
+    .redes__cabeza {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+    }
+  }
+
+  .redes__rejilla {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  .redes__tiktok {
+    grid-column: 1 / -1;
+  }
+
+  @media (min-width: 40rem) {
+    .redes__rejilla {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--s-4);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .redes__rejilla {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .redes__tiktok {
+      grid-column: span 2;
+    }
+  }
+
+
+  .post {
+    display: block;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: var(--noche);
+    aspect-ratio: 4 / 5;
+    transition: transform var(--dur-state) var(--ease-out);
+  }
+
+  .post :global(.post__imagen) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 420ms var(--ease-out);
+  }
+
+  .post:active {
+    transform: scale(0.98);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .post:hover {
+      transform: translateY(-4px);
+    }
+
+    .post:hover :global(.post__imagen) {
+      transform: scale(1.03);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .post:hover,
+    .post:hover :global(.post__imagen) {
+      transform: none;
+    }
+  }
+
+  /* Tarjeta de TikTok: banda noche, como las portadas. */
+  .tiktok {
+    display: grid;
+    align-content: end;
+    justify-items: start;
+    gap: var(--s-2);
+    height: 100%;
+    min-height: 15rem;
+    padding: clamp(1.25rem, 1rem + 1.5vw, 2rem);
+    border-radius: var(--radius-md);
+    background-color: var(--noche);
+    background-image:
+      linear-gradient(var(--noche-linea) 1px, transparent 1px),
+      linear-gradient(90deg, var(--noche-linea) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color: var(--noche-texto);
+    text-decoration: none;
+    transition: transform var(--dur-state) var(--ease-out);
+  }
+
+  .tiktok :global(.tiktok__logo) {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: auto;
+    color: var(--tigre);
+  }
+
+  .tiktok__usuario {
+    color: var(--noche-texto-2);
+    font-size: var(--fs-label);
+    font-weight: 600;
+  }
+
+  .tiktok__titulo {
+    font-family: var(--font-display);
+    font-size: var(--fs-headline);
+    font-weight: 800;
+    font-stretch: var(--wdth-display);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+  }
+
+  .tiktok__texto {
+    color: var(--noche-texto-2);
+    max-width: 36ch;
+  }
+
+  .tiktok__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 44px;
+    margin-top: var(--s-2);
+    padding: 0 var(--s-4);
+    border-radius: var(--radius);
+    background: var(--tigre);
+    color: var(--tinta);
+    font-weight: 650;
+  }
+
+  .tiktok:active {
+    transform: scale(0.98);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tiktok:hover {
+      transform: translateY(-4px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tiktok:hover {
+      transform: none;
+    }
+  }
+</style>
