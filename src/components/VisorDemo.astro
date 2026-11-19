@@ -207,14 +207,19 @@ const dispositivos = [
     background: var(--bg);
   }
 
+  /* Cada dispositivo es solo un juego de variables; las reglas de abajo las usan. */
   .visor__dispositivo {
     --w: 390;
     --h: 844;
     --alto-max: 74svh;
     --bisel: 8px;
+    --borde: 0px;
+    --radio: var(--radius-device);
+    --fondo: var(--ink);
     padding: var(--bisel);
-    border-radius: var(--radius-device);
-    background: var(--ink);
+    border: var(--borde) solid var(--line);
+    border-radius: var(--radio);
+    background: var(--fondo);
     box-shadow: var(--e-device);
   }
 
@@ -228,19 +233,20 @@ const dispositivos = [
     --w: 1280;
     --h: 800;
     --bisel: 0px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-md);
-    background: var(--surface);
+    --borde: 1px;
+    --radio: var(--radius-md);
+    --fondo: var(--surface);
   }
 
+  /* Sin JS ('auto'): celular y, desde 64 rem, escritorio. */
   @media (min-width: 64rem) {
     .visor__dispositivo[data-dispositivo='auto'] {
       --w: 1280;
       --h: 800;
       --bisel: 0px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-md);
-      background: var(--surface);
+      --borde: 1px;
+      --radio: var(--radius-md);
+      --fondo: var(--surface);
     }
   }
 
@@ -253,18 +259,8 @@ const dispositivos = [
       calc(100cqi - 2 * var(--bisel))
     );
     aspect-ratio: var(--w) / var(--h);
-    border-radius: calc(var(--radius-device) - var(--bisel));
+    border-radius: calc(var(--radio) - var(--bisel) - var(--borde));
     background: var(--surface);
-  }
-
-  [data-dispositivo='escritorio'] > .visor__pantalla {
-    border-radius: calc(var(--radius-md) - 1px);
-  }
-
-  @media (min-width: 64rem) {
-    [data-dispositivo='auto'] > .visor__pantalla {
-      border-radius: calc(var(--radius-md) - 1px);
-    }
   }
 
   .visor__pantalla :global(.visor__poster) {
