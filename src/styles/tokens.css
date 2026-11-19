@@ -36,6 +36,7 @@
   --noche-texto: #e8eef0;
   --noche-texto-2: #a9b6bc;
   --noche-linea: #2b3840;
+  --noche-linea-fuerte: #3d4c55;
   --exito: #1f7a4d;
   --aviso: #8a5a00;
   --error: #b42318;
@@ -129,7 +130,7 @@
   --ink-2: var(--noche-texto-2);
   --ink-3: var(--noche-texto-2);
   --line: var(--noche-linea);
-  --line-strong: #3d4c55;
+  --line-strong: var(--noche-linea-fuerte);
   --accent-ink: var(--tigre);
   --focus: var(--tigre);
 }

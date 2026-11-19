@@ -251,13 +251,6 @@ a {
   }
 }
 
-.btn[aria-disabled='true'] {
-  --btn-bg: var(--line);
-  --btn-ink: var(--ink-3);
-  --btn-line: var(--line);
-  cursor: not-allowed;
-}
-
 .acciones {
   display: flex;
   flex-wrap: wrap;
