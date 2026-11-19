@@ -196,7 +196,7 @@ const giro = landing.giro.toLowerCase();
     display: none;
   }
 
-  /* Escenario: el tamaño del marco lo decide CSS; JS solo calcula la escala del iframe. */
+  /* Escenario: el tamaño del marco lo decide CSS (--w, --h); visor.ts lee --w para escalar el iframe. */
   .visor__escenario {
     container-type: inline-size;
     display: grid;
