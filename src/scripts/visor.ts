@@ -110,7 +110,7 @@ function iniciar(raiz: HTMLElement): void {
     const nuevo = document.createElement('iframe');
     nuevo.className = 'visor__iframe';
     nuevo.title = `Demo en vivo de la landing ${codigo}`;
-    nuevo.setAttribute('sandbox', 'allow-scripts');
+    nuevo.setAttribute('sandbox', 'allow-scripts allow-popups allow-popups-to-escape-sandbox');
     nuevo.setAttribute('loading', 'lazy');
     nuevo.setAttribute('referrerpolicy', 'same-origin');
     nuevo.addEventListener(

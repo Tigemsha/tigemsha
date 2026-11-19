@@ -3,7 +3,7 @@
     "codigo": "TGM-001",
     "slug": "gimnasios",
     "giro": "Gimnasios",
-    "nombre": "Rack",
+    "nombre": "El rack de discos",
     "fecha": "2026-11-18",
     "precio_desde": 2500,
     "mantenimiento_mes": 350,
@@ -73,8 +73,8 @@
     "captura_movil": "src/assets/landings/gimnasios/movil.png",
     "captura_escritorio": "src/assets/landings/gimnasios/escritorio.png",
     "ficha_tecnica": {
-      "peso_kb": null,
-      "lighthouse_movil": null
+      "peso_kb": 270,
+      "lighthouse_movil": 98
     }
   }
 ]
