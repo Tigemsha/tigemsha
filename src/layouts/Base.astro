@@ -1,0 +1,61 @@
+---
+import '../styles/tokens.css';
+import '../styles/base.css';
+import fuenteArchivo from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
+import Cabecera from '../components/Cabecera.astro';
+import Pie from '../components/Pie.astro';
+import { sitio } from '../data/sitio';
+
+interface Props {
+  titulo: string;
+  descripcion: string;
+  /** Datos estructurados schema.org (JSON-LD). */
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+  noindex?: boolean;
+  /** Clase extra para <body> (por ejemplo, para reservar la barra fija). */
+  claseBody?: string;
+}
+
+const { titulo, descripcion, schema, noindex = false, claseBody } = Astro.props;
+const canonica = new URL(Astro.url.pathname, Astro.site ?? sitio.url).href;
+const imagenOg = new URL('/og.png', Astro.site ?? sitio.url).href;
+const tituloCompleto = titulo === sitio.nombre ? titulo : `${titulo} · ${sitio.nombre}`;
+---
+
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descripcion} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonica} />}
+    <link rel="preload" href={fuenteArchivo} as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="theme-color" content="#f2f4f4" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_MX" />
+    <meta property="og:site_name" content={sitio.nombre} />
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:url" content={canonica} />
+    <meta property="og:image" content={imagenOg} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Tigemsha: software a la medida para empresas en México" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
+  </head>
+  <body class={claseBody}>
+    <a class="saltar" href="#contenido">Saltar al contenido</a>
+    <Cabecera />
+    <main id="contenido" tabindex="-1">
+      <slot />
+    </main>
+    <Pie />
+  </body>
+</html>

@@ -1,0 +1,142 @@
+---
+import { enlaceWhatsApp, mensajes } from '../lib/whatsapp';
+import Icono from './Icono.astro';
+import Tigre from './Tigre.astro';
+
+const ruta = Astro.url.pathname;
+const enLandings = ruta.startsWith('/landings');
+---
+
+<header class="cabecera">
+  <div class="wrap cabecera__fila">
+    <a class="marca" href="/" aria-label="Tigemsha, ir al inicio">
+      <Tigre clase="marca__tigre" />
+      <span class="marca__nombre" aria-hidden="true">Tigemsha</span>
+    </a>
+    <nav class="cabecera__nav" aria-label="Principal">
+      <ul>
+        <li>
+          <a href="/landings" aria-current={enLandings ? 'page' : undefined}>Landings</a>
+        </li>
+        <li class="solo-amplio"><a href="/#software">Software a medida</a></li>
+        <li class="solo-amplio"><a href="/#preguntas">Preguntas</a></li>
+      </ul>
+    </nav>
+    <a class="btn btn--primario cabecera__wa" href={enlaceWhatsApp(mensajes.cotizar)} rel="noopener">
+      <Icono nombre="whatsapp" />
+      <span class="cabecera__wa-texto">WhatsApp</span>
+    </a>
+  </div>
+</header>
+
+<style>
+  .cabecera {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .cabecera__fila {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 4.5rem;
+  }
+
+  .marca {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 44px;
+    margin-right: auto;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .marca :global(.marca__tigre) {
+    width: 2rem;
+    height: auto;
+    color: var(--accent);
+  }
+
+  .marca__nombre {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 800;
+    font-stretch: var(--wdth-display);
+    letter-spacing: -0.02em;
+  }
+
+  .cabecera__nav ul {
+    display: flex;
+    gap: var(--s-1);
+    padding: 0;
+    list-style: none;
+  }
+
+  .cabecera__nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 var(--s-3);
+    border-radius: var(--radius);
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color var(--dur-fast) ease;
+  }
+
+  .cabecera__nav a[aria-current='page'] {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.35em;
+    text-decoration-color: var(--accent);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .cabecera__nav a:hover {
+      background: var(--surface);
+    }
+  }
+
+  .solo-amplio {
+    display: none;
+  }
+
+  .cabecera__wa {
+    min-width: 44px;
+    min-height: 44px;
+    padding-inline: var(--s-3);
+  }
+
+  .cabecera__wa-texto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  @media (min-width: 30rem) {
+    .cabecera__wa {
+      padding-inline: var(--s-4);
+    }
+
+    .cabecera__wa-texto {
+      position: static;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      clip-path: none;
+    }
+  }
+
+  @media (min-width: 56rem) {
+    .solo-amplio {
+      display: list-item;
+    }
+
+    .cabecera__fila {
+      gap: var(--s-4);
+    }
+  }
+</style>

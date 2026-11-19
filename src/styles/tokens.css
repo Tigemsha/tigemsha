@@ -1,0 +1,132 @@
+/*
+ * Tokens de Tigemsha · "El muestrario"
+ * Fuente: DESIGN.md (propuestas/impeccable.md §4) y DIRECCION.md.
+ * Los componentes solo usan la capa semántica (--bg, --ink, --accent…), nunca hex.
+ */
+
+/* Archivo variable (wght 100–900, wdth 62–125). El navegador solo baja el subset
+   latin para texto en español: un solo woff2. */
+@import '@fontsource-variable/archivo/wdth.css';
+
+/* Fallback con métricas de Archivo (ascent 878, descent 210, xWidthAvg 456)
+   para que el cambio de fuente no mueva el layout. */
+@font-face {
+  font-family: 'Archivo Fallback';
+  src: local('Arial'), local('Helvetica Neue'), local('Helvetica');
+  size-adjust: 103.3%;
+  ascent-override: 85%;
+  descent-override: 20.3%;
+  line-gap-override: 0%;
+}
+
+:root {
+  /* Primitivos */
+  --tigre: #41d4f2;
+  --tigre-hondo: #2bc3e3;
+  --tigre-tinta: #00708a;
+  --tinta: #0e1418;
+  --tinta-2: #3d4a52;
+  --tinta-3: #5e6b73;
+  --cemento: #f2f4f4;
+  --papel: #ffffff;
+  --linea: #d5dbdd;
+  --linea-fuerte: #b9c2c6;
+  --noche: #0e1418;
+  --noche-superficie: #172128;
+  --noche-texto: #e8eef0;
+  --noche-texto-2: #a9b6bc;
+  --noche-linea: #2b3840;
+  --exito: #1f7a4d;
+  --aviso: #8a5a00;
+  --error: #b42318;
+
+  /* Contrato semántico (mismo contrato que el kit de landings) */
+  --bg: var(--cemento);
+  --surface: var(--papel);
+  --ink: var(--tinta);
+  --ink-2: var(--tinta-2);
+  --ink-3: var(--tinta-3);
+  --line: var(--linea);
+  --line-strong: var(--linea-fuerte);
+  --accent: var(--tigre);
+  --accent-hover: var(--tigre-hondo);
+  --on-accent: var(--tinta);
+  --accent-ink: var(--tigre-tinta);
+  --focus: var(--tigre-tinta);
+  --selection: rgb(65 212 242 / 0.35);
+
+  /* Tipografía */
+  --font-display: 'Archivo Variable', 'Archivo Fallback', system-ui, sans-serif;
+  --font-body: 'Archivo Variable', 'Archivo Fallback', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  --wdth-display: 112%;
+  --wdth-code: 75%;
+
+  --fs-display: clamp(2.5rem, 1.45rem + 4.6vw, 5.25rem);
+  --fs-headline: clamp(1.875rem, 1.3rem + 2.4vw, 3rem);
+  --fs-title: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --fs-lead: clamp(1.125rem, 1.05rem + 0.35vw, 1.3125rem);
+  --fs-body: 1.0625rem;
+  --fs-label: 0.875rem;
+  --fs-code: 0.9375rem;
+  --lh-body: 1.6;
+  --measure: 65ch;
+
+  /* Espacio (base 4 px) */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.25rem;
+  --s-6: 1.5rem;
+  --s-8: 2rem;
+  --s-10: 2.5rem;
+  --s-12: 3rem;
+  --s-16: 4rem;
+  --s-24: 6rem;
+  --s-32: 8rem;
+  --section-y: clamp(4rem, 2.5rem + 6vw, 8rem);
+  --container: 75rem;
+  --gutter: clamp(1rem, 0.4rem + 2.6vw, 2rem);
+
+  /* Forma */
+  --radius-xs: 3px;
+  --radius: 6px;
+  --radius-md: 12px;
+  --radius-device: 28px;
+  --radius-pill: 999px;
+
+  /* Profundidad */
+  --e1: 0 1px 2px rgb(14 20 24 / 0.06), 0 10px 24px -8px rgb(14 20 24 / 0.18);
+  --e2: 0 -8px 24px -10px rgb(14 20 24 / 0.2);
+  --e-device: 0 2px 4px rgb(14 20 24 / 0.06), 0 24px 48px -20px rgb(14 20 24 / 0.28);
+
+  /* Movimiento (Emil) */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-press: 160ms;
+  --dur-fast: 150ms;
+  --dur-base: 200ms;
+  --dur-state: 220ms;
+  --dur-hero: 600ms;
+  --rise-lead: 12px;
+  --rise-support: 8px;
+  --rise-cta: 6px;
+
+  /* Capas */
+  --z-bar: 20;
+}
+
+/* Banda noche: solo en el cierre. Re-mapea el contrato, los componentes no cambian. */
+.tema-noche {
+  --bg: var(--noche);
+  --surface: var(--noche-superficie);
+  --ink: var(--noche-texto);
+  --ink-2: var(--noche-texto-2);
+  --ink-3: var(--noche-texto-2);
+  --line: var(--noche-linea);
+  --line-strong: #3d4c55;
+  --accent-ink: var(--tigre);
+  --focus: var(--tigre);
+}

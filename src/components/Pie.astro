@@ -1,0 +1,100 @@
+---
+import { instagramUrl, sitio } from '../data/sitio';
+import Tigre from './Tigre.astro';
+
+const anio = new Date().getFullYear();
+---
+
+<footer class="pie tema-noche">
+  <div class="wrap pie__fila">
+    <a class="pie__marca" href="/" aria-label="Tigemsha, ir al inicio">
+      <Tigre clase="pie__tigre" />
+      <span aria-hidden="true">Tigemsha</span>
+    </a>
+    <nav aria-label="Pie de página">
+      <ul class="pie__enlaces">
+        <li><a href="/landings">Landings a la venta</a></li>
+        <li><a href="/#software">Software a medida</a></li>
+        <li><a href="/#preguntas">Preguntas frecuentes</a></li>
+        <li><a href={instagramUrl} rel="noopener">Instagram</a></li>
+        <li><a href="/aviso-de-privacidad">Aviso de privacidad</a></li>
+      </ul>
+    </nav>
+    <p class="pie__legal">
+      © {anio}
+      {sitio.nombre}. Las demos de la vitrina son muestras con marca de agua; prohibida su copia o
+      redistribución.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .pie {
+    padding-block: var(--s-10) var(--s-12);
+    background: var(--bg);
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+  }
+
+  .pie__fila {
+    display: grid;
+    gap: var(--s-6);
+    padding-top: var(--s-8);
+    border-top: 1px solid var(--line);
+  }
+
+  .pie__marca {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    justify-self: start;
+    min-height: 44px;
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 800;
+    font-stretch: var(--wdth-display);
+    text-decoration: none;
+  }
+
+  .pie__marca :global(.pie__tigre) {
+    width: 1.75rem;
+    height: auto;
+    color: var(--accent);
+  }
+
+  .pie__enlaces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--s-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  .pie__enlaces a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--ink);
+  }
+
+  .pie__legal {
+    max-width: 70ch;
+  }
+
+  @media (min-width: 64rem) {
+    .pie__fila {
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      column-gap: var(--s-12);
+    }
+
+    .pie__enlaces {
+      justify-content: flex-end;
+    }
+
+    .pie__legal {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

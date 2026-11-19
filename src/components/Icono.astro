@@ -1,0 +1,42 @@
+---
+/**
+ * Íconos de Phosphor (peso regular) como SVG en línea. Siempre decorativos:
+ * el texto de al lado (o un texto oculto) da el nombre accesible.
+ */
+import arrowRight from '@phosphor-icons/core/regular/arrow-right.svg?raw';
+import arrowSquareOut from '@phosphor-icons/core/regular/arrow-square-out.svg?raw';
+import caretDown from '@phosphor-icons/core/regular/caret-down.svg?raw';
+import check from '@phosphor-icons/core/regular/check.svg?raw';
+import desktop from '@phosphor-icons/core/regular/desktop.svg?raw';
+import deviceMobile from '@phosphor-icons/core/regular/device-mobile.svg?raw';
+import deviceTablet from '@phosphor-icons/core/regular/device-tablet.svg?raw';
+import instagram from '@phosphor-icons/core/regular/instagram-logo.svg?raw';
+import whatsapp from '@phosphor-icons/core/regular/whatsapp-logo.svg?raw';
+
+const iconos = {
+  'arrow-right': arrowRight,
+  'arrow-square-out': arrowSquareOut,
+  'caret-down': caretDown,
+  check,
+  desktop,
+  'device-mobile': deviceMobile,
+  'device-tablet': deviceTablet,
+  instagram,
+  whatsapp,
+} as const;
+
+export type NombreIcono = keyof typeof iconos;
+
+interface Props {
+  nombre: NombreIcono;
+  clase?: string;
+}
+
+const { nombre, clase = '' } = Astro.props;
+const svg = iconos[nombre].replace(
+  '<svg ',
+  `<svg class="icono ${clase}" aria-hidden="true" focusable="false" `,
+);
+---
+
+<Fragment set:html={svg} />

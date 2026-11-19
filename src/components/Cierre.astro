@@ -1,0 +1,87 @@
+---
+/** Cierre en banda noche: WhatsApp, Instagram y aviso de privacidad. */
+import { instagramUrl, sitio } from '../data/sitio';
+import { enlaceWhatsApp } from '../lib/whatsapp';
+import Icono from './Icono.astro';
+
+interface Props {
+  titulo?: string;
+  texto?: string;
+  mensaje?: string;
+}
+
+const {
+  titulo = 'Cuéntanos qué necesitas',
+  texto = 'Escríbenos por WhatsApp. Si es una landing, dinos el código y tu giro; si es un proyecto, cuéntanos qué proceso quieres resolver y quién lo va a usar.',
+  mensaje = 'Hola, quiero cotizar con Tigemsha.',
+} = Astro.props;
+---
+
+<section class="cierre tema-noche" id="contacto" aria-labelledby="cierre-titulo">
+  <div class="wrap cierre__fila">
+    <h2 id="cierre-titulo" class="titulo-seccion cierre__titulo">{titulo}</h2>
+    <div class="cierre__cuerpo">
+      <p>{texto}</p>
+      <div class="acciones">
+        <a class="btn btn--primario" href={enlaceWhatsApp(mensaje)} rel="noopener">
+          <Icono nombre="whatsapp" /> Escribir por WhatsApp
+        </a>
+        <a class="btn btn--secundario" href={instagramUrl} rel="noopener">
+          <Icono nombre="instagram" /> @{sitio.instagram}
+        </a>
+      </div>
+      <p class="cierre__aviso">
+        Lo que nos mandes se usa solo para atenderte. Lee el <a href="/aviso-de-privacidad"
+          >aviso de privacidad</a
+        >.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cierre {
+    padding-block: var(--section-y) var(--s-12);
+    background: var(--bg);
+    color: var(--ink);
+  }
+
+  .cierre__fila {
+    display: grid;
+    gap: var(--s-8);
+  }
+
+  .cierre__titulo {
+    font-size: var(--fs-display);
+    font-weight: 800;
+    font-stretch: var(--wdth-display);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    max-width: 14ch;
+  }
+
+  .cierre__cuerpo {
+    display: grid;
+    gap: var(--s-6);
+    align-content: end;
+  }
+
+  .cierre__cuerpo > p:first-child {
+    color: var(--ink-2);
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+    max-width: 46ch;
+  }
+
+  .cierre__aviso {
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+  }
+
+  @media (min-width: 64rem) {
+    .cierre__fila {
+      grid-template-columns: 1.2fr 1fr;
+      align-items: end;
+    }
+  }
+</style>
