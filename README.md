@@ -45,7 +45,7 @@ src/
   scripts/visor.ts       ← visor de la demo (iframe, dispositivos y temas)
   assets/landings/<slug>/ ← capturas de cada landing (celular y escritorio)
 public/
-  _headers               ← cabeceras de Netlify (CSP, HSTS y protección de /demos/*)
+  _headers               ← cabeceras de Netlify (HSTS y protección de /demos/*); la CSP la agrega el build
   robots.txt             ← Disallow: /demos/
 scripts/collect-demos.mjs ← arma .demos-dist/ (sitio de demos)
 netlify.toml              ← build del CI y proxy de /demos/*
@@ -167,5 +167,5 @@ Para probar todo en local: `npm run build && npm run preview:full` y abre `/land
 `public/_headers` define:
 
 - Para todo el sitio: HSTS, `X-Content-Type-Options`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy`, `Permissions-Policy` y COOP.
-- La CSP del sitio va en cada ruta de Astro y no en `/*`, porque Netlify junta las cabeceras de todas las reglas que coinciden y la CSP del sitio bloquearía el JS en línea de las demos. **Si agregas una página, agrega su ruta en `_headers`.** El build no inlina CSS ni JS (`astro.config.mjs`), así que la CSP no necesita `'unsafe-inline'`.
+- La CSP del sitio va en cada ruta de Astro y no en `/*`, porque Netlify junta las cabeceras de todas las reglas que coinciden y la CSP del sitio bloquearía el JS en línea de las demos. No se escribe a mano: la integración `cspPorRuta` de `astro.config.mjs` la agrega al final de `dist/_headers`, una regla por cada página que genera el build, así que una página nueva sale con CSP sin tocar nada. El build no inlina CSS ni JS, así que la CSP no necesita `'unsafe-inline'`.
 - Para `/demos/*`, las cabeceras que cuentan son las del sitio de demos (`.demos-dist/_headers`), que pasan por el proxy. `public/_headers` repite las de `ARQUITECTURA.md` §Vitrina como respaldo; ambas políticas son compatibles.

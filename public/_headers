@@ -2,8 +2,9 @@
 #
 # Netlify junta las cabeceras de todas las reglas que coinciden con una ruta.
 # Por eso la CSP del sitio NO va en /*: si llegara a /demos/*, bloquearía el
-# JS en línea de las demos. La CSP del sitio va en las rutas de Astro, una por
-# una, y /demos/* lleva solo la suya. Si agregas una página, agrégala aquí.
+# JS en línea de las demos. La CSP va ruta por ruta y la agrega el build al
+# final de dist/_headers, una regla por cada página (cspPorRuta en
+# astro.config.mjs). /demos/* lleva solo la suya.
 
 /*
   Strict-Transport-Security: max-age=31536000; includeSubDomains
@@ -12,24 +13,6 @@
   Cross-Origin-Opener-Policy: same-origin
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: accelerometer=(), autoplay=(), camera=(), display-capture=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=()
-
-# CSP del sitio: sin JS ni CSS en línea (astro.config.mjs no inlina nada).
-# connect-src 'self' permite que el visor revise si la demo existe;
-# frame-src 'self' permite el iframe de /demos/<slug>/.
-/
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
-/index.html
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
-/landings
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
-/landings/*
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
-/aviso-de-privacidad
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
-/aviso-de-privacidad/*
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
-/404.html
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
 
 # Archivos con hash: caché larga.
 /_astro/*
