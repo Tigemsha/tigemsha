@@ -99,9 +99,8 @@ const schema = {
         >
         <MarcoNavegador url={`tigemsha.com/landings/${ultima.slug}`}>
           <CapturaMarcada
-            imagen={ultima.imagenes.escritorio}
-            alt={`Captura en escritorio de la landing ${ultima.codigo} para ${ultima.giro.toLowerCase()}`}
-            codigo={ultima.codigo}
+            landing={ultima}
+            vista="escritorio"
             anchos={[640, 960, 1200, 1600, 2400]}
             sizes="(min-width: 75rem) 1200px, calc(100vw - 2rem)"
             prioridad

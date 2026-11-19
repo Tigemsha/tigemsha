@@ -23,9 +23,8 @@ const Titulo = nivel === 2 ? 'h2' : 'h3';
   <div class="destacada__telefono">
     <CapturaMarcada
       clase="destacada__captura"
-      imagen={landing.imagenes.movil}
-      alt={`Captura en celular de la landing ${landing.codigo} para ${landing.giro.toLowerCase()}`}
-      codigo={landing.codigo}
+      landing={landing}
+      vista="movil"
       anchos={[260, 320, 520, 640]}
       sizes="(min-width: 64rem) 320px, 260px"
       prioridad={prioridad}

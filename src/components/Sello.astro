@@ -1,0 +1,28 @@
+---
+/** Sello "Muestra · TGM-001" sobre una captura o sobre la demo en vivo. No recibe clics. */
+interface Props {
+  codigo: string;
+  clase?: string;
+}
+
+const { codigo, clase = '' } = Astro.props;
+---
+
+<span class:list={['sello', 'codigo', clase]} aria-hidden="true">Muestra · {codigo}</span>
+
+<style>
+  .sello {
+    position: absolute;
+    left: var(--s-2);
+    bottom: var(--s-2);
+    padding: 2px var(--s-2);
+    border-radius: var(--radius-xs);
+    background: var(--sello-bg);
+    color: var(--sello-ink);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+</style>

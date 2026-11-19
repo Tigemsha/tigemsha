@@ -9,6 +9,7 @@ import type { Landing } from '../lib/landings';
 import CapturaMarcada from './CapturaMarcada.astro';
 import FichaColor from './FichaColor.astro';
 import Icono from './Icono.astro';
+import Sello from './Sello.astro';
 
 interface Props {
   landing: Landing;
@@ -20,7 +21,6 @@ const dispositivos = [
   { id: 'tablet', nombre: 'Tablet', icono: 'device-tablet' },
   { id: 'escritorio', nombre: 'Escritorio', icono: 'desktop' },
 ] as const;
-const giro = landing.giro.toLowerCase();
 ---
 
 <div class="visor" data-visor data-demo={landing.demo} data-codigo={landing.codigo}>
@@ -51,22 +51,22 @@ const giro = landing.giro.toLowerCase();
       <div class="visor__pantalla">
         <CapturaMarcada
           clase="visor__poster visor__poster--movil"
-          imagen={landing.imagenes.movil}
-          alt={`Captura en celular de la landing ${landing.codigo} para ${giro}`}
-          codigo={landing.codigo}
+          landing={landing}
+          vista="movil"
           anchos={[320, 390, 640, 780]}
           sizes="390px"
           prioridad
+          sello={false}
         />
         <CapturaMarcada
           clase="visor__poster visor__poster--escritorio"
-          imagen={landing.imagenes.escritorio}
-          alt={`Captura en escritorio de la landing ${landing.codigo} para ${giro}`}
-          codigo={landing.codigo}
+          landing={landing}
+          vista="escritorio"
           anchos={[640, 960, 1280, 1600]}
           sizes="(min-width: 75rem) 800px, 100vw"
+          sello={false}
         />
-        <span class="visor__sello codigo" aria-hidden="true">Muestra · {landing.codigo}</span>
+        <Sello codigo={landing.codigo} clase="visor__sello" />
         <p class="visor__estado" data-visor-estado role="status"></p>
       </div>
     </div>
@@ -321,24 +321,9 @@ const giro = landing.giro.toLowerCase();
     transition: visibility 0s linear var(--dur-base);
   }
 
-  /* El sello queda sobre la demo y no recibe clics; la marca completa la trae la demo. */
-  .visor__sello {
-    position: absolute;
-    left: var(--s-2);
-    bottom: var(--s-2);
+  /* El sello queda sobre la demo; la marca completa la trae la demo. */
+  .visor__pantalla :global(.visor__sello) {
     z-index: 1;
-    padding: 2px var(--s-2);
-    border-radius: var(--radius-xs);
-    background: var(--sello-bg);
-    color: var(--sello-ink);
-    font-size: 0.75rem;
-    line-height: 1.5;
-    letter-spacing: 0.04em;
-    pointer-events: none;
-  }
-
-  .visor__pantalla :global(.captura__sello) {
-    display: none;
   }
 
   .visor__estado {
