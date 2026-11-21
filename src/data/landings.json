@@ -151,5 +151,162 @@
         "member portal"
       ]
     }
+  },
+  {
+    "codigo": "TGM-002",
+    "slug": "clinicas-dentales",
+    "giro": "Clínicas dentales",
+    "nombre": "Sin sorpresas",
+    "familia": "salud",
+    "fecha": "2026-11-20",
+    "precio_desde": 3900,
+    "mantenimiento_mes": 450,
+    "resumen": "Landing para dentistas: precios desde a la vista, cita en tres toques por WhatsApp, botón de urgencias, meses sin intereses con el total y portal del paciente.",
+    "para": "Consultorios y clínicas dentales independientes: general, ortodoncia, endodoncia, implantes y niños.",
+    "incluye": [
+      "Tu página con tus fotos y colores: cada sección contesta una duda del paciente",
+      "Tratamientos con foto, precio desde y total visible",
+      "Selector de meses sin intereses (3, 6 o 12): cambia la mensualidad y el total se queda igual",
+      "Agenda de un vistazo: horas libres en chips, un toque y WhatsApp con la cita ya escrita, con su carnet de cita",
+      "Urgencias con \"abierto ahora\", botón para llamar y barra fija en el celular",
+      "Membresía como suscripción de streaming, mensual o anual, con tu link de pago",
+      "Dentistas con foto, cédula e institución a la vista y textos sin promesas, listos para tu aviso de COFEPRIS (el aviso lo presentas tú)",
+      "Demo del portal del paciente: próxima cita, avance del tratamiento, abonos y recordatorios. Conectarlo a tus pacientes se cotiza aparte",
+      "Promociones con cuenta regresiva y avisos de la clínica que se quitan solos",
+      "Aviso de privacidad, SEO local con schema.org, 4 temas de color y código fuente"
+    ],
+    "editable": [
+      "Nombre, logo, colonia y la foto de cada sección",
+      "Tratamientos, precios, plazos de meses sin intereses y financiamiento de ortodoncia",
+      "Horas libres de la agenda, tipos de cita y quién atiende",
+      "Horario, días de solo urgencias y precio de la consulta de urgencia",
+      "Dentistas con su foto, cédula, institución y especialidad",
+      "Membresías, precios, lo que incluye cada una y links de pago",
+      "Promociones con su foto y sus fechas",
+      "Avisos: días festivos y horarios especiales",
+      "Lo que se ve en el portal del paciente",
+      "WhatsApp, teléfono y mensajes de cada botón",
+      "Preguntas frecuentes",
+      "Colores y tema",
+      "Aviso de privacidad, responsable sanitario y número de aviso de COFEPRIS"
+    ],
+    "palabras_clave": [
+      "dentista",
+      "clínica dental",
+      "consultorio dental",
+      "odontólogo",
+      "limpieza dental",
+      "blanqueamiento",
+      "ortodoncia",
+      "brackets",
+      "alineadores",
+      "implantes",
+      "endodoncia",
+      "odontopediatría",
+      "urgencias dentales",
+      "meses sin intereses",
+      "portal del paciente"
+    ],
+    "plazo": "3 a 5 días hábiles",
+    "tema_por_defecto": "hierba",
+    "temas": [
+      {
+        "id": "hierba",
+        "nombre": "Hierbabuena",
+        "fondo": "#E8F1EB",
+        "superficie": "#FBFDFB",
+        "tinta": "#10221D",
+        "acento": "#0E6B55",
+        "texto_acento": "#FFFFFF",
+        "nombre_en": "Spearmint"
+      },
+      {
+        "id": "pluma",
+        "nombre": "Pluma",
+        "fondo": "#F0F2F7",
+        "superficie": "#FCFCFE",
+        "tinta": "#121A2E",
+        "acento": "#2A4596",
+        "texto_acento": "#FFFFFF",
+        "nombre_en": "Ink"
+      },
+      {
+        "id": "ciruela",
+        "nombre": "Ciruela",
+        "fondo": "#F7F0F1",
+        "superficie": "#FFFBFB",
+        "tinta": "#24141B",
+        "acento": "#7D2E5A",
+        "texto_acento": "#FFFFFF",
+        "nombre_en": "Plum"
+      },
+      {
+        "id": "nocturno",
+        "nombre": "Nocturno",
+        "fondo": "#0D1513",
+        "superficie": "#16211E",
+        "tinta": "#EAF2EE",
+        "acento": "#5CCFAE",
+        "texto_acento": "#0D1513",
+        "nombre_en": "Night"
+      }
+    ],
+    "captura_movil": "src/assets/landings/clinicas-dentales/movil.png",
+    "captura_escritorio": "src/assets/landings/clinicas-dentales/escritorio.png",
+    "ficha_tecnica": {
+      "peso_kb": 218,
+      "lighthouse_movil": 99
+    },
+    "en": {
+      "giro": "Dental clinics",
+      "nombre": "No surprises",
+      "resumen": "Landing page for dentists: starting prices in plain sight, booking in three taps via WhatsApp, an emergency button, interest-free installments with the full total, and a patient portal.",
+      "para": "Independent dental offices and clinics: general dentistry, orthodontics, root canals, implants and kids.",
+      "plazo": "3 to 5 business days",
+      "incluye": [
+        "Your page with your photos and colors: every section answers a patient's question",
+        "Treatments with a photo, a starting price and the total in sight",
+        "Interest-free installments picker (3, 6 or 12 months): the monthly payment changes and the total stays the same",
+        "Booking at a glance: open slots as chips, one tap and WhatsApp with the appointment already written, plus its appointment card",
+        "Emergencies with \"open now\", a call button and a sticky bar on mobile",
+        "Membership shown like a streaming subscription, monthly or yearly, with your payment link",
+        "Dentists with photo, license number and school in plain sight, and copy with no promises, ready for your COFEPRIS advertising notice (you file the notice)",
+        "Patient portal demo: next appointment, treatment progress, payments and reminders. Connecting it to your real patients is quoted separately",
+        "Promotions with a countdown and clinic notices that remove themselves",
+        "Privacy notice, local SEO with schema.org, 4 color themes and source code"
+      ],
+      "editable": [
+        "Name, logo, neighborhood and the photo of each section",
+        "Treatments, prices, installment terms and orthodontic financing",
+        "Open slots in the booking calendar, appointment types and who attends",
+        "Opening hours, emergency-only days and the emergency visit price",
+        "Dentists with their photo, license number, school and specialty",
+        "Memberships, prices, what each includes and payment links",
+        "Promotions with their photo and dates",
+        "Notices: holidays and special hours",
+        "What the patient portal shows",
+        "WhatsApp, phone and each button's message",
+        "FAQ",
+        "Colors and theme",
+        "Privacy notice, health officer and COFEPRIS advertising notice number"
+      ],
+      "palabras_clave": [
+        "dentist",
+        "dental clinic",
+        "dental office",
+        "odontologist",
+        "teeth cleaning",
+        "teeth whitening",
+        "orthodontics",
+        "braces",
+        "clear aligners",
+        "dental implants",
+        "root canal",
+        "pediatric dentistry",
+        "dental emergencies",
+        "interest-free installments",
+        "patient portal"
+      ]
+    }
   }
 ]
