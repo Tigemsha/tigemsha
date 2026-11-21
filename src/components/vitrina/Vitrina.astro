@@ -11,10 +11,9 @@
  * HTML, baja el índice compacto (/landings/indice.json) la primera vez que se
  * busca.
  */
-import proximasDatos from '../../data/proximas.json';
 import { type Idioma, ruta, rutaIndice, t } from '../../i18n';
 import { clavesDe, proximasDe } from '../../lib/indice';
-import { type Familia, familiasConLandings, type Landing, todasLasLandings } from '../../lib/landings';
+import { type Familia, familiasConLandings, type Landing, proximas as proximasDatos, todasLasLandings } from '../../lib/landings';
 import { enlaceWhatsApp } from '../../lib/whatsapp';
 import Icono from '../Icono.astro';
 import Tigre from '../Tigre.astro';

@@ -1,23 +1,5 @@
 [
   {
-    "orden": 2,
-    "slug": "clinicas-dentales",
-    "nombre": "Clínicas dentales",
-    "nombre_en": "Dental clinics",
-    "familia": "salud",
-    "palabras_clave": [
-      "dentista",
-      "dental",
-      "ortodoncia",
-      "muelas"
-    ],
-    "palabras_clave_en": [
-      "dentist",
-      "dental",
-      "orthodontics"
-    ]
-  },
-  {
     "orden": 3,
     "slug": "medicina-estetica",
     "nombre": "Clínicas de medicina estética",
@@ -87,6 +69,24 @@
       "real estate",
       "realtor",
       "homes"
+    ]
+  },
+  {
+    "orden": 7,
+    "slug": "pilates-yoga",
+    "nombre": "Estudios de pilates, yoga y barre",
+    "nombre_en": "Pilates, yoga and barre studios",
+    "familia": "fitness",
+    "palabras_clave": [
+      "pilates",
+      "yoga",
+      "barre",
+      "reformer"
+    ],
+    "palabras_clave_en": [
+      "pilates",
+      "yoga",
+      "barre"
     ]
   }
 ]

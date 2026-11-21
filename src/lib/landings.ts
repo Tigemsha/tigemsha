@@ -13,6 +13,7 @@ import path from 'node:path';
 import type { ImageMetadata } from 'astro';
 import { z } from 'astro/zod';
 import datosReales from '../data/landings.json';
+import proximasDatos from '../data/proximas.json';
 import { type Idioma, rutaFicha } from '../i18n';
 import { AA_TEXTO, contraste } from './contraste';
 
@@ -211,6 +212,12 @@ export function landingsEn(idioma: Idioma): Landing[] {
 }
 
 /** El precio más bajo de la vitrina, para el copy ("desde $2,500 MXN"). */
+/**
+ * Los siguientes giros de la fila ("Sale pronto"). Nunca incluye un giro que ya
+ * está publicado, aunque proximas.json se haya quedado atrás (npm run sync-proximas).
+ */
+export const proximas = proximasDatos.filter((p) => !datos.some((l) => l.slug === p.slug));
+
 export const precioMinimo = Math.min(...datos.map((l) => l.precio_desde));
 
 /** El mantenimiento mensual más bajo de la vitrina. */

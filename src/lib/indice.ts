@@ -5,11 +5,10 @@
  * normalizado, para aguantar cientos de landings en pocos KB comprimidos.
  */
 import { getImage } from 'astro:assets';
-import proximas from '../data/proximas.json';
 import { type Idioma, t } from '../i18n';
 import { normalizar } from './busqueda';
 import { pesosMXN } from './formato';
-import { type Familia, type Landing, type LandingDatos, landingsEn, todasLasLandings } from './landings';
+import { type Familia, type Landing, type LandingDatos, landingsEn, proximas, todasLasLandings } from './landings';
 
 /** La captura de la tarjeta: 240 px de ancho lógico (480 en pantallas 2x). */
 export const ANCHOS_TARJETA = [240, 480];
