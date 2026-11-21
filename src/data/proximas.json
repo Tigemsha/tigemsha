@@ -1,23 +1,5 @@
 [
   {
-    "orden": 3,
-    "slug": "medicina-estetica",
-    "nombre": "Clínicas de medicina estética",
-    "nombre_en": "Medical aesthetics clinics",
-    "familia": "belleza",
-    "palabras_clave": [
-      "estetica",
-      "botox",
-      "facial",
-      "laser"
-    ],
-    "palabras_clave_en": [
-      "aesthetics",
-      "botox",
-      "med spa"
-    ]
-  },
-  {
     "orden": 4,
     "slug": "veterinarias",
     "nombre": "Veterinarias",
@@ -87,6 +69,25 @@
       "pilates",
       "yoga",
       "barre"
+    ]
+  },
+  {
+    "orden": 8,
+    "slug": "salones-eventos",
+    "nombre": "Salones y jardines de eventos",
+    "nombre_en": "Event halls and gardens",
+    "familia": "eventos",
+    "palabras_clave": [
+      "salon",
+      "jardin",
+      "bodas",
+      "xv anos",
+      "fiestas"
+    ],
+    "palabras_clave_en": [
+      "venue",
+      "weddings",
+      "party hall"
     ]
   }
 ]

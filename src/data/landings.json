@@ -308,5 +308,162 @@
         "patient portal"
       ]
     }
+  },
+  {
+    "codigo": "TGM-003",
+    "slug": "medicina-estetica",
+    "giro": "Medicina estética",
+    "nombre": "Tú decides",
+    "familia": "salud",
+    "fecha": "2026-11-21",
+    "precio_desde": 4400,
+    "mantenimiento_mes": 500,
+    "resumen": "Landing para medicina estética: precio total con IVA y a meses, ficha de riesgos por tratamiento, médicos con cédula, valoración por WhatsApp y portal de sesiones.",
+    "para": "Clínicas y consultorios de medicina estética no quirúrgica: toxina, rellenos, láser, faciales y aparatología.",
+    "incluye": [
+      "Tu página con tus fotos y colores: cada sección contesta una duda de tu paciente",
+      "Hasta 8 tratamientos con foto, precio con IVA, total y mensualidad a 3, 6 o 12 meses sin intereses",
+      "Ficha de cada tratamiento: molestia, recuperación, riesgos y contraindicaciones, sin promesas",
+      "Médicos con foto, cédula e institución, y responsable sanitario a la vista",
+      "Agenda de valoraciones: horas libres en chips y WhatsApp con la cita ya escrita",
+      "Membresía mensual como suscripción de streaming, con tu link de pago",
+      "Promociones con cuenta regresiva y avisos de la clínica que se quitan solos",
+      "Demo del portal del paciente: próxima sesión, sesiones del paquete, abonos y retoque. Conectarlo a tus pacientes y los recordatorios automáticos se cotizan aparte",
+      "Textos sin promesas, listos para tu permiso de publicidad de COFEPRIS (el trámite lo haces tú; te damos capturas y textos)",
+      "Aviso de privacidad, SEO local con schema.org, 4 temas de color y código fuente"
+    ],
+    "editable": [
+      "Nombre, logo, colonia y la foto de cada sección",
+      "Tratamientos, precios con IVA, plazos de meses sin intereses y la ficha de riesgos de cada uno",
+      "Horas libres de la agenda, tipos de valoración y quién atiende",
+      "Médicos con su foto, cédula, institución y especialidad, y las garantías de la clínica",
+      "Membresías, precios, lo que incluye cada una y links de pago",
+      "Promociones con su foto, sus fechas y el tratamiento al que enlazan",
+      "Avisos: días festivos y horarios especiales",
+      "Lo que se ve en el portal del paciente",
+      "WhatsApp, teléfono y mensajes de cada botón",
+      "Preguntas frecuentes",
+      "Colores y tema",
+      "Aviso de privacidad, responsable sanitario, aviso de funcionamiento y permiso de publicidad de COFEPRIS"
+    ],
+    "palabras_clave": [
+      "medicina estética",
+      "clínica estética",
+      "médico estético",
+      "med spa",
+      "toxina botulínica",
+      "líneas de expresión",
+      "ácido hialurónico",
+      "relleno de labios",
+      "depilación láser",
+      "peeling químico",
+      "HIFU",
+      "radiofrecuencia",
+      "valoración estética",
+      "meses sin intereses",
+      "portal del paciente",
+      "COFEPRIS"
+    ],
+    "plazo": "3 a 5 días hábiles",
+    "tema_por_defecto": "petroleo",
+    "temas": [
+      {
+        "id": "petroleo",
+        "nombre": "Petróleo",
+        "fondo": "#EDF1F2",
+        "superficie": "#FBFCFD",
+        "tinta": "#10232A",
+        "acento": "#2A6F84",
+        "texto_acento": "#FFFFFF",
+        "nombre_en": "Petrol"
+      },
+      {
+        "id": "grafito",
+        "nombre": "Grafito",
+        "fondo": "#F0F0EE",
+        "superficie": "#FDFDFC",
+        "tinta": "#18191B",
+        "acento": "#5E6267",
+        "texto_acento": "#FFFFFF",
+        "nombre_en": "Graphite"
+      },
+      {
+        "id": "nogal",
+        "nombre": "Nogal",
+        "fondo": "#F3F0EB",
+        "superficie": "#FDFCFA",
+        "tinta": "#241A15",
+        "acento": "#8A5A3A",
+        "texto_acento": "#FFFFFF",
+        "nombre_en": "Walnut"
+      },
+      {
+        "id": "pizarra",
+        "nombre": "Pizarra",
+        "fondo": "#111619",
+        "superficie": "#1A2125",
+        "tinta": "#E8EEF0",
+        "acento": "#86C8D6",
+        "texto_acento": "#0D1416",
+        "nombre_en": "Slate"
+      }
+    ],
+    "captura_movil": "src/assets/landings/medicina-estetica/movil.png",
+    "captura_escritorio": "src/assets/landings/medicina-estetica/escritorio.png",
+    "ficha_tecnica": {
+      "peso_kb": 323,
+      "lighthouse_movil": 100
+    },
+    "en": {
+      "giro": "Medical aesthetics",
+      "nombre": "Your call",
+      "resumen": "Landing page for aesthetic clinics: full prices with VAT and installments, a risk sheet for each treatment, licensed doctors, WhatsApp booking and a sessions portal.",
+      "para": "Non-surgical aesthetic clinics and practices: neurotoxin, fillers, laser, facials and devices.",
+      "plazo": "3 to 5 business days",
+      "incluye": [
+        "Your page with your photos and colors: every section answers a patient's question",
+        "Up to 8 treatments with a photo, the price with VAT, the total and the monthly payment over 3, 6 or 12 interest-free months",
+        "A sheet for each treatment: discomfort, recovery, risks and contraindications, with no promises",
+        "Doctors with photo, license number and school, and the health officer in plain sight",
+        "Consultation booking: open slots as chips and WhatsApp with the appointment already written",
+        "Monthly membership shown like a streaming subscription, with your payment link",
+        "Promotions with a countdown and clinic notices that remove themselves",
+        "Patient portal demo: next session, package sessions, payments and touch-up. Connecting it to your patients and automatic reminders are quoted separately",
+        "Copy with no promises, ready for your COFEPRIS advertising permit (you file it; we give you screenshots and copy)",
+        "Privacy notice, local SEO with schema.org, 4 color themes and source code"
+      ],
+      "editable": [
+        "Name, logo, neighborhood and the photo of each section",
+        "Treatments, prices with VAT, installment terms and each one's risk sheet",
+        "Open slots in the booking calendar, consultation types and who attends",
+        "Doctors with their photo, license number, school and specialty, and the clinic's guarantees",
+        "Memberships, prices, what each includes and payment links",
+        "Promotions with their photo, dates and the treatment they link to",
+        "Notices: holidays and special hours",
+        "What the patient portal shows",
+        "WhatsApp, phone and each button's message",
+        "FAQ",
+        "Colors and theme",
+        "Privacy notice, health officer, operating notice and COFEPRIS advertising permit"
+      ],
+      "palabras_clave": [
+        "medical aesthetics",
+        "aesthetic clinic",
+        "aesthetic doctor",
+        "med spa",
+        "botulinum toxin",
+        "expression lines",
+        "hyaluronic acid",
+        "lip filler",
+        "laser hair removal",
+        "chemical peel",
+        "HIFU",
+        "radiofrequency",
+        "aesthetic consultation",
+        "interest-free installments",
+        "patient portal",
+        "COFEPRIS"
+      ]
+    }
   }
 ]
