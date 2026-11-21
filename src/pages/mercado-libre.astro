@@ -1,0 +1,581 @@
+---
+/**
+ * /mercado-libre: publicaciones de Mercado Libre para otros vendedores.
+ * Mismo sistema que la home v2: hero noche con cuadrícula, secciones claras,
+ * tarjetas, revelados al hacer scroll y WhatsApp prellenado en cada acción.
+ * El texto vive en src/data/mercado-libre.ts.
+ */
+import { Image } from 'astro:assets';
+import Cierre from '../components/Cierre.astro';
+import Icono from '../components/Icono.astro';
+import Preguntas from '../components/Preguntas.astro';
+import { ml } from '../data/mercado-libre';
+import { sitio } from '../data/sitio';
+import { pesosMXN } from '../lib/formato';
+import { enlaceWhatsApp } from '../lib/whatsapp';
+import Base from '../layouts/Base.astro';
+
+const portada = ml.ejemplos.lista[0];
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: ml.titulo,
+  description: ml.descripcion,
+  provider: { '@type': 'Organization', name: sitio.nombre, url: sitio.url },
+  areaServed: 'MX',
+  offers: ml.paquetes.lista.map((p) => ({
+    '@type': 'Offer',
+    name: p.nombre,
+    price: p.precio,
+    priceCurrency: 'MXN',
+  })),
+};
+---
+
+<Base idioma="es" titulo={ml.titulo} descripcion={ml.descripcion} schema={schema} cabeceraNoche>
+  <section class="ml-hero tema-noche" aria-labelledby="ml-hero-titulo">
+    <div class="wrap ml-hero__rejilla">
+      <div class="ml-hero__texto">
+        <p class="ml-etiqueta entra-1">{ml.hero.etiqueta}</p>
+        <h1 id="ml-hero-titulo" class="display ml-hero__titulo entra-1">{ml.hero.titulo}</h1>
+        <p class="entrada ml-hero__sub entra-2">{ml.hero.sub}</p>
+        <div class="acciones entra-3">
+          <a class="btn btn--primario" href={enlaceWhatsApp(ml.cierre.mensaje)} rel="noopener">
+            <Icono nombre="whatsapp" />
+            {ml.hero.cta}
+          </a>
+          <a class="btn btn--secundario" href="#paquetes">
+            {ml.hero.ctaSecundario}
+            <Icono nombre="arrow-right" />
+          </a>
+        </div>
+        <p class="ml-hero__prueba entra-5">
+          <Icono nombre="check-circle" />
+          {ml.hero.prueba}
+        </p>
+      </div>
+
+      <figure class="ml-tarjeta entra-4" aria-label="Ejemplo de un título antes y después">
+        <div class="ml-tarjeta__busqueda" aria-hidden="true">
+          <Icono nombre="magnifying-glass" />
+          <span>juego de pinzas bisutería</span>
+        </div>
+        <div class="ml-tarjeta__cuerpo">
+          <Image class="ml-tarjeta__foto" src={portada.foto} alt={portada.alt} width={240} height={240} loading="eager" />
+          <div class="ml-tarjeta__titulos">
+            <p class="ml-titulo ml-titulo--antes">
+              <span class="ml-chip">{ml.hero.antes}</span>
+              <s>{portada.antes}</s>
+            </p>
+            <p class="ml-titulo ml-titulo--despues">
+              <span class="ml-chip ml-chip--acento">{ml.hero.despues}</span>
+              <strong>{portada.despues}</strong>
+            </p>
+          </div>
+        </div>
+        <figcaption class="ml-tarjeta__nota">{portada.porque}</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="seccion" id="ejemplos" aria-labelledby="ejemplos-titulo">
+    <div class="wrap">
+      <div class="seccion__cabeza revela">
+        <h2 id="ejemplos-titulo" class="titulo-seccion">{ml.ejemplos.titulo}</h2>
+        <p>{ml.ejemplos.sub}</p>
+      </div>
+      <ul class="ml-ejemplos revela" role="list">
+        {
+          ml.ejemplos.lista.map((e) => (
+            <li class="ml-ejemplo">
+              <Image class="ml-ejemplo__foto" src={e.foto} alt={e.alt} width={420} height={420} />
+              <div class="ml-ejemplo__texto">
+                <p class="ml-titulo ml-titulo--antes">
+                  <span class="ml-chip">{ml.hero.antes}</span>
+                  <s>{e.antes}</s>
+                </p>
+                <p class="ml-titulo ml-titulo--despues">
+                  <span class="ml-chip ml-chip--acento">{ml.hero.despues}</span>
+                  <strong>{e.despues}</strong>
+                </p>
+                <p class="ml-ejemplo__porque">{e.porque}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="seccion ml-incluye" aria-labelledby="incluye-titulo">
+    <div class="wrap">
+      <div class="seccion__cabeza revela">
+        <h2 id="incluye-titulo" class="titulo-seccion">{ml.incluye.titulo}</h2>
+        <p>{ml.incluye.sub}</p>
+      </div>
+      <ul class="ml-rejilla ml-rejilla--4 revela" role="list">
+        {
+          ml.incluye.lista.map((c) => (
+            <li class="ml-caja">
+              <span class="ml-caja__icono">
+                <Icono nombre={c.icono} />
+              </span>
+              <h3 class="titulo">{c.titulo}</h3>
+              <p>{c.texto}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="seccion ml-paquetes tema-noche" id="paquetes" aria-labelledby="paquetes-titulo">
+    <div class="wrap">
+      <div class="seccion__cabeza revela">
+        <h2 id="paquetes-titulo" class="titulo-seccion">{ml.paquetes.titulo}</h2>
+        <p>{ml.paquetes.sub}</p>
+      </div>
+      <ul class="ml-rejilla ml-rejilla--4 revela" role="list">
+        {
+          ml.paquetes.lista.map((p) => (
+            <li class:list={['ml-plan', { 'ml-plan--recomendado': p.recomendado }]}>
+              {p.recomendado && <span class="ml-plan__sello">{ml.paquetes.recomendado}</span>}
+              <h3 class="ml-plan__nombre">{p.nombre}</h3>
+              <p class="ml-plan__precio">
+                {p.precio === 0 ? 'Gratis' : pesosMXN(p.precio)}
+                {p.precio > 0 && <span class="ml-plan__moneda">MXN {p.periodo}</span>}
+              </p>
+              <p class="ml-plan__resumen">{p.resumen}</p>
+              <ul class="ml-plan__puntos" role="list">
+                {p.puntos.map((punto) => (
+                  <li>
+                    <Icono nombre="check" />
+                    {punto}
+                  </li>
+                ))}
+              </ul>
+              <a
+                class:list={['btn', p.recomendado ? 'btn--primario' : 'btn--secundario', 'ml-plan__cta']}
+                href={enlaceWhatsApp(p.mensaje)}
+                rel="noopener"
+              >
+                <Icono nombre="whatsapp" />
+                {p.cta}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="seccion" aria-labelledby="pasos-titulo">
+    <div class="wrap">
+      <div class="seccion__cabeza revela">
+        <h2 id="pasos-titulo" class="titulo-seccion">{ml.pasos.titulo}</h2>
+      </div>
+      <ol class="ml-rejilla ml-rejilla--3 revela" role="list">
+        {
+          ml.pasos.lista.map((paso, i) => (
+            <li class="ml-paso">
+              <span class="ml-paso__num" aria-hidden="true">{i + 1}</span>
+              <h3 class="titulo">{paso.titulo}</h3>
+              <p>{paso.texto}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="seccion ml-preguntas" id="preguntas" aria-labelledby="ml-preguntas-titulo">
+    <div class="wrap ml-preguntas__rejilla">
+      <div class="seccion__cabeza revela">
+        <h2 id="ml-preguntas-titulo" class="titulo-seccion">{ml.preguntas.titulo}</h2>
+      </div>
+      <Preguntas preguntas={ml.preguntas.lista} />
+    </div>
+  </section>
+
+  <Cierre idioma="es" titulo={ml.cierre.titulo} texto={ml.cierre.texto} mensaje={ml.cierre.mensaje} />
+</Base>
+
+<style>
+  /* Hero: la misma banda noche con cuadrícula de la home. */
+  .ml-hero {
+    position: relative;
+    overflow: clip;
+    padding-block: clamp(2rem, 1rem + 4vw, 4.5rem) clamp(3rem, 2rem + 4vw, 5.5rem);
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    color: var(--ink);
+  }
+
+  .ml-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgb(14 20 24 / 0.55), var(--bg) 92%);
+    pointer-events: none;
+  }
+
+  .ml-hero__rejilla {
+    position: relative;
+    display: grid;
+    gap: clamp(2rem, 1rem + 4vw, 3.5rem);
+    align-items: center;
+  }
+
+  .ml-hero__texto {
+    display: grid;
+    gap: var(--s-5);
+    justify-items: start;
+  }
+
+  .ml-etiqueta {
+    font-size: var(--fs-label);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .ml-hero__titulo {
+    max-width: 13ch;
+  }
+
+  .ml-hero__sub {
+    max-width: 40ch;
+  }
+
+  .ml-hero__prueba {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
+  .ml-hero__prueba :global(.icono) {
+    color: var(--accent);
+  }
+
+  /* Tarjeta de resultado: búsqueda arriba, foto y los dos títulos. */
+  .ml-tarjeta {
+    width: 100%;
+    max-width: 34rem;
+    justify-self: center;
+    display: grid;
+    gap: var(--s-4);
+    padding: var(--s-5);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.6);
+  }
+
+  .ml-tarjeta__busqueda {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-3) var(--s-4);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+  }
+
+  .ml-tarjeta__busqueda :global(.icono) {
+    color: var(--accent);
+  }
+
+  .ml-tarjeta__cuerpo {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    gap: var(--s-4);
+    align-items: start;
+  }
+
+  .ml-tarjeta__foto {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: var(--radius);
+    background: #fff;
+  }
+
+  .ml-tarjeta__titulos {
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .ml-tarjeta__nota {
+    padding-top: var(--s-3);
+    border-top: 1px solid var(--line);
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+  }
+
+  /* El título nuevo entra después del viejo (una vez; sin bucle). */
+  .ml-tarjeta .ml-titulo--despues {
+    animation: ml-entra var(--dur-revela, 600ms) var(--ease-out) 900ms both;
+  }
+
+  @keyframes ml-entra {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ml-tarjeta .ml-titulo--despues {
+      animation: none;
+    }
+  }
+
+  /* Antes / Después (hero y ejemplos). */
+  .ml-titulo {
+    display: grid;
+    gap: var(--s-1);
+    justify-items: start;
+    line-height: 1.35;
+  }
+
+  .ml-titulo--antes s {
+    color: var(--ink-2);
+    text-decoration-thickness: 1px;
+  }
+
+  .ml-titulo--despues strong {
+    font-weight: 700;
+    font-size: 1.0625rem;
+  }
+
+  .ml-chip {
+    padding: 0.125rem 0.5rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+
+  .ml-chip--acento {
+    border-color: transparent;
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  /* Ejemplos reales. */
+  .ml-ejemplos {
+    display: grid;
+    gap: var(--s-6);
+    margin-top: var(--s-10);
+  }
+
+  .ml-ejemplo {
+    display: grid;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .ml-ejemplo__foto {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: contain;
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .ml-ejemplo__texto {
+    display: grid;
+    gap: var(--s-4);
+    padding: var(--s-5);
+  }
+
+  .ml-ejemplo__porque {
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+  }
+
+  /* Rejillas de tarjetas. */
+  .ml-rejilla {
+    display: grid;
+    gap: var(--s-5);
+    margin-top: var(--s-10);
+  }
+
+  .ml-incluye,
+  .ml-preguntas {
+    border-top: 1px solid var(--line);
+  }
+
+  .ml-caja,
+  .ml-paso {
+    display: grid;
+    gap: var(--s-3);
+    align-content: start;
+    padding: var(--s-6);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+  }
+
+  .ml-caja p,
+  .ml-paso p {
+    color: var(--ink-2);
+  }
+
+  .ml-caja__icono {
+    display: inline-grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: var(--radius);
+    background: var(--accent);
+    color: var(--on-accent);
+    font-size: 1.5rem;
+  }
+
+  .ml-paso__num {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--accent-ink);
+  }
+
+  /* Paquetes como planes de suscripción. */
+  .ml-paquetes {
+    background: var(--bg);
+    color: var(--ink);
+  }
+
+  .ml-plan {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto auto auto 1fr auto;
+    gap: var(--s-4);
+    padding: var(--s-6);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+  }
+
+  .ml-plan--recomendado {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+
+  .ml-plan__sello {
+    position: absolute;
+    top: 0;
+    right: var(--s-5);
+    translate: 0 -50%;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    color: var(--on-accent);
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+
+  .ml-plan__nombre {
+    font-size: var(--fs-title);
+    font-weight: 700;
+  }
+
+  .ml-plan__precio {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 800;
+    font-stretch: var(--wdth-display);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .ml-plan__moneda {
+    display: inline-block;
+    white-space: nowrap;
+    margin-left: var(--s-2);
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--ink-2);
+  }
+
+  .ml-plan__resumen {
+    font-weight: 600;
+  }
+
+  .ml-plan__puntos {
+    display: grid;
+    gap: var(--s-2);
+    align-content: start;
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+  }
+
+  .ml-plan__puntos li {
+    display: flex;
+    gap: var(--s-2);
+    align-items: center;
+  }
+
+  .ml-plan__puntos :global(.icono) {
+    flex: none;
+    color: var(--accent);
+  }
+
+  .ml-plan__cta {
+    justify-content: center;
+  }
+
+  .ml-preguntas__rejilla {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  @media (min-width: 40rem) {
+    .ml-rejilla--4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ml-ejemplos {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .ml-hero__rejilla {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    }
+
+    .ml-ejemplos,
+    .ml-rejilla--3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .ml-rejilla--4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .ml-preguntas__rejilla {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+      gap: clamp(3rem, 1rem + 5vw, 6rem);
+      align-items: start;
+    }
+  }
+</style>
