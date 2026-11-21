@@ -1,0 +1,62 @@
+---
+/**
+ * Un título de Mercado Libre antes y después de nuestro cambio: el viejo
+ * tachado y el nuevo en negritas, cada uno con su etiqueta. Son dos párrafos
+ * sin envoltorio: el contenedor de quien lo usa (la tarjeta del hero o un
+ * ejemplo) los acomoda.
+ */
+import { ml } from '../../data/mercado-libre';
+
+interface Props {
+  antes: string;
+  despues: string;
+}
+
+const { antes, despues } = Astro.props;
+const { etiquetas } = ml.ejemplos;
+---
+
+<p class="ml-titulo ml-titulo--antes">
+  <span class="ml-chip">{etiquetas.antes}</span>
+  <s>{antes}</s>
+</p>
+<p class="ml-titulo ml-titulo--despues">
+  <span class="ml-chip ml-chip--acento">{etiquetas.despues}</span>
+  <strong>{despues}</strong>
+</p>
+
+<style>
+  .ml-titulo {
+    display: grid;
+    gap: var(--s-1);
+    justify-items: start;
+    line-height: 1.35;
+  }
+
+  .ml-titulo--antes s {
+    color: var(--ink-2);
+    text-decoration-thickness: 1px;
+  }
+
+  .ml-titulo--despues strong {
+    font-weight: 700;
+    font-size: 1.0625rem;
+  }
+
+  .ml-chip {
+    padding: 0.125rem 0.5rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+
+  .ml-chip--acento {
+    border-color: transparent;
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+</style>

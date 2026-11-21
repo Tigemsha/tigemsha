@@ -11,6 +11,86 @@ import luces from '../assets/mercado-libre/luces.jpg';
 import pinas from '../assets/mercado-libre/pinas.jpg';
 import pinzas from '../assets/mercado-libre/pinzas.jpg';
 
+/** Lo mandan el botón del hero, la tarjeta «Muestra» y el cierre (el vendedor pega su link al final). */
+const mensajeMuestra = 'Hola, quiero la muestra gratis para una publicación de Mercado Libre. Este es el link: ';
+
+/** Arriba de `ml` porque los usan dos secciones: la tarjeta del hero y «Así cambia un título». */
+const ejemplos = [
+  {
+    foto: pinzas,
+    alt: 'Juego de dos pinzas de punta con mango negro',
+    antes: 'Kit 2 Pinzas Mini Punta Y Universal Antideslizante Ele-gate',
+    despues: 'Juego 2 Pinzas Punta Y Universal Ele-gate 13 Cm Bisutería',
+    porque: '“Mini” traía pinzas para el cabello. “Bisutería” sí se busca.',
+  },
+  {
+    foto: pinas,
+    alt: 'Seis piñas navideñas con follaje y lazo rojo',
+    antes: 'Set 6 Adornos Navideños Piña Con Follaje Esferas Y Lazo Rojo',
+    despues: 'Set 6 Piñas Navideñas Adorno Árbol De Navidad Con Lazo Rojo',
+    porque: 'Quien busca “esferas” quiere bolas, no piñas.',
+  },
+  {
+    foto: luces,
+    alt: 'Luz LED colgante con forma de muñeco de nieve',
+    antes: 'Luz Led Colgante Navidad Muñeco De Nieve Decoración Ventana Blanco',
+    despues: 'Adorno Navideño Muñeco De Nieve Colgante De Pilas Luz Led',
+    porque: 'Ahora dice “de pilas”: no necesita enchufe.',
+  },
+] as const;
+
+/** Con tipo propio porque no todos los paquetes llevan periodo ni sello. */
+interface Paquete {
+  nombre: string;
+  /** En pesos; 0 es la muestra gratis. */
+  precio: number;
+  /** Solo el plan que se cobra cada mes ("al mes"). */
+  periodo?: string;
+  resumen: string;
+  puntos: readonly string[];
+  cta: string;
+  mensaje: string;
+  /** El paquete resaltado con el sello. */
+  recomendado?: boolean;
+}
+
+const paquetes: readonly Paquete[] = [
+  {
+    nombre: 'Muestra',
+    precio: 0,
+    resumen: '1 publicación: título y descripción',
+    puntos: ['Entrega en 1 a 2 días', 'Una por vendedor', 'Sin compromiso'],
+    cta: 'Pedir mi muestra',
+    mensaje: mensajeMuestra,
+  },
+  {
+    nombre: 'Básico',
+    precio: 1000,
+    resumen: '10 publicaciones completas',
+    puntos: ['Título, ficha y descripción', 'Entrega en 4 días', '2 rondas de cambios'],
+    cta: 'Quiero el Básico',
+    mensaje: 'Hola, me interesa el paquete Básico (10 publicaciones de Mercado Libre).',
+    recomendado: true,
+  },
+  {
+    nombre: 'Catálogo',
+    precio: 3900,
+    resumen: '50 publicaciones y reporte de palabras',
+    puntos: ['Todo lo del Básico', 'Palabras clave de tu categoría', 'Entrega en 10 días, por tandas'],
+    cta: 'Quiero el Catálogo',
+    mensaje: 'Hola, me interesa el paquete Catálogo (50 publicaciones de Mercado Libre).',
+  },
+  {
+    nombre: 'Mensual',
+    precio: 1900,
+    periodo: 'al mes',
+    resumen: 'Hasta 30 publicaciones nuevas al mes',
+    puntos: ['Respuestas modelo a preguntas', 'Revisión de tus más vendidas', 'Cancelas cuando quieras'],
+    cta: 'Quiero el Mensual',
+    mensaje: 'Hola, me interesa el plan Mensual de publicaciones de Mercado Libre.',
+  },
+];
+
 export const ml = {
   titulo: 'Publicaciones de Mercado Libre',
   descripcion:
@@ -23,36 +103,20 @@ export const ml = {
     cta: 'Pide tu muestra gratis',
     ctaSecundario: 'Ver paquetes',
     prueba: 'Nunca te pedimos tu contraseña',
-    antes: 'Antes',
-    despues: 'Después',
+    mensaje: mensajeMuestra,
+    /** La tarjeta del hero: el primer ejemplo, con lo que escribiría el comprador para encontrarlo. */
+    tarjeta: {
+      aria: 'Ejemplo de un título antes y después',
+      busqueda: 'juego de pinzas bisutería',
+      ejemplo: ejemplos[0],
+    },
   },
 
   ejemplos: {
     titulo: 'Así cambia un título',
     sub: 'Tres publicaciones reales de nuestra tienda: hoy y con nuestro cambio.',
-    lista: [
-      {
-        foto: pinzas,
-        alt: 'Juego de dos pinzas de punta con mango negro',
-        antes: 'Kit 2 Pinzas Mini Punta Y Universal Antideslizante Ele-gate',
-        despues: 'Juego 2 Pinzas Punta Y Universal Ele-gate 13 Cm Bisutería',
-        porque: '“Mini” traía pinzas para el cabello. “Bisutería” sí se busca.',
-      },
-      {
-        foto: pinas,
-        alt: 'Seis piñas navideñas con follaje y lazo rojo',
-        antes: 'Set 6 Adornos Navideños Piña Con Follaje Esferas Y Lazo Rojo',
-        despues: 'Set 6 Piñas Navideñas Adorno Árbol De Navidad Con Lazo Rojo',
-        porque: 'Quien busca “esferas” quiere bolas, no piñas.',
-      },
-      {
-        foto: luces,
-        alt: 'Luz LED colgante con forma de muñeco de nieve',
-        antes: 'Luz Led Colgante Navidad Muñeco De Nieve Decoración Ventana Blanco',
-        despues: 'Adorno Navideño Muñeco De Nieve Colgante De Pilas Luz Led',
-        porque: 'Ahora dice “de pilas”: no necesita enchufe.',
-      },
-    ],
+    etiquetas: { antes: 'Antes', despues: 'Después' },
+    lista: ejemplos,
   },
 
   incluye: {
@@ -85,49 +149,9 @@ export const ml = {
   paquetes: {
     titulo: 'Elige tu paquete',
     sub: 'Precio total en pesos, sin cargos extra.',
-    recomendado: 'Recomendado',
-    lista: [
-      {
-        nombre: 'Muestra',
-        precio: 0,
-        periodo: '',
-        resumen: '1 publicación: título y descripción',
-        puntos: ['Entrega en 1 a 2 días', 'Una por vendedor', 'Sin compromiso'],
-        cta: 'Pedir mi muestra',
-        mensaje: 'Hola, quiero la muestra gratis para una publicación de Mercado Libre. Este es el link: ',
-        recomendado: false,
-      },
-      {
-        nombre: 'Básico',
-        precio: 1000,
-        periodo: '',
-        resumen: '10 publicaciones completas',
-        puntos: ['Título, ficha y descripción', 'Entrega en 4 días', '2 rondas de cambios'],
-        cta: 'Quiero el Básico',
-        mensaje: 'Hola, me interesa el paquete Básico (10 publicaciones de Mercado Libre).',
-        recomendado: true,
-      },
-      {
-        nombre: 'Catálogo',
-        precio: 3900,
-        periodo: '',
-        resumen: '50 publicaciones y reporte de palabras',
-        puntos: ['Todo lo del Básico', 'Palabras clave de tu categoría', 'Entrega en 10 días, por tandas'],
-        cta: 'Quiero el Catálogo',
-        mensaje: 'Hola, me interesa el paquete Catálogo (50 publicaciones de Mercado Libre).',
-        recomendado: false,
-      },
-      {
-        nombre: 'Mensual',
-        precio: 1900,
-        periodo: 'al mes',
-        resumen: 'Hasta 30 publicaciones nuevas al mes',
-        puntos: ['Respuestas modelo a preguntas', 'Revisión de tus más vendidas', 'Cancelas cuando quieras'],
-        cta: 'Quiero el Mensual',
-        mensaje: 'Hola, me interesa el plan Mensual de publicaciones de Mercado Libre.',
-        recomendado: false,
-      },
-    ],
+    sello: 'Recomendado',
+    gratis: 'Gratis',
+    lista: paquetes,
   },
 
   pasos: {
@@ -174,6 +198,6 @@ export const ml = {
   cierre: {
     titulo: 'Empieza con tu muestra',
     texto: 'Mándanos el link de una publicación y te la regresamos mejorada.',
-    mensaje: 'Hola, quiero la muestra gratis para una publicación de Mercado Libre. Este es el link: ',
+    mensaje: mensajeMuestra,
   },
 } as const;
