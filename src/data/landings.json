@@ -465,5 +465,168 @@
         "COFEPRIS"
       ]
     }
+  },
+  {
+    "codigo": "TGM-004",
+    "slug": "veterinarias",
+    "giro": "Veterinarias",
+    "nombre": "Al día",
+    "familia": "salud",
+    "fecha": "2026-11-21",
+    "precio_desde": 3500,
+    "mantenimiento_mes": 350,
+    "resumen": "Landing para veterinarias: urgencias a un toque, precio final por especie y peso, MVZ con cédula, agenda por WhatsApp y portal con la cartilla de cada mascota.",
+    "para": "Clínicas y hospitales veterinarios de perros y gatos: consulta, vacunas, urgencias, cirugía, estética y hotel.",
+    "incluye": [
+      "Tu página con tus fotos y colores: cada sección contesta una duda del dueño de la mascota",
+      "Urgencias a un toque: si estás cerrado, el botón llama a tu hospital aliado",
+      "Hasta 8 servicios con foto y precio final por especie y peso; cirugía y dental a 3, 6 o 12 meses sin intereses, con su total",
+      "Ficha de ayuno, anestesia y riesgos en cirugía y limpieza dental",
+      "Médicos con foto, cédula e institución, y tu MVZ responsable a la vista",
+      "Agenda con horas libres en teclas, perro o gato, y WhatsApp con la cita ya escrita",
+      "Calendario de vacunas de cachorro y gatito; estética, hotel y consulta a domicilio con tamaños, requisitos y responsable",
+      "Paquetes por etapa como suscripción de streaming, con tu link de pago, y promociones y avisos que se quitan solos",
+      "Demo del portal de la mascota: cartilla con lote, en curso, cita, cuidados y cuenta. Conectarlo a tu sistema (Vetzilla, OKVET o QVET) y los avisos por WhatsApp se cotizan aparte",
+      "Textos sin marcas ni promesas, listos para SENASICA y Profeco (los trámites los haces tú), aviso de privacidad, SEO local con schema.org, 4 temas de color y código fuente"
+    ],
+    "editable": [
+      "Nombre, logo, colonia y la foto de cada sección",
+      "Servicios, precios finales por especie y peso, plazos de meses sin intereses y la ficha de cirugía y dental",
+      "Urgencias: precio, recargo, cuándo llamar, qué hacer mientras llegas y tu hospital aliado",
+      "Horas libres de la agenda, motivos de cita y quién atiende",
+      "Médicos con su foto, cédula e institución, y las garantías de la clínica",
+      "Calendario de vacunas de cachorro y gatito",
+      "Estética, hotel y domicilio: tamaños, precios, requisitos, horario y responsable",
+      "Paquetes, precios, lo que incluye cada uno, pagos y links de pago",
+      "Promociones con su foto y sus fechas",
+      "Avisos: días festivos y horarios especiales",
+      "Lo que se ve en el portal de la mascota",
+      "WhatsApp, teléfono y mensajes de cada botón",
+      "Preguntas frecuentes",
+      "Colores y tema",
+      "Aviso de privacidad, MVZ responsable, aviso de funcionamiento SENASICA y registro estatal"
+    ],
+    "palabras_clave": [
+      "veterinaria",
+      "veterinario",
+      "clínica veterinaria",
+      "hospital veterinario",
+      "urgencias veterinarias",
+      "vacunas para perros",
+      "vacuna antirrábica",
+      "cartilla de vacunación",
+      "esterilización",
+      "limpieza dental",
+      "estética canina",
+      "hotel para perros",
+      "consulta a domicilio",
+      "desparasitación",
+      "portal de la mascota",
+      "meses sin intereses"
+    ],
+    "plazo": "3 a 5 días hábiles",
+    "tema_por_defecto": "yema",
+    "temas": [
+      {
+        "id": "yema",
+        "nombre": "Yema",
+        "fondo": "#E7E6E1",
+        "superficie": "#F7F7F4",
+        "tinta": "#182235",
+        "acento": "#F2B33D",
+        "texto_acento": "#182235",
+        "nombre_en": "Yolk"
+      },
+      {
+        "id": "nopal",
+        "nombre": "Nopal",
+        "fondo": "#E5E7DF",
+        "superficie": "#F6F7F2",
+        "tinta": "#1A2416",
+        "acento": "#4A7A2C",
+        "texto_acento": "#FFFFFF",
+        "nombre_en": "Nopal"
+      },
+      {
+        "id": "rosa",
+        "nombre": "Rosa mexicano",
+        "fondo": "#EAE6E5",
+        "superficie": "#F9F7F6",
+        "tinta": "#261A1F",
+        "acento": "#C2185B",
+        "texto_acento": "#FFFFFF",
+        "nombre_en": "Mexican pink"
+      },
+      {
+        "id": "guardia",
+        "nombre": "Guardia",
+        "fondo": "#15181E",
+        "superficie": "#1F232B",
+        "tinta": "#EEF0F3",
+        "acento": "#F2B33D",
+        "texto_acento": "#15181E",
+        "nombre_en": "Night shift"
+      }
+    ],
+    "captura_movil": "src/assets/landings/veterinarias/movil.png",
+    "captura_escritorio": "src/assets/landings/veterinarias/escritorio.png",
+    "ficha_tecnica": {
+      "peso_kb": 235,
+      "lighthouse_movil": 99
+    },
+    "en": {
+      "giro": "Veterinary clinics",
+      "nombre": "Up to date",
+      "resumen": "Landing page for vet clinics: one-tap emergency calls, final prices by species and weight, licensed vets, WhatsApp booking and a portal with each pet's vaccine record.",
+      "para": "Dog and cat clinics and animal hospitals: checkups, vaccines, emergencies, surgery, grooming and boarding.",
+      "plazo": "3 to 5 business days",
+      "incluye": [
+        "Your page with your photos and colors: every section answers a pet owner's question",
+        "One-tap emergency calls: when you are closed, the button calls your partner hospital",
+        "Up to 8 services with a photo and the final price by species and weight; surgery and dental over 3, 6 or 12 interest-free months, with the total",
+        "A fasting, anesthesia and risks sheet for surgery and dental cleaning",
+        "Vets with photo, license number and school, and your responsible vet in plain sight",
+        "Booking with open slots as keys, dog or cat, and WhatsApp with the appointment already written",
+        "Puppy and kitten vaccine schedule; grooming, boarding and house calls with sizes, requirements and the person in charge",
+        "Life-stage plans shown like a streaming subscription, with your payment link, and promotions and notices that remove themselves",
+        "Pet portal demo: vaccine record with lot numbers, today's status, appointment, aftercare and account. Connecting it to your system (Vetzilla, OKVET or QVET) and WhatsApp reminders are quoted separately",
+        "Copy with no brands or promises, ready for SENASICA and Profeco (you file the paperwork), privacy notice, local SEO with schema.org, 4 color themes and source code"
+      ],
+      "editable": [
+        "Name, logo, neighborhood and the photo of each section",
+        "Services, final prices by species and weight, installment terms and the surgery and dental sheet",
+        "Emergencies: price, night surcharge, when to call, what to do on the way and your partner hospital",
+        "Open slots in the booking calendar, visit reasons and who attends",
+        "Vets with their photo, license number and school, and the clinic's guarantees",
+        "Puppy and kitten vaccine schedule",
+        "Grooming, boarding and house calls: sizes, prices, requirements, hours and the person in charge",
+        "Plans, prices, what each includes, payments and payment links",
+        "Promotions with their photo and dates",
+        "Notices: holidays and special hours",
+        "What the pet portal shows",
+        "WhatsApp, phone and each button's message",
+        "FAQ",
+        "Colors and theme",
+        "Privacy notice, responsible vet, SENASICA operating notice and state registration"
+      ],
+      "palabras_clave": [
+        "vet clinic",
+        "veterinarian",
+        "veterinary clinic",
+        "animal hospital",
+        "emergency vet",
+        "dog vaccines",
+        "rabies vaccine",
+        "vaccination record",
+        "spay and neuter",
+        "dental cleaning",
+        "dog grooming",
+        "dog boarding",
+        "vet house call",
+        "deworming",
+        "pet portal",
+        "interest-free installments"
+      ]
+    }
   }
 ]

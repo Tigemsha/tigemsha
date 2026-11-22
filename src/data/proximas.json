@@ -1,23 +1,5 @@
 [
   {
-    "orden": 4,
-    "slug": "veterinarias",
-    "nombre": "Veterinarias",
-    "nombre_en": "Veterinary clinics",
-    "familia": "salud",
-    "palabras_clave": [
-      "veterinario",
-      "mascotas",
-      "perros",
-      "gatos"
-    ],
-    "palabras_clave_en": [
-      "vet",
-      "pets",
-      "animal hospital"
-    ]
-  },
-  {
     "orden": 5,
     "slug": "colegios",
     "nombre": "Colegios privados",
@@ -88,6 +70,23 @@
       "venue",
       "weddings",
       "party hall"
+    ]
+  },
+  {
+    "orden": 9,
+    "slug": "fisioterapia",
+    "nombre": "Fisioterapia y rehabilitación",
+    "nombre_en": "Physical therapy and rehab",
+    "familia": "salud",
+    "palabras_clave": [
+      "fisio",
+      "rehabilitacion",
+      "terapia fisica"
+    ],
+    "palabras_clave_en": [
+      "physio",
+      "physical therapy",
+      "rehab"
     ]
   }
 ]
