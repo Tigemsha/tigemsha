@@ -1,22 +1,5 @@
 [
   {
-    "orden": 5,
-    "slug": "colegios",
-    "nombre": "Colegios privados",
-    "nombre_en": "Private schools",
-    "familia": "educacion",
-    "palabras_clave": [
-      "escuela",
-      "primaria",
-      "secundaria",
-      "kinder"
-    ],
-    "palabras_clave_en": [
-      "school",
-      "academy"
-    ]
-  },
-  {
     "orden": 6,
     "slug": "inmobiliarias",
     "nombre": "Inmobiliarias y asesores inmobiliarios",
@@ -87,6 +70,24 @@
       "physio",
       "physical therapy",
       "rehab"
+    ]
+  },
+  {
+    "orden": 10,
+    "slug": "nutriologos",
+    "nombre": "Nutriólogos y control de peso",
+    "nombre_en": "Nutritionists and weight control",
+    "familia": "salud",
+    "palabras_clave": [
+      "nutriologo",
+      "nutricion",
+      "dieta",
+      "bajar de peso"
+    ],
+    "palabras_clave_en": [
+      "nutritionist",
+      "diet",
+      "weight loss"
     ]
   }
 ]
