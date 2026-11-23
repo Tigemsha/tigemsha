@@ -799,5 +799,168 @@
         "private elementary school"
       ]
     }
+  },
+  {
+    "codigo": "TGM-006",
+    "slug": "inmobiliarias",
+    "giro": "Inmobiliarias y asesores inmobiliarios",
+    "nombre": "Primero la ves",
+    "familia": "hogar",
+    "fecha": "2026-11-22",
+    "precio_desde": 4500,
+    "mantenimiento_mes": 500,
+    "resumen": "Landing para inmobiliarias: casas con precio total y papeles, visitas con día y hora por WhatsApp, valuación al momento y portal de operación.",
+    "para": "Inmobiliarias chicas y asesores independientes que venden y rentan casas y departamentos: catálogo, visitas, captación de propietarios y seguimiento.",
+    "incluye": [
+      "Tu página con tus fotos y colores: cada sección contesta una duda de quien compra, renta o vende",
+      "Catálogo con precio de contado, mantenimiento, m², papeles en regla y créditos aceptados; vendidas con fecha",
+      "\"¿Me alcanza?\" con enganche, mensualidad estimada y escrituración aprox., y \"Para entrar\" en rentas",
+      "Agenda de visitas por casa y open house, con el mensaje ya escrito",
+      "Valuación en 5 preguntas con un rango al momento, que te llega por WhatsApp con colonia, m² y recámaras",
+      "Comisión con IVA y su ejemplo en pesos, y los pasos de la venta",
+      "Listas de papeles para vender, rentar, comprar o rentar tu casa",
+      "Zonas que filtran el catálogo y asesores con foto, zona y registro",
+      "Demo del portal de la operación: avance, visitas, ofertas, papeles y firma. El portal real y la conexión con EasyBroker o tu CRM se cotizan aparte",
+      "Textos sin promesas ni marcas, listos para la NOM-247 y Profeco (los trámites los haces tú), aviso de privacidad, SEO local con schema.org, 4 temas de color y código fuente"
+    ],
+    "editable": [
+      "Nombre, logo, colonia y la foto de cada sección",
+      "Casas: precio de contado, renta, mantenimiento, m², recámaras, papeles, créditos y fotos",
+      "Colonias y rangos de la valuación",
+      "Horas de visita y open house",
+      "Pasos de la venta y comisión de venta y de renta",
+      "Listas de papeles",
+      "Zonas con su foto y su precio desde",
+      "Asesores con su foto, zona y registro estatal",
+      "Lo que se ve en el portal de la operación",
+      "WhatsApp, teléfono y mensajes de cada botón",
+      "Preguntas frecuentes",
+      "Colores y tema",
+      "Contrato registrado en Profeco, razón social, formas de pago y aviso de privacidad"
+    ],
+    "palabras_clave": [
+      "inmobiliaria",
+      "asesor inmobiliario",
+      "bienes raíces",
+      "casas en venta",
+      "casas en renta",
+      "departamentos",
+      "valuación",
+      "comisión inmobiliaria",
+      "visita",
+      "open house",
+      "crédito Infonavit",
+      "escrituración",
+      "NOM-247",
+      "portal del cliente",
+      "corredor",
+      "agente inmobiliario",
+      "venta de casas",
+      "rentas"
+    ],
+    "plazo": "3 a 5 días hábiles",
+    "tema_por_defecto": "parota",
+    "temas": [
+      {
+        "id": "parota",
+        "nombre": "Parota",
+        "fondo": "#F3EDE8",
+        "superficie": "#FFFFFF",
+        "tinta": "#25201C",
+        "acento": "#6E412C",
+        "texto_acento": "#FFFFFF",
+        "nombre_en": "Parota wood"
+      },
+      {
+        "id": "olivo",
+        "nombre": "Olivo",
+        "fondo": "#F1F2EB",
+        "superficie": "#FFFFFF",
+        "tinta": "#22251B",
+        "acento": "#55632D",
+        "texto_acento": "#FFFFFF",
+        "nombre_en": "Olive"
+      },
+      {
+        "id": "anil",
+        "nombre": "Añil",
+        "fondo": "#EFF1F4",
+        "superficie": "#FFFFFF",
+        "tinta": "#1B1F28",
+        "acento": "#3A4F9E",
+        "texto_acento": "#FFFFFF",
+        "nombre_en": "Indigo"
+      },
+      {
+        "id": "recinto",
+        "nombre": "Recinto",
+        "fondo": "#1C1917",
+        "superficie": "#27221F",
+        "tinta": "#F2EDE8",
+        "acento": "#D9A27E",
+        "texto_acento": "#1C1917",
+        "nombre_en": "Volcanic stone"
+      }
+    ],
+    "captura_movil": "src/assets/landings/inmobiliarias/movil.png",
+    "captura_escritorio": "src/assets/landings/inmobiliarias/escritorio.png",
+    "ficha_tecnica": {
+      "peso_kb": 270,
+      "lighthouse_movil": 96
+    },
+    "en": {
+      "giro": "Real estate agencies and agents",
+      "nombre": "See it first",
+      "resumen": "Real estate landing page: homes with full price and paperwork, viewings by day and time on WhatsApp, instant valuation and a deal portal.",
+      "para": "Small agencies and independent agents who sell and rent houses and apartments: listings, viewings, owner leads and follow-up.",
+      "plazo": "3 to 5 business days",
+      "incluye": [
+        "Your page with your photos and colors: every section answers a buyer's, renter's or seller's question",
+        "Listings with cash price, HOA fee, square meters, clear title and accepted loans; sold homes with a date",
+        "\"Can I afford it?\" with down payment, estimated monthly payment and closing costs, and move-in cost for rentals",
+        "Viewing and open house booking per home, with the message already written",
+        "A 5-question valuation with an instant range that reaches you on WhatsApp with area, size and bedrooms",
+        "Commission with VAT and a peso example, plus the selling steps",
+        "Paperwork lists to sell, let, buy or rent",
+        "Areas that filter the listings and agents with photo, area and state registration",
+        "Deal portal demo: progress, viewings, offers, paperwork and signing. The live portal and the EasyBroker or CRM connection are quoted separately",
+        "Copy with no promises or brands, ready for NOM-247 and Profeco (you file the paperwork), privacy notice, local SEO with schema.org, 4 color themes and source code"
+      ],
+      "editable": [
+        "Name, logo, neighborhood and the photo of each section",
+        "Homes: cash price, rent, HOA fee, square meters, bedrooms, paperwork, loans and photos",
+        "Valuation neighborhoods and ranges",
+        "Viewing and open house times",
+        "Selling steps and sale and rental commission",
+        "Paperwork lists",
+        "Areas with their photo and starting price",
+        "Agents with their photo, area and state registration",
+        "What the deal portal shows",
+        "WhatsApp, phone and the message of each button",
+        "Frequently asked questions",
+        "Colors and theme",
+        "Contract registered with Profeco, legal name, payment methods and privacy notice"
+      ],
+      "palabras_clave": [
+        "real estate agency",
+        "real estate agent",
+        "real estate",
+        "homes for sale",
+        "homes for rent",
+        "apartments",
+        "home valuation",
+        "real estate commission",
+        "viewing",
+        "open house",
+        "Infonavit loan",
+        "closing costs",
+        "NOM-247",
+        "client portal",
+        "broker",
+        "real estate broker",
+        "home sales",
+        "rentals"
+      ]
+    }
   }
 ]

@@ -1,24 +1,5 @@
 [
   {
-    "orden": 6,
-    "slug": "inmobiliarias",
-    "nombre": "Inmobiliarias y asesores inmobiliarios",
-    "nombre_en": "Real estate agencies",
-    "familia": "hogar",
-    "palabras_clave": [
-      "inmobiliaria",
-      "bienes raices",
-      "casas",
-      "departamentos",
-      "renta"
-    ],
-    "palabras_clave_en": [
-      "real estate",
-      "realtor",
-      "homes"
-    ]
-  },
-  {
     "orden": 7,
     "slug": "pilates-yoga",
     "nombre": "Estudios de pilates, yoga y barre",
@@ -88,6 +69,22 @@
       "nutritionist",
       "diet",
       "weight loss"
+    ]
+  },
+  {
+    "orden": 11,
+    "slug": "cirugia-plastica",
+    "nombre": "Cirugía plástica",
+    "nombre_en": "Plastic surgery",
+    "familia": "salud",
+    "palabras_clave": [
+      "cirujano plastico",
+      "cirugia estetica",
+      "lipo"
+    ],
+    "palabras_clave_en": [
+      "plastic surgeon",
+      "cosmetic surgery"
     ]
   }
 ]
