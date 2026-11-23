@@ -329,6 +329,15 @@ const schema = {
     }
   }
 
+  /* base.css solo quita el margen de las listas: sin esto, el sangrado de 40 px
+     del navegador corre todas las tarjetas a la derecha en el celular. */
+  .ml-ejemplos,
+  .ml-rejilla,
+  .ml-plan__puntos {
+    padding: 0;
+    list-style: none;
+  }
+
   /* Ejemplos reales. */
   .ml-ejemplos {
     display: grid;
