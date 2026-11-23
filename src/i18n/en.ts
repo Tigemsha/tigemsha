@@ -291,6 +291,7 @@ export const en: Diccionario = {
     enlaces: {
       landings: 'Landing pages for sale',
       servicios: 'Services',
+      mercadoLibre: 'For Mercado Libre sellers (in Spanish)',
       preguntas: 'FAQ',
       aviso: 'Privacy notice',
     },

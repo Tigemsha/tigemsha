@@ -288,6 +288,7 @@ export const es = {
     enlaces: {
       landings: 'Landings a la venta',
       servicios: 'Servicios',
+      mercadoLibre: 'Para vendedores de Mercado Libre',
       preguntas: 'Preguntas frecuentes',
       aviso: 'Aviso de privacidad',
     },

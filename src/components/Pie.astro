@@ -1,6 +1,6 @@
 ---
 import { correoUrl, instagramUrl, tiktokUrl } from '../data/sitio';
-import { type Idioma, ruta, t } from '../i18n';
+import { etiquetaLang, type Idioma, ruta, t } from '../i18n';
 import { whatsappDirecto } from '../lib/whatsapp';
 import Icono, { type NombreIcono } from './Icono.astro';
 import Tigre from './Tigre.astro';
@@ -32,6 +32,8 @@ const redes: { icono: NombreIcono; nombre: string; url: string }[] = [
       <ul class="pie__enlaces">
         <li><a href={ruta(idioma, 'landings')}>{d.pie.enlaces.landings}</a></li>
         <li><a href={`${inicio}#servicios`}>{d.pie.enlaces.servicios}</a></li>
+        {/* /mercado-libre solo existe en español, también desde el pie en inglés. */}
+        <li><a href="/mercado-libre/" hreflang={etiquetaLang.es}>{d.pie.enlaces.mercadoLibre}</a></li>
         <li><a href={`${inicio}#preguntas`}>{d.pie.enlaces.preguntas}</a></li>
         <li><a href={ruta(idioma, 'aviso')}>{d.pie.enlaces.aviso}</a></li>
       </ul>
