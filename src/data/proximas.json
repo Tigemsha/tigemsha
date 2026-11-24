@@ -1,23 +1,5 @@
 [
   {
-    "orden": 7,
-    "slug": "pilates-yoga",
-    "nombre": "Estudios de pilates, yoga y barre",
-    "nombre_en": "Pilates, yoga and barre studios",
-    "familia": "fitness",
-    "palabras_clave": [
-      "pilates",
-      "yoga",
-      "barre",
-      "reformer"
-    ],
-    "palabras_clave_en": [
-      "pilates",
-      "yoga",
-      "barre"
-    ]
-  },
-  {
     "orden": 8,
     "slug": "salones-eventos",
     "nombre": "Salones y jardines de eventos",
@@ -85,6 +67,22 @@
     "palabras_clave_en": [
       "plastic surgeon",
       "cosmetic surgery"
+    ]
+  },
+  {
+    "orden": 12,
+    "slug": "paneles-solares",
+    "nombre": "Instaladores de paneles solares",
+    "nombre_en": "Solar panel installers",
+    "familia": "hogar",
+    "palabras_clave": [
+      "solar",
+      "paneles",
+      "energia solar"
+    ],
+    "palabras_clave_en": [
+      "solar",
+      "solar panels"
     ]
   }
 ]
